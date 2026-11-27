@@ -55,6 +55,8 @@ class SessionRepository(
 
     suspend fun messages(sessionId: String): List<StoredMessage> = messages.list(sessionId).map(::decode)
 
+    suspend fun lastSeq(sessionId: String): Int = messages.maxSeq(sessionId)
+
     /** Appends a message and returns its sequence number. Saved before any tool runs. */
     suspend fun append(sessionId: String, content: Content, usage: UsageMetadata? = null, modelId: String? = null, kind: String = MessageEntity.KIND_CHAT): Int =
         db.withTransaction {
