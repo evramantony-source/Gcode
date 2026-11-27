@@ -105,3 +105,26 @@ data class CheckpointEntity(
     val existed: Boolean,
     val createdAt: Long,
 )
+
+/** A GitHub Actions run started or watched from the app (build history, ARCHITECTURE.md section 8.4). */
+@Entity(tableName = "builds", indices = [Index(value = ["repoFullName", "runId"], unique = true)])
+data class BuildEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val repoFullName: String,
+    val runId: Long,
+    val runNumber: Int,
+    val workflowId: Long,
+    val workflowName: String?,
+    val branch: String?,
+    val headSha: String,
+    val event: String?,
+    val status: String?,
+    val conclusion: String?,
+    val htmlUrl: String,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val artifactId: Long? = null,
+    val apkPath: String? = null,
+    val apkLabel: String? = null,
+    val notified: Boolean = false,
+)

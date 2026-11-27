@@ -14,6 +14,8 @@ enum class SecretKey(val id: String) {
     GEMINI_API_KEY("gemini_api_key"),
     GITHUB_TOKEN("github_token"),
     GITHUB_TOKEN_TYPE("github_token_type"),
+    /** Base64 PKCS12 of the stable debug key generated on the device (reused for every repository). */
+    DEBUG_KEYSTORE("debug_keystore"),
     ;
 
     companion object {
