@@ -23,7 +23,7 @@ bundled in the app.
 
 None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor.)
 
-## Libraries (119)
+## Libraries (138)
 
 | Library | Artifact | Version | Licence |
 |---|---|---|---|
@@ -67,6 +67,13 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [androidx.core:core-viewtree](https://developer.android.com/jetpack/androidx/releases/core#1.0.0) | `androidx.core:core-viewtree` | 1.0.0 | Apache-2.0 |
 | [Support Custom View](http://developer.android.com/tools/extras/support-library.html) | `androidx.customview:customview` | 1.0.0 | Apache-2.0 |
 | [androidx.customview:poolingcontainer](https://developer.android.com/jetpack/androidx/releases/customview#1.0.0) | `androidx.customview:customview-poolingcontainer` | 1.0.0 | Apache-2.0 |
+| [DataStore](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore` | 1.3.0 | Apache-2.0 |
+| [DataStore Core](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-core` | 1.3.0 | Apache-2.0 |
+| [DataStore Core Okio](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-core-okio` | 1.3.0 | Apache-2.0 |
+| [Preferences DataStore](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences` | 1.3.0 | Apache-2.0 |
+| [Preferences DataStore Core](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-core` | 1.3.0 | Apache-2.0 |
+| [Preferences External Protobuf](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-external-protobuf` | 1.3.0 | BSD-3-Clause |
+| [Preferences DataStore Proto](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-proto` | 1.3.0 | Apache-2.0 |
 | [Emoji2](https://developer.android.com/jetpack/androidx/releases/emoji2#1.7.0) | `androidx.emoji2:emoji2` | 1.7.0 | Apache-2.0 |
 | [Support fragment](https://developer.android.com/jetpack/androidx/releases/fragment#1.5.1) | `androidx.fragment:fragment` | 1.5.1 | Apache-2.0 |
 | [Android Graphics Path](https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0) | `androidx.graphics:graphics-path` | 1.1.0 | Apache-2.0 |
@@ -94,11 +101,16 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [Navigation Event](https://developer.android.com/jetpack/androidx/releases/navigationevent#1.1.1) | `androidx.navigationevent:navigationevent` | 1.1.1 | Apache-2.0 |
 | [NavigationEvent Compose](https://developer.android.com/jetpack/androidx/releases/navigationevent#1.1.1) | `androidx.navigationevent:navigationevent-compose` | 1.1.1 | Apache-2.0 |
 | [Profile Installer](https://developer.android.com/jetpack/androidx/releases/profileinstaller#1.4.0) | `androidx.profileinstaller:profileinstaller` | 1.4.0 | Apache-2.0 |
+| [Room-Common](https://developer.android.com/jetpack/androidx/releases/room#2.8.5) | `androidx.room:room-common` | 2.8.5 | Apache-2.0 |
+| [Room Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/room#2.8.5) | `androidx.room:room-ktx` | 2.8.5 | Apache-2.0 |
+| [Room-Runtime](https://developer.android.com/jetpack/androidx/releases/room#2.8.5) | `androidx.room:room-runtime` | 2.8.5 | Apache-2.0 |
 | [Saved State](https://developer.android.com/jetpack/androidx/releases/savedstate#1.5.0) | `androidx.savedstate:savedstate` | 1.5.0 | Apache-2.0 |
 | [Saved State Compose](https://developer.android.com/jetpack/androidx/releases/savedstate#1.5.0) | `androidx.savedstate:savedstate-compose` | 1.5.0 | Apache-2.0 |
 | [SavedState Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/savedstate#1.5.0) | `androidx.savedstate:savedstate-ktx` | 1.5.0 | Apache-2.0 |
-| [Android App Startup Runtime](https://developer.android.com/jetpack/androidx/releases/startup#1.1.1) | `androidx.startup:startup-runtime` | 1.1.1 | Apache-2.0 |
-| [Android Tracing](https://developer.android.com/jetpack/androidx/releases/tracing#1.2.0) | `androidx.tracing:tracing` | 1.2.0 | Apache-2.0 |
+| [SQLite](https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2) | `androidx.sqlite:sqlite` | 2.6.2 | Apache-2.0 |
+| [SQLite Framework Integration](https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2) | `androidx.sqlite:sqlite-framework` | 2.6.2 | Apache-2.0 |
+| [Startup Runtime](https://developer.android.com/jetpack/androidx/releases/startup#1.2.0) | `androidx.startup:startup-runtime` | 1.2.0 | Apache-2.0 |
+| [Tracing](https://developer.android.com/jetpack/androidx/releases/tracing#2.0.1) | `androidx.tracing:tracing` | 2.0.1 | Apache-2.0 |
 | [VersionedParcelable](http://developer.android.com/tools/extras/support-library.html) | `androidx.versionedparcelable:versionedparcelable` | 1.1.1 | Apache-2.0 |
 | [Support View Pager](http://developer.android.com/tools/extras/support-library.html) | `androidx.viewpager:viewpager` | 1.0.0 | Apache-2.0 |
 | [WindowManager](https://developer.android.com/jetpack/androidx/releases/window#1.5.0) | `androidx.window:window` | 1.5.0 | Apache-2.0 |
@@ -112,6 +124,10 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [AboutLibraries Compose UI Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-compose-core` | 15.3.0 | Apache-2.0 |
 | [AboutLibraries Compose Material 3 Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-compose-m3` | 15.3.0 | Apache-2.0 |
 | [AboutLibraries Core Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-core` | 15.3.0 | Apache-2.0 |
+| [Multiplatform Markdown Renderer](https://github.com/mikepenz/multiplatform-markdown-renderer) | `com.mikepenz:multiplatform-markdown-renderer` | 0.46.0 | Apache-2.0 |
+| [Multiplatform Markdown Renderer - Material 3](https://github.com/mikepenz/multiplatform-markdown-renderer) | `com.mikepenz:multiplatform-markdown-renderer-m3` | 0.46.0 | Apache-2.0 |
+| [okhttp](https://lysine.dev/okhttp/) | `com.squareup.okhttp3:okhttp` | 5.5.1 | Apache-2.0 |
+| [okio](https://github.com/lysine-dev/okio/) | `com.squareup.okio:okio` | 3.18.1 | Apache-2.0 |
 | [Jakarta Dependency Injection](https://github.com/eclipse-ee4j/injection-api) | `jakarta.inject:jakarta.inject-api` | 2.0.1 | Apache-2.0 |
 | [javax.inject](http://code.google.com/p/atinject/) | `javax.inject:javax.inject` | 1 | Apache-2.0 |
 | [Lifecycle-Common](https://github.com/JetBrains/compose-jb) | `org.jetbrains.androidx.lifecycle:lifecycle-common` | 2.9.6 | Apache-2.0 |
@@ -138,6 +154,8 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [Compose Unit](https://github.com/JetBrains/compose-multiplatform) | `org.jetbrains.compose.ui:ui-unit` | 1.12.1 | Apache-2.0 |
 | [Compose Util](https://github.com/JetBrains/compose-multiplatform) | `org.jetbrains.compose.ui:ui-util` | 1.12.1 | Apache-2.0 |
 | [Kotlin Stdlib](https://kotlinlang.org/) | `org.jetbrains.kotlin:kotlin-stdlib` | 2.4.21 | Apache-2.0 |
+| [atomicfu](https://github.com/Kotlin/kotlinx.atomicfu) | `org.jetbrains.kotlinx:atomicfu` | 0.28.0 | Apache-2.0 |
+| [kotlinx-collections-immutable](https://github.com/Kotlin/kotlinx.collections.immutable) | `org.jetbrains.kotlinx:kotlinx-collections-immutable` | 0.5.2 | Apache-2.0 |
 | [kotlinx-coroutines-android](https://github.com/Kotlin/kotlinx.coroutines) | `org.jetbrains.kotlinx:kotlinx-coroutines-android` | 1.11.0 | Apache-2.0 |
 | [kotlinx-coroutines-bom](https://github.com/Kotlin/kotlinx.coroutines) | `org.jetbrains.kotlinx:kotlinx-coroutines-bom` | 1.11.0 | Apache-2.0 |
 | [kotlinx-coroutines-core](https://github.com/Kotlin/kotlinx.coroutines) | `org.jetbrains.kotlinx:kotlinx-coroutines-core` | 1.11.0 | Apache-2.0 |
@@ -145,6 +163,7 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [kotlinx-serialization-core](https://github.com/Kotlin/kotlinx.serialization) | `org.jetbrains.kotlinx:kotlinx-serialization-core` | 1.13.0 | Apache-2.0 |
 | [kotlinx-serialization-json](https://github.com/Kotlin/kotlinx.serialization) | `org.jetbrains.kotlinx:kotlinx-serialization-json` | 1.13.0 | Apache-2.0 |
 | [JetBrains Java Annotations](https://github.com/JetBrains/java-annotations) | `org.jetbrains:annotations` | 23.0.0 | Apache-2.0 |
+| [markdown](https://github.com/JetBrains/markdown) | `org.jetbrains:markdown` | 0.7.17 | Apache-2.0 |
 | [JSpecify annotations](http://jspecify.org/) | `org.jspecify:jspecify` | 1.0.0 | Apache-2.0 |
 
 ## Licence texts
@@ -152,3 +171,19 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 ### Apache License 2.0
 
 See [LICENSE](LICENSE) (identical text).
+
+### BSD 3-Clause "New" or "Revised" License
+
+```text
+Copyright (c) <<var;name=copyright;original= <year> <owner>;match=.+>>. All rights reserved. 
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution. 
+
+3. Neither the name of <<var;name=organizationClause3;original=the copyright holder;match=.+>> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY <<var;name=copyrightHolderAsIs;original=THE COPYRIGHT HOLDERS AND CONTRIBUTORS;match=.+>> "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <<var;name=copyrightHolderLiability;original=THE COPYRIGHT HOLDER OR CONTRIBUTORS;match=.+>> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```

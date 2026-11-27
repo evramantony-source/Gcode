@@ -22,6 +22,7 @@ fun GCodeScreen(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -41,6 +42,7 @@ fun GCodeScreen(
                         }
                     }
                 },
+                actions = actions,
             )
         },
         content = content,

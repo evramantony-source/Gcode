@@ -18,7 +18,6 @@
 
     <!-- Placeholder screens -->
     <string name="coming_in_phase">قادم في المرحلة %1$d</string>
-    <string name="placeholder_chat">تحدّث مع الوكيل المدعوم بـ Gemini. يعدّل الكود، ويُنشئ الإيداعات، ويدفعها، ويشغّل عمليات البناء على GitHub Actions.</string>
     <string name="placeholder_repos">اعرض مستودعاتك على GitHub وابحث فيها وأنشئها واستنسخها وفرّعها.</string>
     <string name="placeholder_code">تصفّح الملفات وحرّر الكود وأدِر التغييرات والفروع والسجل.</string>
     <string name="placeholder_builds">ابدأ عمليات البناء على GitHub Actions وتابعها مباشرةً واقرأ السجلات وثبّت ملف APK.</string>
@@ -26,7 +25,6 @@
     <string name="placeholder_issues">اعرض المشكلات واقرأها وأنشئها وعلّق عليها.</string>
     <string name="placeholder_releases">أنشئ الوسوم والإصدارات وأرفق ملفات APK.</string>
     <string name="placeholder_sessions">استأنف جلسات الوكيل السابقة أو أعد تسميتها أو احذفها.</string>
-    <string name="placeholder_settings">مفتاح Gemini والنموذج، وحساب GitHub، ووضع الأذونات، والمظهر، واللغة.</string>
 
     <!-- About -->
     <string name="about_body">GCode مساعد برمجة ذكي لنظام Android. يعتمد على واجهة Google Gemini البرمجية بمفتاحك الخاص. تجري جميع عمليات البناء على GitHub Actions، ولا يُترجَم أي شيء على هذا الجهاز.</string>
@@ -42,4 +40,58 @@
     <string name="license_apache_title">رخصة Apache 2.0</string>
 
     <string name="navigate_back">رجوع</string>
+
+    <!-- Phase 2: onboarding, chat, models, settings -->
+    <string name="onboarding_welcome">مرحبًا بك في GCode</string>
+    <string name="onboarding_intro">مساعد برمجة ذكي على هاتفك. يتولى Gemini التفكير، وتتولى GitHub Actions عمليات البناء.</string>
+    <string name="onboarding_gemini_title">1. مفتاح Gemini API</string>
+    <string name="onboarding_gemini_body">يستخدم GCode مفتاح Gemini API الخاص بك. يُخزَّن مشفّرًا على هذا الجهاز ولا يُرسَل إلا إلى واجهة Gemini من Google.</string>
+    <string name="onboarding_get_key">احصل على مفتاح من Google AI Studio</string>
+    <string name="onboarding_key_label">مفتاح Gemini API</string>
+    <string name="onboarding_restrict_tip">نصيحة: في AI Studio، قيِّد المفتاح على \"Gemini API فقط\". يجب تقييد المفاتيح الجديدة.</string>
+    <string name="onboarding_verify">تحقّق واحفظ</string>
+    <string name="show_key">إظهار المفتاح</string>
+    <string name="hide_key">إخفاء المفتاح</string>
+    <string name="model_picker_title">النموذج</string>
+    <string name="refresh_models">تحديث النماذج</string>
+    <string name="refreshing">جارٍ التحديث…</string>
+    <string name="thinking_level">مستوى التفكير</string>
+    <string name="thinking_default">افتراضي</string>
+    <string name="thinking_badge">تفكير</string>
+    <string name="show_thoughts">إظهار الأفكار</string>
+    <string name="show_thoughts_body">اطلب من النموذج ملخصات لأفكاره واعرضها في بطاقة مطوية.</string>
+    <string name="context_tokens">سياق %1$s</string>
+    <string name="not_for_agent">للمحادثة فقط</string>
+    <string name="no_models">لم تُحمَّل أي نماذج. اضغط للتحديث.</string>
+    <string name="new_chat">محادثة جديدة</string>
+    <string name="fallback_active">يُستخدم نموذج بديل</string>
+    <string name="fallback_reason">يُستخدم بديل: %1$s</string>
+    <string name="context_percent">السياق %1$d%%</string>
+    <string name="chat_empty">اسأل أي شيء عن الكود. تصل الأدوات والمستودعات وعمليات البناء مع اكتمال كل مرحلة.</string>
+    <string name="conversation_compacted">لُخّصت الرسائل السابقة</string>
+    <string name="copy">نسخ</string>
+    <string name="thoughts">الأفكار</string>
+    <string name="dismiss">إغلاق</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="composer_hint">اكتب رسالة إلى GCode</string>
+    <string name="send">إرسال</string>
+    <string name="stop">إيقاف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="verifying">جارٍ التحقق…</string>
+    <string name="settings_gemini">Gemini</string>
+    <string name="gemini_api_key">مفتاح Gemini API</string>
+    <string name="key_stored">مخزَّن مشفّرًا على هذا الجهاز. اضغط للاستبدال.</string>
+    <string name="key_missing">غير مضبوط</string>
+    <string name="default_model">النموذج الافتراضي</string>
+    <string name="auto_switch">التبديل التلقائي عند تجاوز الحد</string>
+    <string name="auto_switch_body">بعد تكرار أخطاء 429، انتقل إلى النموذج المتاح التالي وأعد المحاولة.</string>
+    <string name="compaction_title">حد التلخيص التلقائي</string>
+    <string name="compaction_body">لخّص الرسائل الأقدم عند امتلاء نافذة السياق بنسبة %1$d%%.</string>
+    <string name="models_count">%1$d نموذجًا متاحًا</string>
+    <string name="settings_appearance">المظهر</string>
+    <string name="theme_system">اتباع النظام</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="dynamic_color">الألوان الديناميكية</string>
+    <string name="dynamic_color_body">استخدم ألوان الخلفية (Android 12 والأحدث).</string>
 </resources>
