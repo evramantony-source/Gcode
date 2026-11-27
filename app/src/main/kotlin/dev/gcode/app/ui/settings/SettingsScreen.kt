@@ -32,11 +32,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.gcode.app.R
 import dev.gcode.app.ui.components.GCodeScreen
 import dev.gcode.app.ui.models.ModelPickerSheet
+import dev.gcode.app.ui.github.GitHubSignInCard
+import dev.gcode.app.ui.github.GitHubSignInViewModel
 import dev.gcode.core.data.settings.ThemeMode
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel(), signIn: GitHubSignInViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val github by signIn.account.state.collectAsStateWithLifecycle()
+    var clientIdDraft by rememberSaveable(state.settings.githubClientIdOverride) { mutableStateOf(state.settings.githubClientIdOverride.orEmpty()) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val s = state.settings
     GCodeScreen(title = stringResource(R.string.more_settings), onBack = onBack, modifier = Modifier.testTag("screen_settings")) { padding ->
@@ -67,6 +71,23 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
                 modifier = Modifier.clickable(onClick = viewModel::refreshModels),
                 supportingContent = { Text(state.message ?: stringResource(R.string.models_count, state.catalog.chatModels.size)) },
             ) { Text(stringResource(if (state.refreshing) R.string.refreshing else R.string.refresh_models)) }
+            HorizontalDivider()
+
+            SectionHeader(stringResource(R.string.settings_github))
+            GitHubSignInCard(github, signIn.account, Modifier.padding(horizontal = 16.dp))
+            ListItem(supportingContent = {
+                Column {
+                    Text(stringResource(R.string.github_client_id_body))
+                    OutlinedTextField(
+                        value = clientIdDraft,
+                        onValueChange = { clientIdDraft = it },
+                        singleLine = true,
+                        placeholder = { Text(stringResource(R.string.github_client_id_default)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = { TextButton(onClick = { viewModel.setClientIdOverride(clientIdDraft) }) { Text(stringResource(R.string.save)) } },
+                    )
+                }
+            }) { Text(stringResource(R.string.github_client_id)) }
             HorizontalDivider()
 
             SectionHeader(stringResource(R.string.settings_appearance))

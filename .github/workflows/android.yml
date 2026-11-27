@@ -94,10 +94,15 @@ jobs:
         run: rm -f "${RUNNER_TEMP}/debug.keystore"
 
   ui-test:
-    name: Instrumented UI smoke test
+    name: Instrumented tests (API ${{ matrix.api-level }})
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        # minSdk and a recent release: JGit and the Keystore must work on both.
+        api-level: [26, 36]
     steps:
       - name: Check out
         uses: actions/checkout@v7
@@ -128,7 +133,7 @@ jobs:
       - name: Run instrumented tests on an emulator
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:
-          api-level: 36
+          api-level: ${{ matrix.api-level }}
           target: google_apis
           arch: x86_64
           profile: pixel_6
@@ -140,7 +145,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ui-test-reports
+          name: ui-test-reports-api-${{ matrix.api-level }}
           path: |
             app/build/reports/androidTests/
             app/build/outputs/androidTest-results/

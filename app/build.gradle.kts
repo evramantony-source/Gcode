@@ -78,6 +78,10 @@ android {
         buildConfig = true
     }
 
+    sourceSets {
+        getByName("androidTest").assets.directories.add(rootProject.file("core/data/schemas").path)
+    }
+
     androidResources {
         generateLocaleConfig = true
         // Only ship the languages GCode is translated into (English, Arabic); drops partial library translations.
@@ -106,6 +110,8 @@ tasks.named("preBuild") { dependsOn(verifyGitHubClientId) }
 
 aboutLibraries {
     collect {
+        // Metadata overrides for dependencies whose POMs lack an SPDX licence id (e.g. JGit: EDL-1.0 = BSD-3-Clause).
+        configPath = file("config")
         fetchRemoteLicense = false
         fetchRemoteFunding = false
         includePlatform = true
@@ -132,6 +138,11 @@ aboutLibraries {
             "LGPL-2.1-or-later",
             "ISC",
             "Unicode-DFS-2016",
+        )
+        // JGit's POM names the Eclipse Distribution License (EDL-1.0, i.e. BSD-3-Clause) without an SPDX id;
+        // config/libraries/org.eclipse.jgit.json adds BSD-3-Clause, and this allows the POM's own entry for JGit only.
+        allowedLicensesMap = mapOf(
+            "b3f0b0bb52153b7c087898e7d4b6abf6" to listOf("org.eclipse.jgit", "org.eclipse.jgit:org.eclipse.jgit"),
         )
     }
 }
@@ -170,5 +181,6 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.room.testing)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

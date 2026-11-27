@@ -42,6 +42,9 @@ class AppShellSmokeTest {
         if (composeRule.onAllNodes(hasTestTag("screen_onboarding")).fetchSemanticsNodes().isNotEmpty()) {
             composeRule.onNodeWithTag("gemini_key_field").performTextInput("AIzaFakeKeyForInstrumentedTests0000")
             composeRule.onNodeWithTag("verify_key").performClick()
+            composeRule.waitUntilAtLeastOneExists(hasTestTag("skip_github"), TIMEOUT)
+            composeRule.onNodeWithTag("skip_github").performClick()
+            composeRule.onNodeWithTag("finish_onboarding").performClick()
         }
         composeRule.waitUntilAtLeastOneExists(hasTestTag("screen_chat"), TIMEOUT)
 
@@ -51,6 +54,10 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("status_model").assertIsDisplayed()
 
         TopLevelDestination.entries.forEach { composeRule.onNodeWithTag(it.testTag).assertIsDisplayed() }
+        composeRule.onNodeWithTag(TopLevelDestination.REPOS.testTag).performClick()
+        composeRule.onNodeWithTag("github_sign_in").assertIsDisplayed()
+        composeRule.onNodeWithTag(TopLevelDestination.CODE.testTag).performClick()
+        composeRule.onNodeWithTag("screen_code").assertIsDisplayed()
         composeRule.onNodeWithTag(TopLevelDestination.BUILDS.testTag).performClick()
         composeRule.onNodeWithTag("screen_builds").assertIsDisplayed()
 

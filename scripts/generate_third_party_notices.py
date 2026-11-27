@@ -57,8 +57,8 @@ def render(data: dict) -> str:
         names = []
         for key in lib.get("licenses", []):
             info = licenses.get(key, {})
-            names.append(info.get("spdxId") or key)
-        return ", ".join(sorted(names)) or "Unknown"
+            names.append(info.get("spdxId") or info.get("name") or key)
+        return ", ".join(sorted(set(names))) or "Unknown"
 
     out = [HEADER]
     lgpl = [lib for lib in libraries if "LGPL" in license_names(lib).upper()]

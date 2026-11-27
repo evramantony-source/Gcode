@@ -9,3 +9,17 @@
 # stable so saved state restores after process death in minified builds.
 -keep class dev.gcode.app.ui.navigation.** { *; }
 -keep class dev.gcode.app.ui.licenses.BundledLicense { *; }
+
+# JGit 5.13: optional integrations that are not on Android (JMX monitoring, SSH/GPG modules, servlet).
+-dontwarn javax.management.**
+-dontwarn java.lang.management.**
+-dontwarn org.eclipse.jgit.internal.transport.ssh.**
+-dontwarn org.ietf.jgss.**
+-dontwarn javax.servlet.**
+-dontwarn org.slf4j.impl.**
+# JGit loads some classes by name (transports, merge strategies, text encodings).
+-keep class org.eclipse.jgit.transport.** { *; }
+-keep class org.eclipse.jgit.merge.** { *; }
+-keep class org.eclipse.jgit.lib.** { *; }
+-keep class org.eclipse.jgit.internal.JGitText { *; }
+-keepclassmembers class * extends org.eclipse.jgit.nls.TranslationBundle { *; }
