@@ -3,12 +3,24 @@ package dev.gcode.github
 import dev.gcode.core.model.RepoRef
 import dev.gcode.github.api.ActionsApi
 import dev.gcode.github.api.ContentsApi
+import dev.gcode.github.api.IssuesApi
+import dev.gcode.github.api.PullsApi
 import dev.gcode.github.api.ReleasesApi
 import dev.gcode.github.api.ReposApi
 import dev.gcode.github.api.SecretsApi
 import dev.gcode.github.api.UsersApi
 import dev.gcode.github.crypto.SealedBox
+import dev.gcode.github.model.CommentRequest
+import dev.gcode.github.model.CreateIssueRequest
+import dev.gcode.github.model.CreatePullRequest
 import dev.gcode.github.model.CreateReleaseRequest
+import dev.gcode.github.model.GhComment
+import dev.gcode.github.model.GhIssue
+import dev.gcode.github.model.GhPull
+import dev.gcode.github.model.GhPullFile
+import dev.gcode.github.model.MergePullRequest
+import dev.gcode.github.model.MergeResult
+import dev.gcode.github.model.UpdateIssueRequest
 import dev.gcode.github.model.DispatchRequest
 import dev.gcode.github.model.DispatchResponse
 import dev.gcode.github.model.GhArtifact
@@ -48,7 +60,7 @@ import kotlinx.serialization.json.JsonObject
 import java.net.URLEncoder
 
 /** GitHub REST client. Each area is a small interface so tests can fake only what they use. */
-class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi, ActionsApi, ReleasesApi, SecretsApi, ContentsApi {
+class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi, ActionsApi, ReleasesApi, SecretsApi, ContentsApi, PullsApi, IssuesApi {
 
     override suspend fun me(): GhUser = http.get("user", GhUser.serializer(), useEtag = false)
 
@@ -183,6 +195,51 @@ class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi, ActionsApi, Relea
         val response = http.send("PUT", "${path(ref)}/contents/${encodePath(path)}", request, PutContentRequest.serializer(), PutContentResponse.serializer())
         return response.commit?.sha
     }
+
+    // ---------------------------------------------------------------- Pull requests
+
+    override suspend fun pulls(ref: RepoRef, state: String, base: String?, head: String?, perPage: Int): List<GhPull> = http.get(
+        "${path(ref)}/pulls",
+        ListSerializer(GhPull.serializer()),
+        mapOf("state" to state, "base" to base, "head" to head, "sort" to "updated", "direction" to "desc", "per_page" to perPage.coerceIn(1, 100).toString()),
+    )
+
+    override suspend fun pull(ref: RepoRef, number: Int): GhPull = http.get("${path(ref)}/pulls/$number", GhPull.serializer(), useEtag = false)
+
+    override suspend fun createPull(ref: RepoRef, request: CreatePullRequest): GhPull =
+        http.send("POST", "${path(ref)}/pulls", request, CreatePullRequest.serializer(), GhPull.serializer())
+
+    override suspend fun mergePull(ref: RepoRef, number: Int, request: MergePullRequest): MergeResult =
+        http.send("PUT", "${path(ref)}/pulls/$number/merge", request, MergePullRequest.serializer(), MergeResult.serializer())
+
+    override suspend fun pullFiles(ref: RepoRef, number: Int, maxPages: Int): List<GhPullFile> =
+        http.getPaged("${path(ref)}/pulls/$number/files", ListSerializer(GhPullFile.serializer()), maxPages = maxPages)
+
+    override suspend fun updatePullState(ref: RepoRef, number: Int, open: Boolean): GhPull = http.send(
+        "PATCH", "${path(ref)}/pulls/$number", UpdateIssueRequest(state = if (open) "open" else "closed"), UpdateIssueRequest.serializer(), GhPull.serializer(),
+    )
+
+    // ---------------------------------------------------------------- Issues and comments
+
+    override suspend fun issues(ref: RepoRef, state: String, labels: String?, perPage: Int): List<GhIssue> = http.get(
+        "${path(ref)}/issues",
+        ListSerializer(GhIssue.serializer()),
+        mapOf("state" to state, "labels" to labels, "sort" to "updated", "direction" to "desc", "per_page" to perPage.coerceIn(1, 100).toString()),
+    ).filterNot { it.isPullRequest }
+
+    override suspend fun issue(ref: RepoRef, number: Int): GhIssue = http.get("${path(ref)}/issues/$number", GhIssue.serializer(), useEtag = false)
+
+    override suspend fun createIssue(ref: RepoRef, request: CreateIssueRequest): GhIssue =
+        http.send("POST", "${path(ref)}/issues", request, CreateIssueRequest.serializer(), GhIssue.serializer())
+
+    override suspend fun updateIssue(ref: RepoRef, number: Int, request: UpdateIssueRequest): GhIssue =
+        http.send("PATCH", "${path(ref)}/issues/$number", request, UpdateIssueRequest.serializer(), GhIssue.serializer())
+
+    override suspend fun comments(ref: RepoRef, number: Int, maxPages: Int): List<GhComment> =
+        http.getPaged("${path(ref)}/issues/$number/comments", ListSerializer(GhComment.serializer()), maxPages = maxPages)
+
+    override suspend fun comment(ref: RepoRef, number: Int, body: String): GhComment =
+        http.send("POST", "${path(ref)}/issues/$number/comments", CommentRequest(body), CommentRequest.serializer(), GhComment.serializer())
 
     companion object {
         private val SECRET_NAME = Regex("^(?!GITHUB_)(?![0-9])[A-Za-z0-9_]+$")

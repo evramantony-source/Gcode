@@ -1,6 +1,16 @@
 package dev.gcode.github.api
 
 import dev.gcode.core.model.RepoRef
+import dev.gcode.github.model.CommentRequest
+import dev.gcode.github.model.CreateIssueRequest
+import dev.gcode.github.model.CreatePullRequest
+import dev.gcode.github.model.GhComment
+import dev.gcode.github.model.GhIssue
+import dev.gcode.github.model.GhPull
+import dev.gcode.github.model.GhPullFile
+import dev.gcode.github.model.MergePullRequest
+import dev.gcode.github.model.MergeResult
+import dev.gcode.github.model.UpdateIssueRequest
 import dev.gcode.github.model.CreateReleaseRequest
 import dev.gcode.github.model.DispatchResponse
 import dev.gcode.github.model.GhArtifact
@@ -53,4 +63,26 @@ interface SecretsApi {
 interface ContentsApi {
     /** Creates or updates one file with a commit (no clone needed). */
     suspend fun putFile(ref: RepoRef, path: String, content: ByteArray, message: String, branch: String? = null): String?
+}
+
+interface PullsApi {
+    suspend fun pulls(ref: RepoRef, state: String = "open", base: String? = null, head: String? = null, perPage: Int = 30): List<GhPull>
+    suspend fun pull(ref: RepoRef, number: Int): GhPull
+    suspend fun createPull(ref: RepoRef, request: CreatePullRequest): GhPull
+
+    /** 405 when not mergeable, 409 when [MergePullRequest.sha] does not match the head. */
+    suspend fun mergePull(ref: RepoRef, number: Int, request: MergePullRequest): MergeResult
+    suspend fun pullFiles(ref: RepoRef, number: Int, maxPages: Int = 10): List<GhPullFile>
+    suspend fun updatePullState(ref: RepoRef, number: Int, open: Boolean): GhPull
+}
+
+/** Issues and the comment thread shared by issues and pull requests. */
+interface IssuesApi {
+    /** Issues only: pull requests, which the endpoint also returns, are filtered out. */
+    suspend fun issues(ref: RepoRef, state: String = "open", labels: String? = null, perPage: Int = 30): List<GhIssue>
+    suspend fun issue(ref: RepoRef, number: Int): GhIssue
+    suspend fun createIssue(ref: RepoRef, request: CreateIssueRequest): GhIssue
+    suspend fun updateIssue(ref: RepoRef, number: Int, request: UpdateIssueRequest): GhIssue
+    suspend fun comments(ref: RepoRef, number: Int, maxPages: Int = 5): List<GhComment>
+    suspend fun comment(ref: RepoRef, number: Int, body: String): GhComment
 }

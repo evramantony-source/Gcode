@@ -123,7 +123,8 @@ data class CreateReleaseRequest(
     val body: String? = null,
     val draft: Boolean = false,
     val prerelease: Boolean = false,
-    @SerialName("generate_release_notes") val generateReleaseNotes: Boolean = true,
+    // Defaults match GitHub's, so only non-default values are sent (encodeDefaults = false).
+    @SerialName("generate_release_notes") val generateReleaseNotes: Boolean = false,
 )
 
 @Serializable
