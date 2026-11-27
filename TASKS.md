@@ -82,22 +82,22 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
       (full source-control UI with branches and history in Phase 5)
 
 ## Phase 4: Workspace tools, agent loop, diff approval, permission modes
-- [ ] `Workspace` with path sandboxing; denylist and `.gitignore`
-      enforcement
-- [ ] File tools: read_file, write_file, edit_file, multi_edit, list_dir,
+- [x] `WorkspaceFs` (cloned repo, or a SAF folder) with path sandboxing;
+      denylist and `.gitignore` enforcement
+- [x] File tools: read_file, write_file, edit_file, multi_edit, list_dir,
       glob, grep, delete_file, move_file
-- [ ] Git tools: git_status … git_log
-- [ ] Tool registry turns Kotlin tool specs into Gemini `functionDeclarations`
-- [ ] Agent loop: function calling, parallel READ groups, ordered results,
+- [x] Git tools: git_status … git_log
+- [x] Tool registry turns Kotlin tool specs into Gemini `functionDeclarations`
+- [x] Agent loop: function calling, parallel READ groups, ordered results,
       every call answered on Stop or cancel, step limit
-- [ ] `todo_write` and the todo panel; collapsible tool-call cards
-- [ ] `PermissionPolicy` (Ask / Auto-accept edits / Plan / Full auto),
+- [x] `todo_write` and the todo panel; collapsible tool-call cards
+- [x] `PermissionPolicy` (Ask / Auto-accept edits / Plan / Full auto),
       always-confirm dialogs, Full-auto opt-in warning
-- [ ] Diff sheet with Accept / Reject / Edit; Plan mode with `submit_plan`
-- [ ] Checkpoints before each edit (Rewind UI comes in Phase 9)
-- [ ] `AgentService` foreground service with a Stop action (FGS type checked
+- [x] Diff sheet with Accept / Reject / Edit; Plan mode with `submit_plan`
+- [x] Checkpoints before each edit, with restore logic (Rewind UI comes in Phase 9)
+- [x] `AgentService` foreground service with a Stop action (FGS type checked
       on API 37)
-- [ ] Tests: every tool, PermissionPolicy for each tool and mode, agent loop
+- [x] Tests: every tool, PermissionPolicy for each tool and mode, agent loop
       with a scripted fake model
 
 ## Phase 5: Code editor, file explorer, source control
