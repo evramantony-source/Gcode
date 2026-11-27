@@ -3,8 +3,8 @@
 This file lets a new session resume without other context. It is updated after every phase.
 
 - Repository: `evramantony-source/Gcode`. Work branch: `ccr-ee862235-7b5f5g` (the only branch this
-  agent may push to). Each phase is one PR from that branch into `main` (squash merge); after a merge
-  the branch is restarted from `main`.
+  agent may push to). Each phase is one PR from that branch into `main`, merged with a merge commit
+  (decision 42); after a merge the branch fast-forwards to `main`.
 - Plan: [TASKS.md](TASKS.md). Design: [ARCHITECTURE.md](ARCHITECTURE.md). Decisions:
   [docs/DECISIONS.md](docs/DECISIONS.md). Setup and signing: [docs/SIGNING.md](docs/SIGNING.md).
 - Local build: Android SDK at `/opt/android-sdk` (platform 37.2, build-tools 37.0.0), `local.properties`
@@ -21,8 +21,8 @@ This file lets a new session resume without other context. It is updated after e
 | 3 GitHub sign-in, repos, JGit | Merged | [#3](https://github.com/evramantony-source/Gcode/pull/3) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45990406165) |
 | 4 Workspace tools, agent loop, permissions | Merged | [#4](https://github.com/evramantony-source/Gcode/pull/4) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46038035247) |
 | 5 Editor, explorer, source control UI | Merged | [#5](https://github.com/evramantony-source/Gcode/pull/5) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46041082463) |
-| 6 Remote build pipeline | In review | #6 (see below) | — |
-| 7 Agent GitHub/Actions tools, build-fix loop | Not started | | |
+| 6 Remote build pipeline | Merged | [#6](https://github.com/evramantony-source/Gcode/pull/6) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46042568090) |
+| 7 Agent GitHub/Actions tools, build-fix loop | In review | #7 (see below) | — |
 | 8 PRs, issues, releases, branches, conflicts | Not started | | |
 | 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Not started | | |
 | 10 Release signing, polish, README, tests | Not started | | |
@@ -87,10 +87,23 @@ This file lets a new session resume without other context. It is updated after e
   sealed box, link to GitHub settings) and the stable debug key (generated on the device, saved as
   `DEBUG_KEYSTORE_BASE64`, always confirmed); workflows with `workflow_dispatch` inputs for any project.
 
+- **Phase 7:** pull request and issue APIs (list/get/create/merge/files/state, issues without PRs,
+  update with state_reason, comments); 21 agent tools: gh_list_repos, gh_search_repos, gh_create_repo
+  (public = always confirmed), gh_clone_repo (opens it as the workspace mid-turn), gh_fork_repo,
+  gh_get_file (denylisted paths need the secret prompt), gh_create_pr, gh_list_prs, gh_merge_pr (into
+  the default branch = always confirmed; waits for mergeability; merges the reviewed head SHA),
+  gh_comment, gh_list_issues (or one issue with comments), gh_create_issue, gh_setup_build_workflow,
+  gh_trigger_workflow (push + find/dispatch, inputs), gh_get_run_status, gh_wait_for_run, gh_get_run_logs
+  (failed steps only), gh_list_artifacts, gh_download_apk, gh_install_apk (always confirmed),
+  gh_create_release (optional APK asset); web_fetch (jsoup, private-network guard) and web_search
+  (Google Search grounding with sources); build-fix guard (per-repo limit, default 3) with guidance in
+  the system prompt.
+
 ## Known limitations
 
-- PR/issue/release screens are still placeholders until Phase 8; GitHub/Actions/web agent tools
-  arrive in Phase 7; the Rewind UI in Phase 9.
+- PR/issue/release screens are still placeholders until Phase 8; the Rewind UI arrives in Phase 9.
+- The per-repository build-fix limit is stored (default 3) but has no settings UI until Phase 8's
+  repository settings.
 - Dispatch inputs are read from the workflow file in the local clone (names only, no type-specific
   widgets); workflows that exist only on GitHub are dispatched without inputs.
 - JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
@@ -102,8 +115,8 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for the Phase 6 PR's CI, merge it, restart the branch from `main`, then start Phase 7: agent
-GitHub tools (gh_list_repos … gh_create_issue), Actions tools on top of `BuildService`
-(gh_setup_build_workflow, gh_trigger_workflow, gh_get_run_status, gh_wait_for_run, gh_get_run_logs
-with `LogParser.failureSummary`, gh_list_artifacts, gh_download_apk, gh_install_apk, gh_create_release),
-web_fetch (Jsoup) and web_search (google_search grounding), and the build-fix guard.
+Wait for the Phase 7 PR's CI, merge it (merge commit), fast-forward the branch, then start Phase 8:
+PR list/detail (files, diff, comments)/create/comment/merge (confirmed into the default branch),
+issue list/detail/create/comment/close, releases (list, create tag + release, upload APK), branch merge
+with the conflict resolver (Ours / Theirs / Both / Edit / Ask AI), secrets screen, per-repo settings
+(build-fix limit, author, default mode).

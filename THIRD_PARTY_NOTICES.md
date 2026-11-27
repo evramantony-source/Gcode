@@ -26,7 +26,7 @@ bundled in the app.
 - editor (`io.github.rosemoe:editor:0.24.7`): LGPL v2.1, LGPL-2.1-only, https://github.com/Rosemoe/sora-editor
 - language-textmate (`io.github.rosemoe:language-textmate:0.24.7`): LGPL v2.1, LGPL-2.1-only, https://github.com/Rosemoe/sora-editor
 
-## Libraries (160)
+## Libraries (161)
 
 | Library | Artifact | Version | Licence |
 |---|---|---|---|
@@ -187,6 +187,7 @@ bundled in the app.
 | [markdown](https://github.com/JetBrains/markdown) | `org.jetbrains:markdown` | 0.7.17 | Apache-2.0 |
 | [JCodings](https://github.com/jruby/jcodings) | `org.jruby.jcodings:jcodings` | 1.0.64 | MIT |
 | [Joni](https://github.com/jruby/joni) | `org.jruby.joni:joni` | 2.2.7 | MIT |
+| [jsoup Java HTML Parser](https://jsoup.org/) | `org.jsoup:jsoup` | 1.24.1 | MIT |
 | [JSpecify annotations](http://jspecify.org/) | `org.jspecify:jspecify` | 1.0.0 | Apache-2.0 |
 | [SLF4J API Module](http://www.slf4j.org) | `org.slf4j:slf4j-api` | 1.7.30 | MIT |
 | [SnakeYAML Engine](https://codeberg.org/snakeyaml/snakeyaml-engine) | `org.snakeyaml:snakeyaml-engine` | 3.2 | Apache-2.0 |

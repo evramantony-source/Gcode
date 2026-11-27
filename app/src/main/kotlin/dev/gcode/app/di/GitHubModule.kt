@@ -12,6 +12,8 @@ import dev.gcode.git.WorkspaceManager
 import dev.gcode.github.GitHubClient
 import dev.gcode.github.api.ActionsApi
 import dev.gcode.github.api.ContentsApi
+import dev.gcode.github.api.IssuesApi
+import dev.gcode.github.api.PullsApi
 import dev.gcode.github.api.ReleasesApi
 import dev.gcode.github.api.ReposApi
 import dev.gcode.github.api.SecretsApi
@@ -49,6 +51,12 @@ object GitHubModule {
 
     @Provides
     fun contentsApi(client: GitHubClient): ContentsApi = client
+
+    @Provides
+    fun pullsApi(client: GitHubClient): PullsApi = client
+
+    @Provides
+    fun issuesApi(client: GitHubClient): IssuesApi = client
 
     @Provides
     @Singleton

@@ -131,17 +131,17 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
       parser, sealed box (libsodium vectors), worker logic
 
 ## Phase 7: Agent GitHub and Actions tools, build-fix loop
-- [ ] gh_list_repos, gh_search_repos, gh_create_repo, gh_clone_repo,
+- [x] gh_list_repos, gh_search_repos, gh_create_repo, gh_clone_repo,
       gh_fork_repo, gh_get_file
-- [ ] gh_create_pr, gh_list_prs, gh_merge_pr, gh_comment, gh_list_issues,
+- [x] gh_create_pr, gh_list_prs, gh_merge_pr, gh_comment, gh_list_issues,
       gh_create_issue
-- [ ] gh_setup_build_workflow, gh_trigger_workflow, gh_get_run_status,
+- [x] gh_setup_build_workflow, gh_trigger_workflow, gh_get_run_status,
       gh_wait_for_run, gh_get_run_logs (failed steps only), gh_list_artifacts,
       gh_download_apk, gh_install_apk (always confirmed), gh_create_release
-- [ ] web_fetch (Jsoup), web_search (separate `google_search` grounding
+- [x] web_fetch (Jsoup), web_search (separate `google_search` grounding
       call, with sources)
-- [ ] Build-fix guard (per-repo limit, default 3) and system-prompt guidance
-- [ ] Tests: each tool against a fake gateway; the guard; a full scripted
+- [x] Build-fix guard (per-repo limit, default 3) and system-prompt guidance
+- [x] Tests: each tool against a fake gateway; the guard; a full scripted
       build-fail → fix → success scenario
 
 ## Phase 8: PRs, issues, releases, branches, conflicts

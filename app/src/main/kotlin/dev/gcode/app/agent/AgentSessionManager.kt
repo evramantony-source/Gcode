@@ -10,6 +10,7 @@ import dev.gcode.agent.loop.AgentLoop
 import dev.gcode.agent.loop.ConversationStore
 import dev.gcode.agent.loop.FinishReason
 import dev.gcode.agent.loop.MessageKind
+import dev.gcode.agent.tools.CheckpointStore
 import dev.gcode.agent.tools.CoreTools
 import dev.gcode.agent.tools.FileToolDeps
 import dev.gcode.agent.tools.GitToolDeps
@@ -108,9 +109,9 @@ class AgentSessionManager @Inject constructor(
         AgentService.start(context)
         jobs[sessionId] = scope.launch {
             try {
-                val workspace = workspaces.current()
-                val executor = executor(sessionId, workspace)
-                val config = buildConfig(sessionId, workspace, executor)
+                val turn = TurnWorkspace(workspaces.current()) { workspaces.current() }
+                val executor = executor(sessionId, turn)
+                val config = buildConfig(sessionId, turn.value, executor)
                 AgentLoop(gemini, store(sessionId), executor).run(user, config).collect { event -> onEvent(sessionId, event) }
             } catch (e: CancellationException) {
                 update(sessionId) { it.copy(running = false, streamingText = "", streamingThoughts = "", finishReason = FinishReason.CANCELLED, tools = it.tools.map { t -> t.copy(running = false) }) }
@@ -126,18 +127,24 @@ class AgentSessionManager @Inject constructor(
 
     suspend fun mode(sessionId: String): PermissionMode = PermissionMode.fromId(sessions.get(sessionId)?.mode)
 
-    private suspend fun executor(sessionId: String, workspace: ActiveWorkspace?): ToolRegistryExecutor {
-        val checkpoints = if (workspace != null) {
-            RoomCheckpointStore(sessionId, workspace.key, db, sessions, File(context.filesDir, "checkpoints"))
-        } else {
-            MemoryCheckpointStore()
+    private suspend fun executor(sessionId: String, turn: TurnWorkspace): ToolRegistryExecutor {
+        val stores = mutableMapOf<String, CheckpointStore>()
+        // Checkpoints go to the store of whichever workspace is open when the file changes (gh_clone_repo can switch it).
+        val checkpoints = object : CheckpointStore {
+            private fun current(): CheckpointStore = turn.value?.let { ws ->
+                synchronized(stores) { stores.getOrPut(ws.key) { RoomCheckpointStore(sessionId, ws.key, db, sessions, File(context.filesDir, "checkpoints")) } }
+            } ?: synchronized(stores) { stores.getOrPut("") { MemoryCheckpointStore() } }
+
+            override suspend fun record(path: String, before: ByteArray?) = current().record(path, before)
+            override suspend fun since(seq: Int) = current().since(seq)
+            override suspend fun delete(ids: List<Long>) = current().delete(ids)
         }
         val todos = SessionTodoStore(sessionId, sessions) {}
         val tools: List<Tool> = CoreTools.create(
-            FileToolDeps({ workspace?.fs }, { workspace?.guard ?: dev.gcode.agent.tools.SecretGuard() }, checkpoints),
-            GitToolDeps { workspace?.git },
+            FileToolDeps({ turn.value?.fs }, { turn.value?.guard ?: dev.gcode.agent.tools.SecretGuard() }, checkpoints),
+            GitToolDeps { turn.value?.git },
             todos,
-        ) + extraTools.tools(sessionId, workspace)
+        ) + extraTools.tools(sessionId, turn)
         return ToolRegistryExecutor(
             tools,
             mode = { mode(sessionId) },
@@ -160,7 +167,10 @@ class AgentSessionManager @Inject constructor(
         return AgentConfig(
             modelCandidates = candidates.ifEmpty { listOf(s.preferredModel) },
             autoSwitch = s.autoSwitchModels,
-            systemInstruction = SystemPrompt.agent(wsInfo, mode(sessionId), TodoJson.decode(sessions.get(sessionId)?.todoJson), memory = extraTools.memory(workspace)),
+            systemInstruction = SystemPrompt.agent(
+                wsInfo, mode(sessionId), TodoJson.decode(sessions.get(sessionId)?.todoJson),
+                memory = extraTools.memory(workspace), extra = extraTools.promptExtra(workspace),
+            ),
             thinking = { model -> ThinkingSupport.configFor(model, catalog.find(model)?.thinking ?: false, level, s.showThoughts, s.rejectedThinking) },
             maxSteps = s.maxSteps,
             beforeModelCall = { executor.refreshMode(); extraTools.beforeModelCall(sessionId) },
@@ -263,15 +273,24 @@ class ActiveSession @Inject constructor() {
  * Tools and prompt additions contributed by later phases (GitHub/Actions/web tools, sub-agents, MCP,
  * project memory, compaction). Phase 4 contributes none.
  */
-interface ExtraToolsProvider {
-    suspend fun tools(sessionId: String, workspace: ActiveWorkspace?): List<Tool>
-    suspend fun memory(workspace: ActiveWorkspace?): String?
-    suspend fun beforeModelCall(sessionId: String)
+/**
+ * The workspace for one agent turn. Tools read [value] on every call, so cloning a repository mid-turn
+ * (gh_clone_repo) moves the file and Git tools to it.
+ */
+class TurnWorkspace(initial: ActiveWorkspace?, private val load: suspend () -> ActiveWorkspace?) {
+    @Volatile
+    var value: ActiveWorkspace? = initial
+        private set
+
+    suspend fun refresh() {
+        value = load()
+    }
 }
 
-@Singleton
-class DefaultExtraTools @Inject constructor() : ExtraToolsProvider {
-    override suspend fun tools(sessionId: String, workspace: ActiveWorkspace?): List<Tool> = emptyList()
-    override suspend fun memory(workspace: ActiveWorkspace?): String? = null
-    override suspend fun beforeModelCall(sessionId: String) = Unit
+/** Tools and prompt additions beyond the core file/Git tools (GitHub, Actions, web; MCP and memory in Phase 9). */
+interface ExtraToolsProvider {
+    suspend fun tools(sessionId: String, workspace: TurnWorkspace): List<Tool>
+    suspend fun memory(workspace: ActiveWorkspace?): String?
+    suspend fun promptExtra(workspace: ActiveWorkspace?): String?
+    suspend fun beforeModelCall(sessionId: String)
 }
