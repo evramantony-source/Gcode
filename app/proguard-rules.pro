@@ -28,3 +28,6 @@
 -keep class org.eclipse.tm4e.** { *; }
 -keep class io.github.rosemoe.sora.langs.textmate.registry.model.** { *; }
 -dontwarn org.eclipse.tm4e.**
+
+# jsoup (web_fetch tool): ships -dontwarn for its optional re2j engine; JSpecify nullness annotations are compile-only.
+-dontwarn org.jspecify.annotations.**

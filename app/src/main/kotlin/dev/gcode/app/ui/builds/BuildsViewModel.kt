@@ -212,14 +212,9 @@ class BuildsViewModel @Inject constructor(
         val repo = s.repo ?: return@launchCatching
         val workflow = s.selectedWorkflow ?: return@launchCatching
         try {
-            val runId = if (inputs.isNotEmpty()) {
-                _state.update { it.copy(step = BuildStep.Starting) }
-                builds.dispatch(repo, workflow, s.branch ?: repo.defaultBranch, inputs)
-            } else {
-                builds.build(repo, workflow, commitMessage) { step -> _state.update { it.copy(step = step) } }
-            }
+            val run = builds.build(repo, workflow, commitMessage, inputs) { step -> _state.update { it.copy(step = step) } }
             _state.update { it.copy(dirty = false) }
-            openRun(repo.fullName, runId)
+            openRun(repo.fullName, run.id)
         } finally {
             _state.update { it.copy(step = null) }
         }

@@ -89,10 +89,17 @@ class BuildService @Inject constructor(
     }
 
     /**
-     * Commits pending changes (when [commitMessage] is given), pushes, then finds the run the push started
-     * or dispatches [workflow]. Records the run and starts background monitoring.
+     * Commits pending changes (when [commitMessage] is given) and pushes. Without [inputs], follows the run the
+     * push started for the commit, or dispatches [workflow]; with inputs, always dispatches with them.
+     * Records the run and starts background monitoring.
      */
-    suspend fun build(repo: LocalRepoEntity, workflow: GhWorkflow, commitMessage: String?, onStep: (BuildStep) -> Unit): Long {
+    suspend fun build(
+        repo: LocalRepoEntity,
+        workflow: GhWorkflow,
+        commitMessage: String?,
+        inputs: Map<String, String> = emptyMap(),
+        onStep: (BuildStep) -> Unit = {},
+    ): GhWorkflowRun {
         val ref = RepoRef.parse(repo.fullName) ?: error("Invalid repository ${repo.fullName}")
         val creds = git.credentials()
         val author = git.author(repo)
@@ -110,26 +117,29 @@ class BuildService @Inject constructor(
         }
         onStep(BuildStep.Starting)
         val yaml = localWorkflowYaml(repo, workflow).orEmpty()
-        // A push-triggered run may already exist for this commit; don't start a duplicate.
-        val runId = findRunForSha(ref, workflow, sha) ?: if (AndroidProjectDetector.supportsDispatch(yaml) || yaml.isEmpty()) {
-            val dispatched = actions.dispatch(ref, workflow.fileName, branch)
-            dispatched.workflowRunId.takeIf { it > 0 } ?: findRunForSha(ref, workflow, sha, attempts = 6) ?: error("The run did not appear. Check Actions on GitHub.")
+        val canDispatch = yaml.isEmpty() || AndroidProjectDetector.supportsDispatch(yaml)
+        val runId = if (inputs.isNotEmpty()) {
+            if (!canDispatch) error("${workflow.name} has no workflow_dispatch trigger, so it cannot take inputs.")
+            dispatchAndFind(ref, workflow, branch, sha, inputs)
         } else {
-            findRunForSha(ref, workflow, sha, attempts = 10) ?: error("${workflow.name} does not run on push and has no workflow_dispatch trigger.")
+            // A push-triggered run may already exist for this commit; don't start a duplicate.
+            findRunForSha(ref, workflow, sha) ?: if (canDispatch) {
+                dispatchAndFind(ref, workflow, branch, sha, emptyMap())
+            } else {
+                findRunForSha(ref, workflow, sha, attempts = 10) ?: error("${workflow.name} does not run on push and has no workflow_dispatch trigger.")
+            }
         }
-        record(ref, actions.run(ref, runId))
+        val run = actions.run(ref, runId)
+        record(ref, run)
         onStep(BuildStep.Started(runId))
-        return runId
+        return run
     }
 
-    /** Dispatches any workflow with inputs (non-Android projects too). */
-    suspend fun dispatch(repo: LocalRepoEntity, workflow: GhWorkflow, branch: String, inputs: Map<String, String>): Long {
-        val ref = RepoRef.parse(repo.fullName) ?: error("Invalid repository")
-        val sha = git.withRepo(repo) { r, _ -> r.headSha() }
-        val result = actions.dispatch(ref, workflow.fileName, branch, inputs)
-        val runId = result.workflowRunId.takeIf { it > 0 } ?: sha?.let { findRunForSha(ref, workflow, it, attempts = 6) } ?: error("The run did not appear yet")
-        record(ref, actions.run(ref, runId))
-        return runId
+    private suspend fun dispatchAndFind(ref: RepoRef, workflow: GhWorkflow, branch: String, sha: String, inputs: Map<String, String>): Long {
+        val dispatched = actions.dispatch(ref, workflow.fileName, branch, inputs)
+        return dispatched.workflowRunId.takeIf { it > 0 }
+            ?: findRunForSha(ref, workflow, sha, attempts = 6)
+            ?: error("The run did not appear. Check Actions on GitHub.")
     }
 
     private suspend fun findRunForSha(ref: RepoRef, workflow: GhWorkflow, sha: String, attempts: Int = 2): Long? {
