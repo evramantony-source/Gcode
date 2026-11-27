@@ -37,6 +37,7 @@ import dev.gcode.app.ui.screens.AboutScreen
 import dev.gcode.app.ui.screens.MoreScreen
 import dev.gcode.app.ui.screens.PlaceholderScreen
 import dev.gcode.app.ui.chat.ChatScreen
+import dev.gcode.app.ui.approval.ApprovalHost
 import dev.gcode.app.ui.code.CodeScreen
 import dev.gcode.app.ui.repos.ReposScreen
 import dev.gcode.app.ui.settings.SettingsScreen
@@ -52,6 +53,7 @@ fun GCodeAppUi() {
     // At the root of a tab other than Chat, Back returns to Chat (NavDisplay only handles deeper stacks).
     BackHandler(enabled = backStack.size == 1 && BackStackOps.canGoBack(backStack)) { back() }
 
+    ApprovalHost()
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             TopLevelDestination.entries.forEach { destination ->

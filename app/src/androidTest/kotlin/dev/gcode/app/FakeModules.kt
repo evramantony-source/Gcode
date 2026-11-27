@@ -38,7 +38,18 @@ class FakeGeminiTransport : GeminiTransport {
         ModelInfo("models/gemini-3.8-flash", displayName = "Gemini 3.8 Flash", inputTokenLimit = 1_048_576, supportedGenerationMethods = listOf("generateContent"), thinking = true),
     )
 
+    /** First turn: a todo_write tool call. After the tool result: a streamed text reply. */
     override fun streamGenerateContent(model: String, request: GenerateContentRequest): Flow<GenerateContentResponse> = flow {
+        val last = request.contents.last()
+        if (last.parts.none { it.functionResponse != null }) {
+            val todos = kotlinx.serialization.json.buildJsonObject {
+                put("todos", kotlinx.serialization.json.buildJsonArray {
+                    add(kotlinx.serialization.json.buildJsonObject { put("content", kotlinx.serialization.json.JsonPrimitive("Say hello")); put("status", kotlinx.serialization.json.JsonPrimitive("in_progress")) })
+                })
+            }
+            emit(GenerateContentResponse(listOf(Candidate(Content.model(Part.functionCall("todo_write", todos, "call-1")), "STOP"))))
+            return@flow
+        }
         emit(GenerateContentResponse(listOf(Candidate(Content.model(Part.text(REPLY_START))))))
         emit(GenerateContentResponse(listOf(Candidate(Content.model(Part.text(REPLY_END)), "STOP")), UsageMetadata(promptTokenCount = 10_000, candidatesTokenCount = 20)))
     }

@@ -52,6 +52,9 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("send").performClick()
         composeRule.waitUntilAtLeastOneExists(hasText(FakeGeminiTransport.REPLY_START + FakeGeminiTransport.REPLY_END, substring = true), TIMEOUT)
         composeRule.onNodeWithTag("status_model").assertIsDisplayed()
+        composeRule.onNodeWithTag("status_mode").assertIsDisplayed()
+        composeRule.onNodeWithTag("tool_card_todo_write").assertIsDisplayed()
+        composeRule.onNodeWithTag("todo_panel").assertIsDisplayed()
 
         TopLevelDestination.entries.forEach { composeRule.onNodeWithTag(it.testTag).assertIsDisplayed() }
         composeRule.onNodeWithTag(TopLevelDestination.REPOS.testTag).performClick()

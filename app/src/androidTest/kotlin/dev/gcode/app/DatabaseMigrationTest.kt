@@ -30,6 +30,6 @@ class DatabaseMigrationTest {
 
     private companion object {
         const val DB = "migration-test.db"
-        const val LATEST = 2
+        const val LATEST = 3
     }
 }

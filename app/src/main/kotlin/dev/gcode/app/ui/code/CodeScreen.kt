@@ -1,6 +1,10 @@
 package dev.gcode.app.ui.code
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,13 +53,29 @@ import dev.gcode.git.ChangeKind
 @Composable
 fun CodeScreen(onOpenRepos: () -> Unit, viewModel: ChangesViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val folder by viewModel.safFolder.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri != null) {
+            val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            runCatching { context.contentResolver.takePersistableUriPermission(uri, flags) }
+            viewModel.linkFolder(uri.toString())
+        }
+    }
     GCodeScreen(title = state.repo?.fullName ?: stringResource(R.string.nav_code), modifier = Modifier.testTag("screen_code")) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             val repo = state.repo
             if (repo == null) {
                 Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(stringResource(R.string.code_no_repo), style = MaterialTheme.typography.bodyLarge)
+                    if (folder != null) {
+                        Text(stringResource(R.string.folder_linked, folder.orEmpty()), style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.folder_linked_body), style = MaterialTheme.typography.bodyMedium)
+                        OutlinedButton(onClick = viewModel::unlinkFolder) { Text(stringResource(R.string.folder_unlink)) }
+                    } else {
+                        Text(stringResource(R.string.code_no_repo), style = MaterialTheme.typography.bodyLarge)
+                    }
                     Button(onClick = onOpenRepos) { Text(stringResource(R.string.code_open_repos)) }
+                    OutlinedButton(onClick = { pickFolder.launch(null) }, modifier = Modifier.testTag("link_folder")) { Text(stringResource(R.string.folder_link)) }
                 }
                 return@Column
             }

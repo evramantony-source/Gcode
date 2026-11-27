@@ -3,14 +3,17 @@ package dev.gcode.app.ui.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.gcode.agent.PermissionMode
+import dev.gcode.agent.tools.TodoItem
+import dev.gcode.agent.tools.TodoJson
 import dev.gcode.app.agent.ActiveSession
 import dev.gcode.app.agent.AgentSessionManager
 import dev.gcode.app.agent.LiveTurn
-import dev.gcode.core.data.db.MessageEntity
+import dev.gcode.app.workspace.WorkspaceGit
+import dev.gcode.core.data.db.LocalRepoEntity
 import dev.gcode.core.data.db.SessionEntity
 import dev.gcode.core.data.repo.ModelRepository
 import dev.gcode.core.data.repo.SessionRepository
-import dev.gcode.core.data.repo.StoredMessage
 import dev.gcode.core.data.settings.AppSettings
 import dev.gcode.core.data.settings.SettingsRepository
 import dev.gcode.gemini.ContextUsage
@@ -25,14 +28,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ChatUiState(
     val session: SessionEntity? = null,
-    val messages: List<StoredMessage> = emptyList(),
+    val items: List<ChatItem> = emptyList(),
     val live: LiveTurn = LiveTurn(),
     val settings: AppSettings = AppSettings(),
     val catalog: ModelCatalog = ModelCatalog(emptyList()),
@@ -41,6 +43,9 @@ data class ChatUiState(
     val contextPercent: Int = 0,
     val refreshingModels: Boolean = false,
     val modelError: String? = null,
+    val mode: PermissionMode = PermissionMode.ASK,
+    val repo: LocalRepoEntity? = null,
+    val todos: List<TodoItem> = emptyList(),
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,45 +57,49 @@ class ChatViewModel @Inject constructor(
     private val settingsRepo: SettingsRepository,
     private val selector: ModelSelector,
     private val active: ActiveSession,
+    workspaceGit: WorkspaceGit,
 ) : ViewModel() {
 
     private val modelStatus = MutableStateFlow(false to (null as String?))
-
     private val sessionFlow = active.id.filterNotNull().flatMapLatest { sessions.observeSession(it) }
     private val messagesFlow = active.id.flatMapLatest { id -> if (id == null) flowOf(emptyList()) else sessions.observeMessages(id) }
 
     val state: StateFlow<ChatUiState> = combine(
-        combine(sessionFlow, messagesFlow) { s, m -> s to m },
+        combine(sessionFlow, messagesFlow, workspaceGit.activeRepo) { s, m, r -> Triple(s, m, r) },
         manager.live,
         settingsRepo.settings,
         models.catalog,
         modelStatus,
-    ) { (session, messages), live, settings, catalog, (refreshing, modelError) ->
+    ) { (session, messages, repo), live, settings, catalog, (refreshing, modelError) ->
         val turn = session?.let { live[it.id] } ?: LiveTurn()
         val selection = selector.select(catalog, settings.preferredModel, System.currentTimeMillis())
-        val activeModel = turn.activeModel ?: session?.modelId?.takeIf { turn.running } ?: selection?.modelId ?: settings.preferredModel
+        val activeModel = turn.activeModel ?: selection?.modelId ?: settings.preferredModel
         val limit = catalog.find(activeModel)?.inputTokenLimit ?: session?.contextLimit ?: 0
-        val used = session?.lastPromptTokens ?: 0
         ChatUiState(
             session = session,
-            messages = messages.filter { it.kind != MessageEntity.KIND_TOOL_RESULTS || it.content.functionCalls.isNotEmpty() },
+            items = ChatItems.build(messages, AgentSessionManager::summarizeArgs),
             live = turn,
             settings = settings,
             catalog = catalog,
             activeModel = activeModel,
             fallbackReason = selection?.reason?.takeIf { selection.isFallback && activeModel == selection.modelId },
-            contextPercent = ContextUsage(used, limit).percent,
+            contextPercent = ContextUsage(session?.lastPromptTokens ?: 0, limit).percent,
             refreshingModels = refreshing,
             modelError = modelError,
+            mode = PermissionMode.fromId(session?.mode),
+            repo = repo,
+            todos = TodoJson.decode(session?.todoJson),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ChatUiState())
 
     init {
         viewModelScope.launch {
-            if (active.id.value == null) active.open((sessions.latest() ?: sessions.create()).id)
+            if (active.id.value == null) active.open((sessions.latest() ?: newSession()).id)
             runCatching { models.refreshIfStale() }
         }
     }
+
+    private suspend fun newSession(): SessionEntity = sessions.create(mode = settingsRepo.current().defaultMode)
 
     fun send(text: String) {
         val id = active.id.value ?: return
@@ -99,24 +108,21 @@ class ChatViewModel @Inject constructor(
     }
 
     fun stop() = active.id.value?.let(manager::stop)
-
     fun retry() = active.id.value?.let(manager::retry)
-
     fun dismissError() = active.id.value?.let(manager::clearError)
 
     fun newChat() {
         viewModelScope.launch {
             val current = state.value
-            // Reuse an empty session instead of piling up blank ones.
-            if (current.session != null && current.messages.isEmpty()) return@launch
-            active.open(sessions.create(modelId = current.activeModel).id)
+            if (current.session != null && current.items.isEmpty()) return@launch
+            active.open(newSession().id)
         }
     }
 
+    fun setMode(mode: PermissionMode) = viewModelScope.launch { active.id.value?.let { sessions.setMode(it, mode.id) } }
+
     fun selectModel(id: String) = viewModelScope.launch { settingsRepo.update { it.copy(preferredModel = id) } }
-
     fun setThinkingLevel(wire: String?) = viewModelScope.launch { settingsRepo.update { it.copy(thinkingLevel = wire) } }
-
     fun setShowThoughts(show: Boolean) = viewModelScope.launch { settingsRepo.update { it.copy(showThoughts = show) } }
 
     fun refreshModels() {

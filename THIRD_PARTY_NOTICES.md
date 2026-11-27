@@ -23,7 +23,7 @@ bundled in the app.
 
 None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor.)
 
-## Libraries (141)
+## Libraries (142)
 
 | Library | Artifact | Version | Licence |
 |---|---|---|---|
@@ -74,6 +74,7 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [Preferences DataStore Core](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-core` | 1.3.0 | Apache-2.0 |
 | [Preferences External Protobuf](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-external-protobuf` | 1.3.0 | BSD-3-Clause |
 | [Preferences DataStore Proto](https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0) | `androidx.datastore:datastore-preferences-proto` | 1.3.0 | Apache-2.0 |
+| [Document File](https://developer.android.com/jetpack/androidx/releases/documentfile#1.1.0) | `androidx.documentfile:documentfile` | 1.1.0 | Apache-2.0 |
 | [Emoji2](https://developer.android.com/jetpack/androidx/releases/emoji2#1.7.0) | `androidx.emoji2:emoji2` | 1.7.0 | Apache-2.0 |
 | [Support fragment](https://developer.android.com/jetpack/androidx/releases/fragment#1.5.1) | `androidx.fragment:fragment` | 1.5.1 | Apache-2.0 |
 | [Android Graphics Path](https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0) | `androidx.graphics:graphics-path` | 1.1.0 | Apache-2.0 |
