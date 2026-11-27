@@ -91,3 +91,48 @@ interface ModelDao {
         insertAll(models)
     }
 }
+
+@Dao
+interface LocalRepoDao {
+    @Query("SELECT * FROM local_repos ORDER BY lastOpenedAt DESC")
+    fun observeAll(): Flow<List<LocalRepoEntity>>
+
+    @Query("SELECT * FROM local_repos WHERE fullName = :fullName")
+    suspend fun get(fullName: String): LocalRepoEntity?
+
+    @Query("SELECT * FROM local_repos WHERE fullName = :fullName")
+    fun observe(fullName: String): Flow<LocalRepoEntity?>
+
+    @Upsert
+    suspend fun upsert(repo: LocalRepoEntity)
+
+    @Query("DELETE FROM local_repos WHERE fullName = :fullName")
+    suspend fun delete(fullName: String)
+
+    @Query("UPDATE local_repos SET lastOpenedAt = :now WHERE fullName = :fullName")
+    suspend fun touch(fullName: String, now: Long)
+}
+
+@Dao
+interface RemoteRepoDao {
+    @Query("SELECT * FROM remote_repos ORDER BY pushedAt DESC")
+    fun observeAll(): Flow<List<RemoteRepoEntity>>
+
+    @Query("DELETE FROM remote_repos")
+    suspend fun clear()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(rows: List<RemoteRepoEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(row: RemoteRepoEntity)
+
+    @Query("DELETE FROM remote_repos WHERE fullName = :fullName")
+    suspend fun delete(fullName: String)
+
+    @Transaction
+    suspend fun replaceAll(rows: List<RemoteRepoEntity>) {
+        clear()
+        insertAll(rows)
+    }
+}
