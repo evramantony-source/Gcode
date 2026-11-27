@@ -347,7 +347,7 @@ class BuildsViewModel @Inject constructor(
         if (show) loadSecrets()
     }
 
-    private fun loadSecrets() = launchCatching {
+    fun loadSecrets() = launchCatching {
         val ref = _state.value.repo?.let { RepoRef.parse(it.fullName) } ?: return@launchCatching
         val names = secretsApi.secretNames(ref).map { it.name }
         _state.update { it.copy(secretNames = names) }

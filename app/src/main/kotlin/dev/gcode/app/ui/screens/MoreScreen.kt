@@ -22,6 +22,7 @@ import dev.gcode.app.ui.navigation.IssuesRoute
 import dev.gcode.app.ui.navigation.LicensesRoute
 import dev.gcode.app.ui.navigation.PullRequestsRoute
 import dev.gcode.app.ui.navigation.ReleasesRoute
+import dev.gcode.app.ui.navigation.SecretsRoute
 import dev.gcode.app.ui.navigation.SessionsRoute
 import dev.gcode.app.ui.navigation.SettingsRoute
 
@@ -31,6 +32,7 @@ private val MORE_ITEMS = listOf(
     MoreItem(PullRequestsRoute, R.string.more_pull_requests, R.drawable.ic_pull_request, "more_pull_requests"),
     MoreItem(IssuesRoute, R.string.more_issues, R.drawable.ic_issue, "more_issues"),
     MoreItem(ReleasesRoute, R.string.more_releases, R.drawable.ic_release, "more_releases"),
+    MoreItem(SecretsRoute, R.string.more_secrets, R.drawable.ic_key, "more_secrets"),
     MoreItem(SessionsRoute, R.string.more_sessions, R.drawable.ic_sessions, "more_sessions"),
     MoreItem(SettingsRoute, R.string.more_settings, R.drawable.ic_settings, "more_settings"),
     MoreItem(LicensesRoute, R.string.more_licenses, R.drawable.ic_licenses, "more_licenses"),
