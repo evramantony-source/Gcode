@@ -3,5 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":core:model"))
+    api(project(":core:model"))
+    implementation(project(":core:common"))
+    api(libs.jgit)
+    api(libs.kotlinx.coroutines.core)
+    implementation(libs.javax.inject)
 }
