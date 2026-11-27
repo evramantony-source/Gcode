@@ -102,6 +102,14 @@ jobs:
       - name: Check out
         uses: actions/checkout@v7
 
+      # Fail fast, before the emulator boots, with the same message as the build job.
+      - name: Check repository variable GCODE_GITHUB_CLIENT_ID
+        run: |
+          if [ -z "${GCODE_GITHUB_CLIENT_ID}" ]; then
+            echo "::error title=Missing repository variable::GCODE_GITHUB_CLIENT_ID is not set. Add your GitHub OAuth App client ID under Settings > Secrets and variables > Actions > Variables."
+            exit 1
+          fi
+
       - name: Set up JDK 21
         uses: actions/setup-java@v6
         with:
