@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resource shrinking must keep the generated dependency list and bundled licence texts. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/aboutlibraries,@raw/license_apache_2_0,@raw/license_lgpl_2_1" />

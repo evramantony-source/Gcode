@@ -8,38 +8,41 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
 
 ---
 
-## Phase 0: Planning (this commit)
+## Phase 0: Planning
 - [x] Verify current toolchain versions, Gemini API and GitHub API facts
 - [x] `ARCHITECTURE.md`
 - [x] `TASKS.md`
-- [ ] **Your approval, plus answers to decisions D1–D5 (section 2)**
+- [x] Your approval, plus answers to decisions D1–D5 (all approved as recommended)
 - [ ] You: register a GitHub OAuth App with Device Flow enabled, and add
-      repository variable `GCODE_GITHUB_CLIENT_ID` (needed by Phase 3)
+      repository variable `GCODE_GITHUB_CLIENT_ID` (CI fails without it)
 
 ## Phase 1: Repo, Gradle, CI, app shell
-- [ ] `.gitignore` (secrets denylist), `.editorconfig`, `LICENSE` (your choice)
-- [ ] Gradle wrapper 9.9.2, `settings.gradle.kts`, version catalog
+- [x] `.gitignore` (secrets denylist), `.editorconfig`, `LICENSE` (Apache-2.0)
+- [x] Gradle wrapper 9.9.2, `settings.gradle.kts`, version catalog
       `gradle/libs.versions.toml` with stable pins
-- [ ] Modules: `:app`, `:core:model`, `:core:common`, `:core:data`, `:gemini`,
-      `:github`, `:git`, `:agent`, `:mcp`. Empty but compiling, each with
-      one unit test
-- [ ] Shared build logic for Android and JVM modules (convention plugins in
+- [x] Modules: `:app`, `:core:model`, `:core:common`, `:core:data`, `:gemini`,
+      `:github`, `:git`, `:agent`, `:mcp`, each compiling with unit tests
+- [x] Shared build logic for Android and JVM modules (convention plugins in
       `build-logic/`)
-- [ ] `:app`: Hilt application, Compose Material 3 theme (light, dark,
-      dynamic), `NavigationSuiteScaffold` with empty top-level destinations,
-      `values-ar` strings, `supportsRtl`
-- [ ] `BuildConfig.GITHUB_CLIENT_ID` from a Gradle property or env var (empty
-      if unset)
-- [ ] `.github/workflows/android.yml`:
+- [x] `:app`: Hilt application, Compose Material 3 theme (light, dark,
+      dynamic), `NavigationSuiteScaffold` + Navigation 3 with five top-level
+      destinations, `values-ar` strings, `supportsRtl`, only en/ar resources
+      packaged
+- [x] `BuildConfig.GITHUB_CLIENT_ID` from env var or Gradle property; the
+      build fails with a clear message if it is missing
+- [x] `.github/workflows/android.yml`:
       - build, lint and unit tests, plus artifact `gcode-debug-apk`
       - Gradle caching
       - `ui-test` emulator job (PRs and `main`)
       - signed `release` job on `v*`
-      - denylist guard step
-- [ ] Optional stable debug signing from `DEBUG_KEYSTORE_BASE64`
-- [ ] Instrumented smoke-test scaffold: app launches and shows the shell
-- [ ] `docs/SIGNING.md`: keytool, base64, `gh secret set` / web UI steps
-- [ ] `README.md` (short; finished in Phase 10)
+      - secret scan step
+- [x] Optional stable debug signing from `DEBUG_KEYSTORE_BASE64`
+- [x] Instrumented smoke test: app launches, shows the shell, navigates to
+      the licences screen and back
+- [x] `docs/SIGNING.md`: OAuth App, keytool, base64, `gh secret set` / web UI
+- [x] `README.md` (short; finished in Phase 10)
+- [x] `THIRD_PARTY_NOTICES.md` (generated, checked in CI) and an in-app
+      "Open-source licences" screen with the Apache-2.0 and LGPL-2.1 texts
 - **Done when:** CI green, the APK installs and shows the shell, and a test
   tag builds a signed release once you add the secrets.
 
