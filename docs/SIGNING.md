@@ -120,6 +120,12 @@ rm debug.b64
 The alias and passwords must be exactly `androiddebugkey` / `android` / `android`, the standard
 debug values that the build expects. This key is for debug builds only; never use it for releases.
 
+**From the app:** for repositories you build with GCode (including GCode itself), open
+**Builds › Secrets and signing › Create and save debug key**. GCode generates the same kind of key on
+the device (or reuses the one it made before, so every repository shares it), encrypts it with the
+repository's public key and saves it as `DEBUG_KEYSTORE_BASE64`. You confirm this every time. The
+`gcode-build.yml` workflow that **Set up builds** adds reads the secret into `~/.android/debug.keystore`.
+
 The `versionCode` of CI builds is the workflow run number, so each new debug APK is a valid update
 of the previous one.
 

@@ -1,0 +1,56 @@
+package dev.gcode.github.api
+
+import dev.gcode.core.model.RepoRef
+import dev.gcode.github.model.CreateReleaseRequest
+import dev.gcode.github.model.DispatchResponse
+import dev.gcode.github.model.GhArtifact
+import dev.gcode.github.model.GhJob
+import dev.gcode.github.model.GhPublicKey
+import dev.gcode.github.model.GhRelease
+import dev.gcode.github.model.GhReleaseAsset
+import dev.gcode.github.model.GhSecretInfo
+import dev.gcode.github.model.GhWorkflow
+import dev.gcode.github.model.GhWorkflowRun
+import java.io.File
+
+/** GitHub Actions (ARCHITECTURE.md section 8.4). */
+interface ActionsApi {
+    suspend fun workflows(ref: RepoRef): List<GhWorkflow>
+
+    /** Starts a workflow_dispatch run; API 2026-03-10 returns the new run id. */
+    suspend fun dispatch(ref: RepoRef, workflow: String, gitRef: String, inputs: Map<String, String> = emptyMap()): DispatchResponse
+
+    suspend fun runs(ref: RepoRef, workflow: String? = null, branch: String? = null, headSha: String? = null, event: String? = null, perPage: Int = 20): List<GhWorkflowRun>
+    suspend fun run(ref: RepoRef, runId: Long): GhWorkflowRun
+    suspend fun jobs(ref: RepoRef, runId: Long): List<GhJob>
+
+    /** Plain-text log of one job (follows the 1-minute redirect). */
+    suspend fun jobLog(ref: RepoRef, jobId: Long): String
+
+    suspend fun artifacts(ref: RepoRef, runId: Long): List<GhArtifact>
+
+    /** Streams an artifact zip to [dest] (the redirect host never sees the token). */
+    suspend fun downloadArtifact(ref: RepoRef, artifactId: Long, dest: File, progress: (Long, Long) -> Unit = { _, _ -> })
+
+    suspend fun cancelRun(ref: RepoRef, runId: Long)
+    suspend fun rerunFailedJobs(ref: RepoRef, runId: Long)
+}
+
+interface ReleasesApi {
+    suspend fun releases(ref: RepoRef): List<GhRelease>
+    suspend fun createRelease(ref: RepoRef, request: CreateReleaseRequest): GhRelease
+    suspend fun uploadAsset(release: GhRelease, file: File, name: String, contentType: String): GhReleaseAsset
+}
+
+interface SecretsApi {
+    suspend fun secretNames(ref: RepoRef): List<GhSecretInfo>
+    suspend fun publicKey(ref: RepoRef): GhPublicKey
+
+    /** Encrypts [value] with a libsodium sealed box and stores it. */
+    suspend fun putSecret(ref: RepoRef, name: String, value: String)
+}
+
+interface ContentsApi {
+    /** Creates or updates one file with a commit (no clone needed). */
+    suspend fun putFile(ref: RepoRef, path: String, content: ByteArray, message: String, branch: String? = null): String?
+}

@@ -11,7 +11,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.content.Intent
 import dagger.hilt.android.AndroidEntryPoint
+import dev.gcode.app.builds.BuildLinks
 import dev.gcode.app.ui.GCodeAppUi
 import dev.gcode.app.ui.onboarding.OnboardingScreen
 import dev.gcode.app.ui.root.RootState
@@ -26,6 +28,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) BuildLinks.handle(intent)
         setContent {
             val state by rootViewModel.state.collectAsStateWithLifecycle()
             val ready = state as? RootState.Ready
@@ -42,5 +45,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        BuildLinks.handle(intent)
     }
 }

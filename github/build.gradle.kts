@@ -10,6 +10,8 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     api(libs.okhttp)
     implementation(libs.javax.inject)
+    implementation(libs.bouncycastle.prov)
+    implementation(libs.bouncycastle.pkix)
 
     testImplementation(libs.okhttp.mockwebserver)
 }

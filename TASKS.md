@@ -111,23 +111,23 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
 - [x] Tests: diff model, ViewModels (Turbine)
 
 ## Phase 6: Remote build pipeline
-- [ ] Android-project detection; workflow template (with pinned action
+- [x] Android-project detection; workflow template (with pinned action
       versions) and "Set up builds" commit
-- [ ] Build button: commit → push → dispatch (200 `workflow_run_id`) or find
+- [x] Build button: commit → push → dispatch (200 `workflow_run_id`) or find
       the run by `head_sha`; no duplicate runs
-- [ ] Live run screen: jobs and steps, 5 s ETag polling
-- [ ] Log download (302) and parser; failed steps highlighted
-- [ ] Artifacts: zip download (302, token not forwarded), extract APK, check
+- [x] Live run screen: jobs and steps, 5 s ETag polling
+- [x] Log download (302) and parser; failed steps highlighted
+- [x] Artifacts: zip download (302, token not forwarded), extract APK, check
       it, confirm, `PackageInstaller` session, unknown-sources flow, clear
       handling of signature mismatch
-- [ ] Build history in Room, APK download again, HTTP 410 for expired
+- [x] Build history in Room, APK download again, HTTP 410 for expired
       artifacts
-- [ ] `BuildMonitorWorker` (long-running, ETag) and completion notifications
-- [ ] Optional stable debug keystore: generated on the device, saved as a
+- [x] `BuildMonitorWorker` (long-running, ETag) and completion notifications
+- [x] Optional stable debug keystore: generated on the device, saved as a
       secret with a sealed box (always confirmed)
-- [ ] Non-Android projects: run any workflow (with dispatch inputs), monitor
+- [x] Non-Android projects: run any workflow (with dispatch inputs), monitor
       it, read its logs
-- [ ] Tests: run/job/artifact parsing, redirect without the token, log
+- [x] Tests: run/job/artifact parsing, redirect without the token, log
       parser, sealed box (libsodium vectors), worker logic
 
 ## Phase 7: Agent GitHub and Actions tools, build-fix loop

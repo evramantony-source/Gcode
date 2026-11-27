@@ -1,8 +1,35 @@
 package dev.gcode.github
 
 import dev.gcode.core.model.RepoRef
+import dev.gcode.github.api.ActionsApi
+import dev.gcode.github.api.ContentsApi
+import dev.gcode.github.api.ReleasesApi
 import dev.gcode.github.api.ReposApi
+import dev.gcode.github.api.SecretsApi
 import dev.gcode.github.api.UsersApi
+import dev.gcode.github.crypto.SealedBox
+import dev.gcode.github.model.CreateReleaseRequest
+import dev.gcode.github.model.DispatchRequest
+import dev.gcode.github.model.DispatchResponse
+import dev.gcode.github.model.GhArtifact
+import dev.gcode.github.model.GhJob
+import dev.gcode.github.model.GhJobsPage
+import dev.gcode.github.model.GhArtifactsPage
+import dev.gcode.github.model.GhPublicKey
+import dev.gcode.github.model.GhRelease
+import dev.gcode.github.model.GhReleaseAsset
+import dev.gcode.github.model.GhRunsPage
+import dev.gcode.github.model.GhSecretInfo
+import dev.gcode.github.model.GhSecretsPage
+import dev.gcode.github.model.GhWorkflow
+import dev.gcode.github.model.GhWorkflowRun
+import dev.gcode.github.model.GhWorkflowsPage
+import dev.gcode.github.model.PutContentRequest
+import dev.gcode.github.model.PutContentResponse
+import dev.gcode.github.model.PutSecretRequest
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.util.Base64
 import dev.gcode.github.http.GitHubHttp
 import dev.gcode.github.model.CreateRepoRequest
 import dev.gcode.github.model.ForkRequest
@@ -21,7 +48,7 @@ import kotlinx.serialization.json.JsonObject
 import java.net.URLEncoder
 
 /** GitHub REST client. Each area is a small interface so tests can fake only what they use. */
-class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi {
+class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi, ActionsApi, ReleasesApi, SecretsApi, ContentsApi {
 
     override suspend fun me(): GhUser = http.get("user", GhUser.serializer(), useEtag = false)
 
@@ -82,7 +109,84 @@ class GitHubClient(val http: GitHubHttp) : UsersApi, ReposApi {
     override suspend fun rawFile(ref: RepoRef, path: String, gitRef: String?): String =
         http.send("GET", http.url("${path(ref)}/contents/${encodePath(path)}", mapOf("ref" to gitRef)), null, accept = "application/vnd.github.raw+json").body
 
+    // ---------------------------------------------------------------- Actions
+
+    override suspend fun workflows(ref: RepoRef): List<GhWorkflow> =
+        http.get("${path(ref)}/actions/workflows", GhWorkflowsPage.serializer(), mapOf("per_page" to "100")).workflows
+
+    override suspend fun dispatch(ref: RepoRef, workflow: String, gitRef: String, inputs: Map<String, String>): DispatchResponse {
+        val response = http.sendNoContent("POST", "${path(ref)}/actions/workflows/${seg(workflow)}/dispatches", DispatchRequest(gitRef, inputs.ifEmpty { null }), DispatchRequest.serializer())
+        return if (response.body.isBlank()) DispatchResponse() else http.decode(response.body, DispatchResponse.serializer())
+    }
+
+    override suspend fun runs(ref: RepoRef, workflow: String?, branch: String?, headSha: String?, event: String?, perPage: Int): List<GhWorkflowRun> {
+        val base = if (workflow != null) "${path(ref)}/actions/workflows/${seg(workflow)}/runs" else "${path(ref)}/actions/runs"
+        return http.get(base, GhRunsPage.serializer(), mapOf("branch" to branch, "head_sha" to headSha, "event" to event, "per_page" to perPage.toString())).runs
+    }
+
+    override suspend fun run(ref: RepoRef, runId: Long): GhWorkflowRun = http.get("${path(ref)}/actions/runs/$runId", GhWorkflowRun.serializer())
+
+    override suspend fun jobs(ref: RepoRef, runId: Long): List<GhJob> =
+        http.get("${path(ref)}/actions/runs/$runId/jobs", GhJobsPage.serializer(), mapOf("per_page" to "100")).jobs
+
+    override suspend fun jobLog(ref: RepoRef, jobId: Long): String =
+        http.send("GET", http.url("${path(ref)}/actions/jobs/$jobId/logs"), null, useEtag = false).body
+
+    override suspend fun artifacts(ref: RepoRef, runId: Long): List<GhArtifact> =
+        http.get("${path(ref)}/actions/runs/$runId/artifacts", GhArtifactsPage.serializer(), mapOf("per_page" to "100"), useEtag = false).artifacts
+
+    override suspend fun downloadArtifact(ref: RepoRef, artifactId: Long, dest: java.io.File, progress: (Long, Long) -> Unit) =
+        http.download(http.url("${path(ref)}/actions/artifacts/$artifactId/zip"), dest, progress)
+
+    override suspend fun cancelRun(ref: RepoRef, runId: Long) {
+        http.sendNoContent<Unit>("POST", "${path(ref)}/actions/runs/$runId/cancel", null, null)
+    }
+
+    override suspend fun rerunFailedJobs(ref: RepoRef, runId: Long) {
+        http.sendNoContent<Unit>("POST", "${path(ref)}/actions/runs/$runId/rerun-failed-jobs", null, null)
+    }
+
+    // ---------------------------------------------------------------- Releases
+
+    override suspend fun releases(ref: RepoRef): List<GhRelease> = http.getPaged("${path(ref)}/releases", ListSerializer(GhRelease.serializer()), maxPages = 3)
+
+    override suspend fun createRelease(ref: RepoRef, request: CreateReleaseRequest): GhRelease =
+        http.send("POST", "${path(ref)}/releases", request, CreateReleaseRequest.serializer(), GhRelease.serializer())
+
+    override suspend fun uploadAsset(release: GhRelease, file: java.io.File, name: String, contentType: String): GhReleaseAsset {
+        // upload_url is an RFC 6570 template: https://uploads.github.com/repos/o/r/releases/1/assets{?name,label}
+        val base = release.uploadUrl.substringBefore('{')
+        val url = http.url(base, mapOf("name" to name))
+        val body = file.asRequestBody(contentType.toMediaType())
+        return http.decode(http.upload(url, body).body, GhReleaseAsset.serializer())
+    }
+
+    // ---------------------------------------------------------------- Secrets
+
+    override suspend fun secretNames(ref: RepoRef): List<GhSecretInfo> =
+        http.get("${path(ref)}/actions/secrets", GhSecretsPage.serializer(), mapOf("per_page" to "100"), useEtag = false).secrets
+
+    override suspend fun publicKey(ref: RepoRef): GhPublicKey = http.get("${path(ref)}/actions/secrets/public-key", GhPublicKey.serializer(), useEtag = false)
+
+    override suspend fun putSecret(ref: RepoRef, name: String, value: String) {
+        require(SECRET_NAME.matches(name)) { "Secret names use letters, digits and underscores, and cannot start with a digit or GITHUB_" }
+        val key = publicKey(ref)
+        val sealed = SealedBox.seal(value.toByteArray(Charsets.UTF_8), Base64.getDecoder().decode(key.key))
+        http.sendNoContent("PUT", "${path(ref)}/actions/secrets/${seg(name)}", PutSecretRequest(Base64.getEncoder().encodeToString(sealed), key.keyId), PutSecretRequest.serializer())
+    }
+
+    // ---------------------------------------------------------------- Contents
+
+    override suspend fun putFile(ref: RepoRef, path: String, content: ByteArray, message: String, branch: String?): String? {
+        val existing = runCatching { content(ref, path, branch).singleOrNull()?.sha }.getOrNull()
+        val request = PutContentRequest(message, Base64.getEncoder().encodeToString(content), branch, existing)
+        val response = http.send("PUT", "${path(ref)}/contents/${encodePath(path)}", request, PutContentRequest.serializer(), PutContentResponse.serializer())
+        return response.commit?.sha
+    }
+
     companion object {
+        private val SECRET_NAME = Regex("^(?!GITHUB_)(?![0-9])[A-Za-z0-9_]+$")
+
         fun path(ref: RepoRef) = "repos/${ref.owner}/${ref.name}"
 
         fun seg(s: String): String = URLEncoder.encode(s, "UTF-8").replace("+", "%20")

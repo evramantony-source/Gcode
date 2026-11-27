@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
@@ -153,4 +154,25 @@ interface CheckpointDao {
 
     @Query("SELECT id FROM checkpoints WHERE sessionId = :sessionId ORDER BY id DESC LIMIT -1 OFFSET :keep")
     suspend fun idsBeyond(sessionId: String, keep: Int): List<Long>
+}
+
+@Dao
+interface BuildDao {
+    @Query("SELECT * FROM builds WHERE repoFullName = :repo ORDER BY runId DESC LIMIT 100")
+    fun observeForRepo(repo: String): Flow<List<BuildEntity>>
+
+    @Query("SELECT * FROM builds WHERE repoFullName = :repo AND runId = :runId")
+    suspend fun get(repo: String, runId: Long): BuildEntity?
+
+    @Query("SELECT * FROM builds WHERE repoFullName = :repo AND runId = :runId")
+    fun observe(repo: String, runId: Long): Flow<BuildEntity?>
+
+    @Query("SELECT * FROM builds WHERE status IS NULL OR status != 'completed' ORDER BY runId DESC")
+    suspend fun active(): List<BuildEntity>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(build: BuildEntity): Long
+
+    @Update
+    suspend fun update(build: BuildEntity)
 }

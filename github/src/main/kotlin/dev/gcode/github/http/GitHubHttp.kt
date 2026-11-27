@@ -178,6 +178,43 @@ class GitHubHttp(
 
     fun <T> decode(text: String, serializer: KSerializer<T>): T = GitHubJson.decodeFromString(serializer, text)
 
+    /**
+     * Streams a GET response (e.g. an artifact zip behind a 302) to [dest]. OkHttp drops the Authorization
+     * header when a redirect changes host, so the storage host never sees the token.
+     */
+    suspend fun download(url: HttpUrl, dest: java.io.File, progress: (Long, Long) -> Unit = { _, _ -> }) {
+        val request = Request.Builder().url(url).get()
+            .header("Accept", "application/vnd.github+json")
+            .header("X-GitHub-Api-Version", GitHubApi.API_VERSION)
+            .header("User-Agent", userAgent)
+            .apply { token()?.takeIf { it.isNotBlank() }?.let { header("Authorization", "Bearer $it") } }
+            .build()
+        val response = client.newCall(request).await()
+        response.use { r ->
+            if (!r.isSuccessful) throw GitHubApiException.parse(r.code, withContext(Dispatchers.IO) { r.body.string() }, null, false, emptySet())
+            withContext(Dispatchers.IO) {
+                dest.parentFile?.mkdirs()
+                val total = r.body.contentLength()
+                r.body.byteStream().use { input ->
+                    dest.outputStream().use { output ->
+                        val buffer = ByteArray(64 * 1024)
+                        var done = 0L
+                        while (true) {
+                            val n = input.read(buffer)
+                            if (n < 0) break
+                            output.write(buffer, 0, n)
+                            done += n
+                            progress(done, total)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /** POSTs a raw body (release asset uploads go to uploads.github.com). */
+    suspend fun upload(url: HttpUrl, body: RequestBody): GitHubResponse = send("POST", url, body, useEtag = false)
+
     companion object {
         private val JSON = "application/json; charset=utf-8".toMediaType()
         private val EMPTY_JSON = "{}".toRequestBody(JSON)

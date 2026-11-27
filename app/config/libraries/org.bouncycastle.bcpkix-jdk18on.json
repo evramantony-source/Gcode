@@ -1,0 +1,5 @@
+{
+  "uniqueId": "org.bouncycastle:bcpkix-jdk18on",
+  "licenses": ["MIT"],
+  "website": "https://www.bouncycastle.org/"
+}
