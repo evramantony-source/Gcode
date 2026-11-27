@@ -24,6 +24,7 @@ markdownRenderer = "0.46.0"
 turbine = "1.2.1"
 jgit = "5.13.5.202508271544-r"
 documentfile = "1.1.0"
+sora = "0.24.7"
 
 junit4 = "4.13.2"
 truth = "1.4.5"
@@ -56,6 +57,10 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 
 # Git
 jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
+
+# Code editor (LGPL-2.1, used unmodified; see THIRD_PARTY_NOTICES)
+sora-editor = { module = "io.github.rosemoe:editor", version.ref = "sora" }
+sora-textmate = { module = "io.github.rosemoe:language-textmate", version.ref = "sora" }
 
 # Markdown
 markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

@@ -143,6 +143,8 @@ aboutLibraries {
         // config/libraries/org.eclipse.jgit.json adds BSD-3-Clause, and this allows the POM's own entry for JGit only.
         allowedLicensesMap = mapOf(
             "b3f0b0bb52153b7c087898e7d4b6abf6" to listOf("org.eclipse.jgit", "org.eclipse.jgit:org.eclipse.jgit"),
+            // Sora Editor's POM says "LGPL v2.1"; config/libraries/io.github.rosemoe.*.json adds LGPL-2.1-only (decision D4).
+            "36c8ce2eb10d65ef5edf4a5fdd06186e" to listOf("io.github.rosemoe", "io.github.rosemoe:editor", "io.github.rosemoe:language-textmate"),
         )
     }
 }
@@ -170,6 +172,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.markdown.renderer.m3)
     implementation(libs.androidx.documentfile)
+    implementation(libs.sora.editor)
+    implementation(libs.sora.textmate)
     implementation(libs.okhttp)
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)

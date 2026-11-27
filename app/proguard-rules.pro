@@ -23,3 +23,8 @@
 -keep class org.eclipse.jgit.lib.** { *; }
 -keep class org.eclipse.jgit.internal.JGitText { *; }
 -keepclassmembers class * extends org.eclipse.jgit.nls.TranslationBundle { *; }
+
+# Sora Editor TextMate support: tm4e builds grammar and theme models from JSON at runtime.
+-keep class org.eclipse.tm4e.** { *; }
+-keep class io.github.rosemoe.sora.langs.textmate.registry.model.** { *; }
+-dontwarn org.eclipse.tm4e.**

@@ -44,6 +44,21 @@ annotation class SettingsStore
 @Retention(AnnotationRetention.BINARY)
 annotation class SecretsStore
 
+/**
+ * One DataStore per file for the whole process. DataStore refuses two active instances on the same file,
+ * and Hilt re-creates the singleton component for every instrumented test in the same process.
+ */
+internal object ProcessDataStores {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val stores = HashMap<String, DataStore<Preferences>>()
+
+    @Synchronized
+    fun get(context: Context, name: String): DataStore<Preferences> = stores.getOrPut(name) {
+        val app = context.applicationContext
+        PreferenceDataStoreFactory.create(scope = scope) { app.preferencesDataStoreFile(name) }
+    }
+}
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
@@ -65,18 +80,12 @@ object AppModule {
     @Provides
     @Singleton
     @SettingsStore
-    fun settingsDataStore(@ApplicationContext context: Context, @ApplicationScope scope: CoroutineScope): DataStore<Preferences> =
-        PreferenceDataStoreFactory.create(scope = CoroutineScope(scope.coroutineContext + Dispatchers.IO)) {
-            context.preferencesDataStoreFile("settings")
-        }
+    fun settingsDataStore(@ApplicationContext context: Context): DataStore<Preferences> = ProcessDataStores.get(context, "settings")
 
     @Provides
     @Singleton
     @SecretsStore
-    fun secretsDataStore(@ApplicationContext context: Context, @ApplicationScope scope: CoroutineScope): DataStore<Preferences> =
-        PreferenceDataStoreFactory.create(scope = CoroutineScope(scope.coroutineContext + Dispatchers.IO)) {
-            context.preferencesDataStoreFile("secrets")
-        }
+    fun secretsDataStore(@ApplicationContext context: Context): DataStore<Preferences> = ProcessDataStores.get(context, "secrets")
 
     @Provides
     @Singleton

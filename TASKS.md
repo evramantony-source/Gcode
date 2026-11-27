@@ -101,14 +101,14 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
       with a scripted fake model
 
 ## Phase 5: Code editor, file explorer, source control
-- [ ] File tree explorer, Sora Editor with tabs, find/replace, undo/redo,
+- [x] File tree explorer, Sora Editor with tabs, find/replace, undo/redo,
       TextMate grammars, LTR editor
-- [ ] Changes screen: stage/unstage, unified and side-by-side diff, commit,
+- [x] Changes screen: stage/unstage, unified and side-by-side diff, commit,
       push/pull/fetch
-- [ ] Branch list (create, switch, delete; delete is always confirmed)
-- [ ] History with per-commit diffs
-- [ ] Tablet two-pane layout for chat + file/diff
-- [ ] Tests: diff model, ViewModels (Turbine)
+- [x] Branch list (create, switch, delete; delete is always confirmed)
+- [x] History with per-commit diffs
+- [x] Tablet two-pane layout for chat + file/diff
+- [x] Tests: diff model, ViewModels (Turbine)
 
 ## Phase 6: Remote build pipeline
 - [ ] Android-project detection; workflow template (with pinned action

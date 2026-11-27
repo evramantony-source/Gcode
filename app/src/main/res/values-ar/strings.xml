@@ -204,4 +204,34 @@
     <string name="folder_unlink">إغلاق المجلد</string>
     <string name="folder_linked">مجلد الجهاز: %1$s</string>
     <string name="folder_linked_body">يمكن للوكيل قراءة الملفات في هذا المجلد وتعديلها. تحتاج أدوات Git إلى مستودع مستنسخ.</string>
+
+    <!-- Phase 5: editor, explorer, source control -->
+    <string name="code_tab_files">الملفات</string>
+    <string name="code_tab_changes">التغييرات</string>
+    <string name="code_tab_history">السجل</string>
+    <string name="code_tab_branches">الفروع</string>
+    <string name="files_empty">هذا المجلد فارغ.</string>
+    <string name="files_show">عرض الملفات</string>
+    <string name="close_tab">إغلاق التبويب</string>
+    <string name="editor_no_file">افتح ملفًا من المستكشف.</string>
+    <string name="undo">تراجع</string>
+    <string name="redo">إعادة</string>
+    <string name="find">بحث</string>
+    <string name="find_previous">التطابق السابق</string>
+    <string name="find_next">التطابق التالي</string>
+    <string name="find_matches">%1$d تطابقات</string>
+    <string name="replace">استبدال</string>
+    <string name="replace_all">استبدال الكل</string>
+    <string name="diff_side_by_side">جنبًا إلى جنب</string>
+    <string name="history_empty">لا توجد إيداعات بعد.</string>
+    <string name="merge_in_progress">يوجد دمج قيد التنفيذ مع تعارضات.</string>
+    <string name="merge_abort">إلغاء الدمج</string>
+    <string name="branch_new">اسم الفرع الجديد</string>
+    <string name="branch_current">الحالي</string>
+    <string name="branch_remote">بعيد</string>
+    <string name="branch_switch">التبديل إلى هذا الفرع</string>
+    <string name="branch_merge_into">الدمج في %1$s</string>
+    <string name="more_actions">إجراءات أخرى</string>
+    <string name="git_discard">تجاهل التغييرات</string>
+    <string name="git_discard_body">هل تريد تجاهل تغييراتك على %1$s؟ لا يمكن التراجع عن ذلك.</string>
 </resources>
