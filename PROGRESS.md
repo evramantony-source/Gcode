@@ -19,8 +19,8 @@ This file lets a new session resume without other context. It is updated after e
 | 1 Repo, Gradle, CI, app shell | Merged | [#1](https://github.com/evramantony-source/Gcode/pull/1) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45978861795) |
 | 2 Gemini onboarding, model discovery, streaming chat | Merged | [#2](https://github.com/evramantony-source/Gcode/pull/2) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45986329590) |
 | 3 GitHub sign-in, repos, JGit | Merged | [#3](https://github.com/evramantony-source/Gcode/pull/3) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45990406165) |
-| 4 Workspace tools, agent loop, permissions | In review | [#4](https://github.com/evramantony-source/Gcode/pull/4) | — |
-| 5 Editor, explorer, source control UI | Ready (pushed after #4 merges) | — | — |
+| 4 Workspace tools, agent loop, permissions | Merged | [#4](https://github.com/evramantony-source/Gcode/pull/4) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46038035247) |
+| 5 Editor, explorer, source control UI | In review | [#5](https://github.com/evramantony-source/Gcode/pull/5) | — |
 | 6 Remote build pipeline | Not started | | |
 | 7 Agent GitHub/Actions tools, build-fix loop | Not started | | |
 | 8 PRs, issues, releases, branches, conflicts | Not started | | |
@@ -85,6 +85,6 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for Phase 4 CI, merge, reset the branch to `main`, then start Phase 5: file explorer, Sora
-Editor with tabs/search/undo/redo, full source-control screens (diff viewer, branches, history),
-tablet two-pane layout.
+Wait for Phase 5 CI, merge, reset the branch to `main`, then start Phase 6: build workflow template
+and "Set up builds", Build button (dispatch / head_sha), live run status, log parser, artifact
+download + PackageInstaller, build history, BuildMonitorWorker notifications, sealed-box secrets.
