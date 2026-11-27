@@ -61,3 +61,29 @@ data class ModelEntity(
     val thinking: Boolean,
     val fetchedAt: Long,
 )
+
+/** A repository cloned into the app workspace, with its per-repo settings (ARCHITECTURE.md section 10). */
+@Entity(tableName = "local_repos")
+data class LocalRepoEntity(
+    @PrimaryKey val fullName: String,
+    val path: String,
+    val defaultBranch: String,
+    val remoteUrl: String,
+    val buildWorkflow: String? = null,
+    val autoFixLimit: Int = 3,
+    val pullRebase: Boolean = false,
+    val authorName: String? = null,
+    val authorEmail: String? = null,
+    val defaultMode: String? = null,
+    val clonedAt: Long,
+    val lastOpenedAt: Long,
+)
+
+/** Cached GitHub repository listings (the raw JSON of each repo). */
+@Entity(tableName = "remote_repos")
+data class RemoteRepoEntity(
+    @PrimaryKey val fullName: String,
+    val json: String,
+    val pushedAt: String?,
+    val fetchedAt: Long,
+)

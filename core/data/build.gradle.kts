@@ -16,6 +16,8 @@ room {
 dependencies {
     api(project(":core:model"))
     api(project(":gemini"))
+    api(project(":github"))
+    api(project(":git"))
     implementation(project(":core:common"))
     implementation(libs.javax.inject)
     api(libs.androidx.datastore.preferences)
@@ -25,4 +27,5 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.androidx.datastore.preferences.core)
+    testImplementation(libs.androidx.room.testing)
 }

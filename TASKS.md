@@ -66,21 +66,20 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
 - Repo, branch and mode join the status bar with workspaces (Phase 3) and tools (Phase 4)
 
 ## Phase 3: GitHub sign-in, repos, JGit
-- [ ] **Spike first (risk R1):** JGit 7.x clone/commit/push in an
-      instrumented test on API 26 and 37; fall back to 6.10.x or 5.13.x if
-      needed
-- [ ] Device flow (state machine with every error code), PAT fallback with a
+- [x] **Spike first (risk R1):** static API check of JGit 7.x/6.10/5.13
+      against API 26 → JGit 5.13.5; instrumented Git test on API 26 and 36
+- [x] Device flow (state machine with every error code), PAT fallback with a
       scope/permission checklist, token in SecretStore
-- [ ] GitHub REST client: headers, `X-GitHub-Api-Version: 2026-03-10`, Link
+- [x] GitHub REST client: headers, `X-GitHub-Api-Version: 2026-03-10`, Link
       pagination, ETag, rate-limit handling
-- [ ] Repositories screen: user and org repos, search, create (gitignore and
+- [x] Repositories screen: user and org repos, search, create (gitignore and
       license templates), fork, clone with progress, delete the local copy
-- [ ] `GitGateway`: status, diff, add/reset, commit, push, pull, fetch, with
+- [x] `GitGateway`: status, diff, add/reset, commit, push, pull, fetch, with
       the commit author set up
-- [ ] Tests: device-flow polling, pagination, ETag, create/fork request
+- [x] Tests: device-flow polling, pagination, ETag, create/fork request
       bodies; JGit operations against temporary local repos
-- *(stub)* the Changes screen is a minimal list; the full source-control UI
-  comes in Phase 5
+- [x] Changes panel under Code: status, stage/unstage, diff, commit, push, pull, fetch
+      (full source-control UI with branches and history in Phase 5)
 
 ## Phase 4: Workspace tools, agent loop, diff approval, permission modes
 - [ ] `Workspace` with path sandboxing; denylist and `.gitignore`

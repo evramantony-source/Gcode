@@ -23,7 +23,7 @@ bundled in the app.
 
 None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor.)
 
-## Libraries (138)
+## Libraries (141)
 
 | Library | Artifact | Version | Licence |
 |---|---|---|---|
@@ -121,6 +121,7 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [Hilt Android](https://github.com/google/dagger) | `com.google.dagger:hilt-android` | 2.60.1 | Apache-2.0 |
 | [Hilt Core](https://github.com/google/dagger) | `com.google.dagger:hilt-core` | 2.60.1 | Apache-2.0 |
 | [Guava ListenableFuture only](https://github.com/google/guava/listenablefuture) | `com.google.guava:listenablefuture` | 1.0 | Apache-2.0 |
+| [JavaEWAH](https://github.com/lemire/javaewah) | `com.googlecode.javaewah:JavaEWAH` | 1.1.13 | Apache-2.0 |
 | [AboutLibraries Compose UI Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-compose-core` | 15.3.0 | Apache-2.0 |
 | [AboutLibraries Compose Material 3 Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-compose-m3` | 15.3.0 | Apache-2.0 |
 | [AboutLibraries Core Library](https://github.com/mikepenz/AboutLibraries) | `com.mikepenz:aboutlibraries-core` | 15.3.0 | Apache-2.0 |
@@ -130,6 +131,7 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [okio](https://github.com/lysine-dev/okio/) | `com.squareup.okio:okio` | 3.18.1 | Apache-2.0 |
 | [Jakarta Dependency Injection](https://github.com/eclipse-ee4j/injection-api) | `jakarta.inject:jakarta.inject-api` | 2.0.1 | Apache-2.0 |
 | [javax.inject](http://code.google.com/p/atinject/) | `javax.inject:javax.inject` | 1 | Apache-2.0 |
+| [JGit - Core](https://github.com/eclipse-jgit/jgit) | `org.eclipse.jgit:org.eclipse.jgit` | 5.13.5.202508271544-r | BSD-3-Clause, Eclipse Distribution License (New BSD License) |
 | [Lifecycle-Common](https://github.com/JetBrains/compose-jb) | `org.jetbrains.androidx.lifecycle:lifecycle-common` | 2.9.6 | Apache-2.0 |
 | [Lifecycle Runtime](https://github.com/JetBrains/compose-jb) | `org.jetbrains.androidx.lifecycle:lifecycle-runtime` | 2.9.6 | Apache-2.0 |
 | [Lifecycle Runtime Compose](https://github.com/JetBrains/compose-jb) | `org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose` | 2.9.6 | Apache-2.0 |
@@ -165,6 +167,7 @@ None in the current build. (Sora Editor, LGPL-2.1, is added with the code editor
 | [JetBrains Java Annotations](https://github.com/JetBrains/java-annotations) | `org.jetbrains:annotations` | 23.0.0 | Apache-2.0 |
 | [markdown](https://github.com/JetBrains/markdown) | `org.jetbrains:markdown` | 0.7.17 | Apache-2.0 |
 | [JSpecify annotations](http://jspecify.org/) | `org.jspecify:jspecify` | 1.0.0 | Apache-2.0 |
+| [SLF4J API Module](http://www.slf4j.org) | `org.slf4j:slf4j-api` | 1.7.30 | MIT |
 
 ## Licence texts
 
@@ -187,3 +190,19 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY <<var;name=copyrightHolderAsIs;original=THE COPYRIGHT HOLDERS AND CONTRIBUTORS;match=.+>> "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL <<var;name=copyrightHolderLiability;original=THE COPYRIGHT HOLDER OR CONTRIBUTORS;match=.+>> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
+
+### MIT License
+
+```text
+MIT License
+
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### Eclipse Distribution License (New BSD License)

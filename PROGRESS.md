@@ -17,8 +17,8 @@ This file lets a new session resume without other context. It is updated after e
 | Phase | Status | PR | Green Actions run |
 |---|---|---|---|
 | 1 Repo, Gradle, CI, app shell | Merged | [#1](https://github.com/evramantony-source/Gcode/pull/1) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45978861795) |
-| 2 Gemini onboarding, model discovery, streaming chat | In review | — | — |
-| 3 GitHub sign-in, repos, JGit | Not started | | |
+| 2 Gemini onboarding, model discovery, streaming chat | Merged | [#2](https://github.com/evramantony-source/Gcode/pull/2) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45986329590) |
+| 3 GitHub sign-in, repos, JGit | In review | [#3](https://github.com/evramantony-source/Gcode/pull/3) | — |
 | 4 Workspace tools, agent loop, permissions | Not started | | |
 | 5 Editor, explorer, source control UI | Not started | | |
 | 6 Remote build pipeline | Not started | | |
@@ -41,9 +41,21 @@ This file lets a new session resume without other context. It is updated after e
   Markdown, thoughts card, status bar with model + context %, error/retry, Stop, new chat);
   model picker; settings (key, model, thinking, thoughts, auto-switch, compaction threshold, theme).
 
+- **Phase 3:** GitHub device-flow sign-in (code + countdown, slow_down/expiry/denied handling) with
+  fine-grained/classic PAT fallback and scope checks; `GitHubHttp` (API version 2026-03-10, Link
+  pagination, ETag/304 cache, primary and secondary rate limits, error/scope parsing); repos API
+  (list, search, create user/org with gitignore/license templates, fork, delete, visibility, branches,
+  contents/raw); JGit 5.13.5 wrapper (clone with progress/cancel, status, diff, stage/unstage,
+  commit, push with force-with-lease, pull merge/rebase, fetch, branches, checkout of remote branches,
+  merge with conflict detection/abort, log, commit diff); onboarding steps 2–3 (GitHub, workspace);
+  Repositories screen (filters, search, create dialog, clone progress/cancel, fork, open, delete
+  local copy); Changes panel; Settings GitHub section with client ID override; Room v2 with
+  auto-migration (local and cached remote repos).
+
 ## Known limitations
 
-- Tools, GitHub, workspaces and builds arrive in Phases 3–7; their screens are still placeholders.
+- Agent tools arrive in Phase 4; Builds and PR/issue/release screens are still placeholders until Phases 6 and 8.
+- JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
 - The release APK has not been launched on a device yet (planned in Phase 10).
 
 ## Blockers on the repository owner
@@ -52,5 +64,6 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for Phase 2 CI, merge, reset the branch to `main`, then start Phase 3 with the JGit Android
-compatibility spike (ARCHITECTURE.md risk R1).
+Wait for Phase 3 CI (now also instrumented tests on API 26 and 36), merge, reset the branch to
+`main`, then start Phase 4: `WorkspaceFs` (internal + SAF), file/git tools, tool registry, parallel
+execution, permission policy, diff sheet, checkpoints, AgentService.

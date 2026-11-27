@@ -43,7 +43,7 @@ are finalised in Phase 1 in `gradle/libs.versions.toml` after a real build.
 | OkHttp (+ okhttp-sse, mockwebserver3) | 5.5.1 | single HTTP stack |
 | Retrofit | 3.0.0 | GitHub REST interface |
 | kotlinx.serialization / coroutines | 1.13.0 / 1.11.0 | |
-| JGit | 7.8.1.202611041320-r | bytecode targets **Java 17** (class file 61, `JavaSE-17`). See risk R1 |
+| JGit | **5.13.5.202508271544-r** | 7.x targets Java 17 and calls JDK APIs missing on API 26–32; 5.13 (Java 8) is used. See risk R1 and DECISIONS.md #17 |
 | Sora Editor | 0.24.7 (`editor-bom`, `language-textmate`) | **LGPL-2.1**. See decision D4 |
 | BouncyCastle `bcprov-jdk18on` | 1.87 | sealed box for GitHub secrets, on-device keystore generation |
 | Jsoup | 1.24.1 | `web_fetch` HTML to text |
@@ -569,7 +569,7 @@ Endpoints by feature:
   storage; exporting through the Storage Access Framework is possible later.
 * HTTPS auth: `UsernamePasswordCredentialsProvider("x-access-token", token)`.
   No SSH, so the JGit SSH modules are not included.
-* Operations: clone (progress shown in the UI, optional shallow depth),
+* Operations: clone (progress shown in the UI, optional single-branch clone; JGit 5.13 has no shallow clone),
   fetch, pull (merge or rebase, set per repo), push (force uses
   `--force-with-lease` semantics through the expected old object id), status,
   diff (`DiffFormatter`, word-level highlighting in the UI), add/reset,
@@ -851,7 +851,7 @@ all strings in `values-ar/strings.xml`; code, diffs and logs are forced LTR.
 
 | # | Risk | Mitigation |
 |---|---|---|
-| R1 | JGit 7.x targets Java 17. Some JDK APIs may be missing on ART at runtime. | Phase 3 starts with a spike: clone, commit and push from an instrumented test on API 26 and 37 emulators, with core-library desugaring. Fallback to JGit 6.10.x (Java 11) or 5.13.x (Java 8, widely used on Android). Hidden behind `GitGateway`. |
+| R1 | JGit 7.x targets Java 17. Some JDK APIs may be missing on ART at runtime. | **Resolved in Phase 3:** a static API check showed ~40 missing JDK methods for 7.x on API 26, so GCode uses JGit 5.13.5 (Java 8 API surface). An instrumented test runs clone/commit/push/pull/merge on API 26 and 36 emulators in CI. |
 | R2 | Neither Gemini nor GitHub can be called live from CI (no keys). | Recorded fixtures, MockWebServer, a manual checklist, and the optional dispatch-only live smoke job. |
 | R3 | Bugs in thought-signature handling cause 400s mid-task. | Parts stored verbatim, a folding algorithm with tests, and on a 400 that mentions `thought_signature`, a clear error plus "retry from last good step". |
 | R4 | 50+ tool schemas cost tokens on every call. | Tool sets per mode; MCP tools only when enabled; later, Gemini's "tool retrieval" preview (Gemini 3.6+). |

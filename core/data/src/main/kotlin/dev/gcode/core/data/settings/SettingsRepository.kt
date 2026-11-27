@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,12 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             modelCacheHours = (p[MODEL_CACHE_HOURS] ?: defaults.modelCacheHours).coerceIn(1, 168),
             rejectedThinking = p[REJECTED_THINKING] ?: emptySet(),
             onboardingComplete = p[ONBOARDING_COMPLETE] ?: false,
+            githubLogin = p[GITHUB_LOGIN],
+            githubUserId = p[GITHUB_USER_ID],
+            githubName = p[GITHUB_NAME],
+            githubTokenType = p[GITHUB_TOKEN_TYPE],
+            githubClientIdOverride = p[GITHUB_CLIENT_ID_OVERRIDE],
+            activeRepo = p[ACTIVE_REPO],
         )
     }
 
@@ -49,6 +56,16 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         p[MODEL_CACHE_HOURS] = s.modelCacheHours
         p[REJECTED_THINKING] = s.rejectedThinking
         p[ONBOARDING_COMPLETE] = s.onboardingComplete
+        p.setOrRemove(GITHUB_LOGIN, s.githubLogin)
+        p.setOrRemove(GITHUB_USER_ID, s.githubUserId)
+        p.setOrRemove(GITHUB_NAME, s.githubName)
+        p.setOrRemove(GITHUB_TOKEN_TYPE, s.githubTokenType)
+        p.setOrRemove(GITHUB_CLIENT_ID_OVERRIDE, s.githubClientIdOverride?.trim()?.ifEmpty { null })
+        p.setOrRemove(ACTIVE_REPO, s.activeRepo)
+    }
+
+    private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T?) {
+        if (value == null) remove(key) else set(key, value)
     }
 
     private companion object {
@@ -62,5 +79,11 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val MODEL_CACHE_HOURS = intPreferencesKey("model_cache_hours")
         val REJECTED_THINKING = stringSetPreferencesKey("rejected_thinking")
         val ONBOARDING_COMPLETE = booleanPreferencesKey("onboarding_complete")
+        val GITHUB_LOGIN = stringPreferencesKey("github_login")
+        val GITHUB_USER_ID = longPreferencesKey("github_user_id")
+        val GITHUB_NAME = stringPreferencesKey("github_name")
+        val GITHUB_TOKEN_TYPE = stringPreferencesKey("github_token_type")
+        val GITHUB_CLIENT_ID_OVERRIDE = stringPreferencesKey("github_client_id_override")
+        val ACTIVE_REPO = stringPreferencesKey("active_repo")
     }
 }

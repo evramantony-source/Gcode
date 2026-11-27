@@ -18,6 +18,16 @@ data class AppSettings(
     /** Thinking levels the API rejected, as "model:level". */
     val rejectedThinking: Set<String> = emptySet(),
     val onboardingComplete: Boolean = false,
+    /** Signed-in GitHub account (profile only; the token is in the SecretStore). */
+    val githubLogin: String? = null,
+    val githubUserId: Long? = null,
+    val githubName: String? = null,
+    /** "oauth", "pat_fine_grained" or "pat_classic". */
+    val githubTokenType: String? = null,
+    /** Overrides BuildConfig.GITHUB_CLIENT_ID when set. */
+    val githubClientIdOverride: String? = null,
+    /** Full name (owner/repo) of the repository open in the workspace. */
+    val activeRepo: String? = null,
 ) {
     init {
         require(modelCacheHours in 1..168) { "modelCacheHours out of range: $modelCacheHours" }

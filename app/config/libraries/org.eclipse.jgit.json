@@ -1,0 +1,5 @@
+{
+  "uniqueId": "org.eclipse.jgit:org.eclipse.jgit",
+  "licenses": ["BSD-3-Clause"],
+  "website": "https://github.com/eclipse-jgit/jgit"
+}

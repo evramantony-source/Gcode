@@ -22,6 +22,7 @@ room = "2.8.5"
 work = "2.12.0"
 markdownRenderer = "0.46.0"
 turbine = "1.2.1"
+jgit = "5.13.5.202508271544-r"
 
 junit4 = "4.13.2"
 truth = "1.4.5"
@@ -50,6 +51,9 @@ androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidxHilt" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidxHilt" }
+
+# Git
+jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 
 # Markdown
 markdown-renderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

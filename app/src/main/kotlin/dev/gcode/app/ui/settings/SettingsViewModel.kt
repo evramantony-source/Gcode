@@ -52,6 +52,7 @@ class SettingsViewModel @Inject constructor(
     fun setThinkingLevel(wire: String?) = set { it.copy(thinkingLevel = wire) }
     fun setShowThoughts(on: Boolean) = set { it.copy(showThoughts = on) }
     fun setAutoSwitch(on: Boolean) = set { it.copy(autoSwitchModels = on) }
+    fun setClientIdOverride(id: String) = set { it.copy(githubClientIdOverride = id.trim().ifEmpty { null }) }
     fun setCompactionThreshold(percent: Int) = set { it.copy(compactionThresholdPercent = percent.coerceIn(50, 95)) }
 
     fun refreshModels() {

@@ -1,5 +1,6 @@
 package dev.gcode.app.ui.onboarding
 
+import android.text.format.Formatter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -40,25 +42,52 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.gcode.app.R
+import dev.gcode.app.github.GitHubAuthState
+import dev.gcode.app.ui.github.GitHubSignInCard
 
 const val GEMINI_KEY_URL = "https://aistudio.google.com/apikey"
 
+/** Onboarding: 1. Gemini key, 2. GitHub sign-in (device flow, PAT, or later), 3. workspace. */
 @Composable
 fun OnboardingScreen(viewModel: OnboardingViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val github by viewModel.account.state.collectAsStateWithLifecycle()
     Surface(modifier = Modifier.fillMaxSize().testTag("screen_onboarding")) {
         Column(
-            modifier = Modifier
-                .safeDrawingPadding()
-                .imePadding()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+            modifier = Modifier.safeDrawingPadding().imePadding().verticalScroll(rememberScrollState()).padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(painterResource(R.drawable.ic_code), contentDescription = null, modifier = Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
             Text(stringResource(R.string.onboarding_welcome), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.onboarding_intro), style = MaterialTheme.typography.bodyLarge)
-            GeminiKeyStep(state, viewModel::onKeyChange, viewModel::verify)
+            when (state.step) {
+                OnboardingStep.GEMINI -> GeminiKeyStep(state.gemini, viewModel::onKeyChange, viewModel::verify)
+                OnboardingStep.GITHUB -> {
+                    GitHubSignInCard(github, viewModel.account)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (github is GitHubAuthState.SignedIn) {
+                            Button(onClick = viewModel::toWorkspace, modifier = Modifier.testTag("github_continue")) { Text(stringResource(R.string.continue_label)) }
+                        } else {
+                            TextButton(onClick = viewModel::toWorkspace, modifier = Modifier.testTag("skip_github")) { Text(stringResource(R.string.skip_for_now)) }
+                        }
+                    }
+                }
+                OnboardingStep.WORKSPACE -> WorkspaceStep(state, viewModel::finish)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorkspaceStep(state: OnboardingState, onFinish: () -> Unit) {
+    val context = LocalContext.current
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(stringResource(R.string.workspace_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.workspace_body), style = MaterialTheme.typography.bodyMedium)
+            Text(state.workspacePath, style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(R.string.workspace_free, Formatter.formatShortFileSize(context, state.freeBytes)), style = MaterialTheme.typography.bodySmall)
+            Button(onClick = onFinish, modifier = Modifier.testTag("finish_onboarding")) { Text(stringResource(R.string.finish)) }
         }
     }
 }

@@ -37,6 +37,8 @@ import dev.gcode.app.ui.screens.AboutScreen
 import dev.gcode.app.ui.screens.MoreScreen
 import dev.gcode.app.ui.screens.PlaceholderScreen
 import dev.gcode.app.ui.chat.ChatScreen
+import dev.gcode.app.ui.code.CodeScreen
+import dev.gcode.app.ui.repos.ReposScreen
 import dev.gcode.app.ui.settings.SettingsScreen
 
 /** App shell: adaptive navigation (bottom bar on phones, rail on tablets) around a Navigation 3 back stack. */
@@ -72,18 +74,8 @@ fun GCodeAppUi() {
             ),
             entryProvider = entryProvider {
                 entry<ChatRoute> { ChatScreen() }
-                entry<ReposRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.nav_repos), stringResource(R.string.placeholder_repos),
-                        phase = 3, icon = R.drawable.ic_repos, testTag = "screen_repos",
-                    )
-                }
-                entry<CodeRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.nav_code), stringResource(R.string.placeholder_code),
-                        phase = 5, icon = R.drawable.ic_code, testTag = "screen_code",
-                    )
-                }
+                entry<ReposRoute> { ReposScreen(onOpened = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CODE) }) }
+                entry<CodeRoute> { CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
                 entry<BuildsRoute> {
                     PlaceholderScreen(
                         stringResource(R.string.nav_builds), stringResource(R.string.placeholder_builds),
