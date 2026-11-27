@@ -1,6 +1,9 @@
 package dev.gcode.app
 
+import android.Manifest
+import android.os.Build
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -34,6 +37,12 @@ class AppShellSmokeTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+        // Android 13+: sending a message asks for the notification permission (for the agent's foreground
+        // service). Grant it up front so the system dialog does not cover the app during the test.
+        if (Build.VERSION.SDK_INT >= 33) {
+            val instrumentation = InstrumentationRegistry.getInstrumentation()
+            instrumentation.uiAutomation.grantRuntimePermission(instrumentation.targetContext.packageName, Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     @Test
