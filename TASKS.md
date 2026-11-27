@@ -145,14 +145,16 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
       build-fail → fix → success scenario
 
 ## Phase 8: PRs, issues, releases, branches, conflicts
-- [ ] PR list, detail (files, diff, comments), create, comment, merge
+- [x] PR list, detail (files, diff, comments), create, comment, merge
       (always confirmed into the default branch)
-- [ ] Issue list, detail, create, comment
-- [ ] Releases: list, create tag and release, upload APK asset
-- [ ] Branch merge; conflict resolver (Ours / Theirs / Both / Edit / Ask AI)
-- [ ] Secrets screen: link to repo settings, or set through the API (always
+- [x] Issue list, detail, create, comment
+- [x] Releases: list, create tag and release, upload APK asset
+- [x] Branch merge; conflict resolver (Ours / Theirs / Both / Edit / Ask AI)
+- [x] Secrets screen: link to repo settings, or set through the API (always
       confirmed)
-- [ ] Tests: conflict model, merge flows, release upload request
+- [x] Per-repository settings (author, pull rebase, default mode, build
+      workflow, build-fix limit)
+- [x] Tests: conflict model, merge flows, release upload request
 
 ## Phase 9: Compaction, fallback polish, sessions, checkpoints, MCP, commands, sub-agents
 - [ ] countTokens tracking, auto-compact at 80% (turn boundaries only),
