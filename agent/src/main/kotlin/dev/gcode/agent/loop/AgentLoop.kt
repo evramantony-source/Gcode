@@ -15,8 +15,7 @@ import dev.gcode.gemini.model.UsageMetadata
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -66,23 +65,25 @@ class AgentLoop(
     private val tools: ToolExecutor,
 ) {
     /** Runs a turn. With [user] null the loop continues from the saved history (Retry after an error). */
-    fun run(user: Content?, config: AgentConfig): Flow<AgentEvent> = flow {
+    fun run(user: Content?, config: AgentConfig): Flow<AgentEvent> = channelFlow {
+        // channelFlow: parallel tool calls report events from several coroutines.
+        val emit: suspend (AgentEvent) -> Unit = { send(it) }
         if (user != null) store.append(user, null, null)
         var step = 0
         while (true) {
             if (step >= config.maxSteps) {
                 emit(AgentEvent.Finished(FinishReason.STEP_LIMIT))
-                return@flow
+                return@channelFlow
             }
             step++
             config.beforeModelCall()
-            val outcome = callModel(config, step) ?: return@flow
+            val outcome = callModel(config, step, emit) ?: return@channelFlow
             val calls = outcome.content.functionCalls
             if (calls.isEmpty()) {
                 emit(AgentEvent.Finished(if (outcome.blocked) FinishReason.BLOCKED else FinishReason.COMPLETED))
-                return@flow
+                return@channelFlow
             }
-            val responses = runTools(calls)
+            val responses = runTools(calls, emit)
             store.append(Content(Content.ROLE_USER, responses), null, null, MessageKind.TOOL_RESULTS)
         }
     }
@@ -90,7 +91,7 @@ class AgentLoop(
     private data class ModelOutcome(val content: Content, val blocked: Boolean)
 
     /** Streams one model turn and saves it. Returns null when the turn ended with an error or Stop. */
-    private suspend fun FlowCollector<AgentEvent>.callModel(config: AgentConfig, step: Int): ModelOutcome? {
+    private suspend fun callModel(config: AgentConfig, step: Int, emit: suspend (AgentEvent) -> Unit): ModelOutcome? {
         val history = HistoryNormalizer.normalize(store.history())
         val declarations = tools.declarations()
         val acc = StreamAccumulator()
@@ -140,10 +141,9 @@ class AgentLoop(
      * Runs the calls. If the user stops mid-way, every unanswered call still gets a response,
      * so the next request has a valid history.
      */
-    private suspend fun FlowCollector<AgentEvent>.runTools(calls: List<FunctionCall>): List<Part> {
-        val collector = this
+    private suspend fun runTools(calls: List<FunctionCall>, emit: suspend (AgentEvent) -> Unit): List<Part> {
         return try {
-            tools.execute(calls) { collector.emit(it) }
+            tools.execute(calls, emit)
         } catch (e: CancellationException) {
             withContext(NonCancellable) {
                 store.append(Content(Content.ROLE_USER, cancelledResponses(calls)), null, null, MessageKind.TOOL_RESULTS)

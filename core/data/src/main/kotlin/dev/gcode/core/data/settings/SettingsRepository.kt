@@ -42,6 +42,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             githubTokenType = p[GITHUB_TOKEN_TYPE],
             githubClientIdOverride = p[GITHUB_CLIENT_ID_OVERRIDE],
             activeRepo = p[ACTIVE_REPO],
+            safFolderUri = p[SAF_FOLDER],
+            defaultMode = p[DEFAULT_MODE]?.takeIf { it != "full_auto" } ?: defaults.defaultMode,
+            extraDenylist = p[EXTRA_DENYLIST]?.split('\n')?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList(),
+            maxSteps = (p[MAX_STEPS] ?: defaults.maxSteps).coerceIn(5, 500),
         )
     }
 
@@ -62,6 +66,10 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         p.setOrRemove(GITHUB_TOKEN_TYPE, s.githubTokenType)
         p.setOrRemove(GITHUB_CLIENT_ID_OVERRIDE, s.githubClientIdOverride?.trim()?.ifEmpty { null })
         p.setOrRemove(ACTIVE_REPO, s.activeRepo)
+        p.setOrRemove(SAF_FOLDER, s.safFolderUri)
+        p[DEFAULT_MODE] = s.defaultMode.takeIf { it != "full_auto" } ?: "ask"
+        p[EXTRA_DENYLIST] = s.extraDenylist.joinToString("\n")
+        p[MAX_STEPS] = s.maxSteps
     }
 
     private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T?) {
@@ -85,5 +93,9 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val GITHUB_TOKEN_TYPE = stringPreferencesKey("github_token_type")
         val GITHUB_CLIENT_ID_OVERRIDE = stringPreferencesKey("github_client_id_override")
         val ACTIVE_REPO = stringPreferencesKey("active_repo")
+        val SAF_FOLDER = stringPreferencesKey("saf_folder_uri")
+        val DEFAULT_MODE = stringPreferencesKey("default_mode")
+        val EXTRA_DENYLIST = stringPreferencesKey("extra_denylist")
+        val MAX_STEPS = intPreferencesKey("max_steps")
     }
 }

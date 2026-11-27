@@ -64,4 +64,6 @@ class WorkspaceGit @Inject constructor(
     fun refOf(repo: LocalRepoEntity): RepoRef? = RepoRef.parse(repo.fullName)
 
     fun dirFor(ref: RepoRef): File = workspace.dirFor(ref)
+
+    fun dirForName(fullName: String): File? = RepoRef.parse(fullName)?.let(workspace::dirFor)
 }

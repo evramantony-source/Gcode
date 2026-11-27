@@ -16,7 +16,7 @@ sealed interface AgentEvent {
     data class ModelMessage(val content: Content, val usage: UsageMetadata?, val model: String, val finishReason: String?) : AgentEvent
 
     data class ToolStarted(val call: FunctionCall) : AgentEvent
-    data class ToolFinished(val call: FunctionCall, val ok: Boolean, val summary: String, val durationMs: Long) : AgentEvent
+    data class ToolFinished(val call: FunctionCall, val ok: Boolean, val summary: String, val durationMs: Long, val display: String? = null) : AgentEvent
 
     /** Free-form progress from a long-running tool (e.g. a sub-agent or a build). */
     data class ToolProgress(val callId: String?, val message: String) : AgentEvent

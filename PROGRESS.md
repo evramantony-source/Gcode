@@ -18,8 +18,8 @@ This file lets a new session resume without other context. It is updated after e
 |---|---|---|---|
 | 1 Repo, Gradle, CI, app shell | Merged | [#1](https://github.com/evramantony-source/Gcode/pull/1) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45978861795) |
 | 2 Gemini onboarding, model discovery, streaming chat | Merged | [#2](https://github.com/evramantony-source/Gcode/pull/2) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45986329590) |
-| 3 GitHub sign-in, repos, JGit | In review | [#3](https://github.com/evramantony-source/Gcode/pull/3) | — |
-| 4 Workspace tools, agent loop, permissions | Not started | | |
+| 3 GitHub sign-in, repos, JGit | Merged | [#3](https://github.com/evramantony-source/Gcode/pull/3) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45990406165) |
+| 4 Workspace tools, agent loop, permissions | In review | [#4](https://github.com/evramantony-source/Gcode/pull/4) | — |
 | 5 Editor, explorer, source control UI | Not started | | |
 | 6 Remote build pipeline | Not started | | |
 | 7 Agent GitHub/Actions tools, build-fix loop | Not started | | |
@@ -52,9 +52,21 @@ This file lets a new session resume without other context. It is updated after e
   local copy); Changes panel; Settings GitHub section with client ID override; Room v2 with
   auto-migration (local and cached remote repos).
 
+- **Phase 4:** tool framework (prepare/apply, schema DSL, `ToolRegistryExecutor` with parallel reads,
+  ordered writes and serialised prompts, output truncation); 21 tools (read_file, write_file,
+  edit_file, multi_edit, list_dir, glob, grep, delete_file, move_file, git_status/diff/log/add/commit/
+  branch/checkout/merge/pull/push, todo_write, submit_plan); `PermissionPolicy` (Ask / Auto-accept
+  edits / Plan / Full auto, always-confirm set: force push, branch delete, merge into default branch);
+  `SecretGuard` (denylist + .gitignore via JGit IgnoreNode); workspaces (cloned repo or SAF folder,
+  path sandbox incl. symlinks); checkpoints (Room v3 + files) with newest-first restore; approval UI
+  (diff sheet Accept/Reject/Edit, dangerous confirmations naming the target, secret prompt, plan
+  sheet with mode choice); chat tool cards, todo panel, mode menu with Full-auto opt-in, workspace
+  chip; `AgentService` (dataSync FGS, Stop action, onTimeout); notification permission on first send.
+
 ## Known limitations
 
-- Agent tools arrive in Phase 4; Builds and PR/issue/release screens are still placeholders until Phases 6 and 8.
+- Builds and PR/issue/release screens are still placeholders until Phases 6 and 8; GitHub/Actions/web
+  agent tools arrive in Phase 7; the Rewind UI in Phase 9.
 - JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
 - The release APK has not been launched on a device yet (planned in Phase 10).
 
@@ -64,6 +76,6 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for Phase 3 CI (now also instrumented tests on API 26 and 36), merge, reset the branch to
-`main`, then start Phase 4: `WorkspaceFs` (internal + SAF), file/git tools, tool registry, parallel
-execution, permission policy, diff sheet, checkpoints, AgentService.
+Wait for Phase 4 CI, merge, reset the branch to `main`, then start Phase 5: file explorer, Sora
+Editor with tabs/search/undo/redo, full source-control screens (diff viewer, branches, history),
+tablet two-pane layout.

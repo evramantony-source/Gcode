@@ -6,6 +6,7 @@ plugins {
 dependencies {
     api(project(":core:model"))
     api(project(":gemini"))
+    api(project(":git"))
     implementation(project(":core:common"))
     implementation(libs.javax.inject)
 }

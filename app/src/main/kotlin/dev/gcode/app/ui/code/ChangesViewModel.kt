@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import android.net.Uri
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,8 +30,15 @@ data class ChangesUiState(
 
 /** Source control for the open repository: status, stage, commit, push, pull, fetch. */
 @HiltViewModel
-class ChangesViewModel @Inject constructor(private val git: WorkspaceGit) : ViewModel() {
+class ChangesViewModel @Inject constructor(private val git: WorkspaceGit, private val settings: dev.gcode.core.data.settings.SettingsRepository) : ViewModel() {
     private val local = MutableStateFlow(ChangesUiState())
+
+    /** Display name of a linked device folder (SAF), when no repository is open. */
+    val safFolder: StateFlow<String?> = settings.settings.map { s -> s.safFolderUri?.let { Uri.decode(it).substringAfterLast(':').substringAfterLast('/') .ifEmpty { it } } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    fun linkFolder(uri: String) = viewModelScope.launch { settings.update { it.copy(safFolderUri = uri, activeRepo = null) } }
+    fun unlinkFolder() = viewModelScope.launch { settings.update { it.copy(safFolderUri = null) } }
 
     val state: StateFlow<ChangesUiState> = combine(local, git.activeRepo) { l, repo -> l.copy(repo = repo) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ChangesUiState())

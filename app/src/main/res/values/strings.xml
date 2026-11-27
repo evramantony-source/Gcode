@@ -171,4 +171,39 @@
     <string name="git_modified">modified</string>
     <string name="git_deleted">deleted</string>
     <string name="git_renamed">renamed</string>
+
+    <!-- Phase 4: agent tools, approvals, modes -->
+    <string name="agent_running">Agent is working…</string>
+    <string name="channel_agent">Agent activity</string>
+    <string name="approval_no_changes">(no textual changes)</string>
+    <string name="approval_reject_comment">Comment for the agent (optional)</string>
+    <string name="approval_reject">Reject</string>
+    <string name="approval_edit">Edit</string>
+    <string name="approval_show_diff">Show diff</string>
+    <string name="approval_accept">Accept</string>
+    <string name="approval_confirm_dangerous">Confirm: %1$s</string>
+    <string name="approval_dangerous_body">This action is destructive or hard to undo. It always needs your confirmation, in every mode.</string>
+    <string name="approval_confirm">Confirm</string>
+    <string name="approval_allow">Allow</string>
+    <string name="approval_allow_once">Allow once</string>
+    <string name="approval_keep_private">Keep private</string>
+    <string name="approval_secret_body">The agent wants to send %1$s to the Gemini API (%2$s). Only allow this if the file holds no secrets.</string>
+    <string name="plan_title">The agent\'s plan</string>
+    <string name="plan_mode_choice">Carry it out in:</string>
+    <string name="plan_feedback">Feedback (to revise the plan)</string>
+    <string name="plan_revise">Revise</string>
+    <string name="plan_approve">Approve plan</string>
+    <string name="mode_ask">Ask</string>
+    <string name="mode_auto_accept">Auto-accept edits</string>
+    <string name="mode_plan">Plan</string>
+    <string name="mode_full_auto">Full auto</string>
+    <string name="full_auto_title">Turn on Full auto?</string>
+    <string name="full_auto_body">The agent will edit files, commit, push and change GitHub without asking you first. Destructive actions (deleting, force pushing, merging into the default branch, making repos public, changing secrets, installing APKs) still need your confirmation. Use this only for tasks you trust.</string>
+    <string name="full_auto_enable">Turn on for this chat</string>
+    <string name="device_folder">Device folder</string>
+    <string name="todos_title">Tasks %1$d/%2$d</string>
+    <string name="folder_link">Open a device folder</string>
+    <string name="folder_unlink">Close the folder</string>
+    <string name="folder_linked">Device folder: %1$s</string>
+    <string name="folder_linked_body">The agent can read and edit files in this folder. Git tools need a cloned repository.</string>
 </resources>

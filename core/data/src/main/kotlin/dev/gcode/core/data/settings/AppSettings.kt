@@ -28,6 +28,14 @@ data class AppSettings(
     val githubClientIdOverride: String? = null,
     /** Full name (owner/repo) of the repository open in the workspace. */
     val activeRepo: String? = null,
+    /** A device folder picked with the Storage Access Framework, used when no repository is open. */
+    val safFolderUri: String? = null,
+    /** Permission mode for new sessions ("ask", "auto_accept_edits", "plan"; never "full_auto"). */
+    val defaultMode: String = "ask",
+    /** Extra secrets-denylist globs added by the user. */
+    val extraDenylist: List<String> = emptyList(),
+    /** Maximum agent model calls per turn before asking to continue. */
+    val maxSteps: Int = 50,
 ) {
     init {
         require(modelCacheHours in 1..168) { "modelCacheHours out of range: $modelCacheHours" }

@@ -11,11 +11,11 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         SessionEntity::class, MessageEntity::class, ModelEntity::class,
-        LocalRepoEntity::class, RemoteRepoEntity::class,
+        LocalRepoEntity::class, RemoteRepoEntity::class, CheckpointEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class GCodeDatabase : RoomDatabase() {
     abstract fun sessions(): SessionDao
@@ -23,6 +23,7 @@ abstract class GCodeDatabase : RoomDatabase() {
     abstract fun models(): ModelDao
     abstract fun localRepos(): LocalRepoDao
     abstract fun remoteRepos(): RemoteRepoDao
+    abstract fun checkpoints(): CheckpointDao
 
     companion object {
         const val NAME = "gcode.db"

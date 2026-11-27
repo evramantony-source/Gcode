@@ -169,4 +169,39 @@
     <string name="git_modified">مُعدَّل</string>
     <string name="git_deleted">محذوف</string>
     <string name="git_renamed">مُعاد تسميته</string>
+
+    <!-- Phase 4: agent tools, approvals, modes -->
+    <string name="agent_running">الوكيل يعمل…</string>
+    <string name="channel_agent">نشاط الوكيل</string>
+    <string name="approval_no_changes">(لا توجد تغييرات نصية)</string>
+    <string name="approval_reject_comment">تعليق للوكيل (اختياري)</string>
+    <string name="approval_reject">رفض</string>
+    <string name="approval_edit">تعديل</string>
+    <string name="approval_show_diff">عرض الفروق</string>
+    <string name="approval_accept">قبول</string>
+    <string name="approval_confirm_dangerous">تأكيد: %1$s</string>
+    <string name="approval_dangerous_body">هذا الإجراء مدمّر أو يصعب التراجع عنه. يحتاج دائمًا إلى تأكيدك في كل الأوضاع.</string>
+    <string name="approval_confirm">تأكيد</string>
+    <string name="approval_allow">سماح</string>
+    <string name="approval_allow_once">السماح مرة واحدة</string>
+    <string name="approval_keep_private">إبقاؤه خاصًا</string>
+    <string name="approval_secret_body">يريد الوكيل إرسال %1$s إلى واجهة Gemini (%2$s). لا تسمح بذلك إلا إذا كان الملف لا يحتوي على أسرار.</string>
+    <string name="plan_title">خطة الوكيل</string>
+    <string name="plan_mode_choice">نفّذها في وضع:</string>
+    <string name="plan_feedback">ملاحظات (لمراجعة الخطة)</string>
+    <string name="plan_revise">مراجعة</string>
+    <string name="plan_approve">الموافقة على الخطة</string>
+    <string name="mode_ask">السؤال</string>
+    <string name="mode_auto_accept">قبول التعديلات تلقائيًا</string>
+    <string name="mode_plan">التخطيط</string>
+    <string name="mode_full_auto">تلقائي بالكامل</string>
+    <string name="full_auto_title">تشغيل الوضع التلقائي بالكامل؟</string>
+    <string name="full_auto_body">سيعدّل الوكيل الملفات وينشئ الإيداعات ويدفعها ويغيّر GitHub دون أن يسألك أولًا. تبقى الإجراءات المدمّرة (الحذف، والدفع القسري، والدمج في الفرع الافتراضي، وجعل المستودعات عامة، وتغيير الأسرار، وتثبيت ملفات APK) بحاجة إلى تأكيدك. استخدمه فقط للمهام التي تثق بها.</string>
+    <string name="full_auto_enable">تشغيل لهذه المحادثة</string>
+    <string name="device_folder">مجلد على الجهاز</string>
+    <string name="todos_title">المهام %1$d/%2$d</string>
+    <string name="folder_link">فتح مجلد على الجهاز</string>
+    <string name="folder_unlink">إغلاق المجلد</string>
+    <string name="folder_linked">مجلد الجهاز: %1$s</string>
+    <string name="folder_linked_body">يمكن للوكيل قراءة الملفات في هذا المجلد وتعديلها. تحتاج أدوات Git إلى مستودع مستنسخ.</string>
 </resources>

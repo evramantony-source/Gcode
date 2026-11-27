@@ -27,3 +27,9 @@ Significant decisions, with a one-line rationale each. D1–D5 were approved bef
 | 20 | One `GitHubHttp` core with small per-area interfaces (`UsersApi`, `ReposApi`, …) | Tests and agent tools fake only the area they use. |
 | 21 | AboutLibraries metadata override for JGit (EDL-1.0 → BSD-3-Clause) plus an allow-list entry scoped to JGit | JGit's POM licence has no SPDX id; the strict licence check stays on for everything else. |
 | 22 | Instrumented tests run on API 26 and 36 | The minimum SDK and a recent release both run JGit, the Keystore and the UI. |
+| 23 | Tools are prepared, then applied | `Tool.prepare` computes the exact change (and its diff) before anything is written, so Ask mode can show a diff sheet and the user's edits replace the proposal. |
+| 24 | Agent loop uses `channelFlow` | Parallel read-only tool calls report progress from several coroutines; a plain `flow` forbids that (caught by a unit test). |
+| 25 | Workspace = cloned repo (Git) or SAF folder (files only) | JGit needs a real directory; SAF folders give access to files elsewhere on the device without broad storage permissions. |
+| 26 | Protected-file writes use the always-confirm secret prompt | Editing `.env`, keystores or git-ignored files should never happen silently, even with auto-accept. |
+| 27 | Agent foreground service type `dataSync`, `START_NOT_STICKY`, stop on `onTimeout` | Matches the docs for user-started network work; Android 15+ caps dataSync at 6 h per 24 h. |
+| 28 | Checkpoint bytes in app files, metadata in Room (newest 100 per session) | Keeps the database small; rewind restores newest-first. |

@@ -87,3 +87,21 @@ data class RemoteRepoEntity(
     val pushedAt: String?,
     val fetchedAt: Long,
 )
+
+/** A file's state before an agent change; the bytes live in files/checkpoints/<session>/<id>. */
+@Entity(
+    tableName = "checkpoints",
+    foreignKeys = [ForeignKey(entity = SessionEntity::class, parentColumns = ["id"], childColumns = ["sessionId"], onDelete = ForeignKey.CASCADE)],
+    indices = [Index("sessionId")],
+)
+data class CheckpointEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val sessionId: String,
+    val messageSeq: Int,
+    /** Workspace key ("repo:owner/name" or "saf:<uri>") the path belongs to. */
+    val workspace: String,
+    val path: String,
+    /** False when the file did not exist before the change. */
+    val existed: Boolean,
+    val createdAt: Long,
+)

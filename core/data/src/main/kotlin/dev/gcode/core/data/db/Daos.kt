@@ -136,3 +136,21 @@ interface RemoteRepoDao {
         insertAll(rows)
     }
 }
+
+@Dao
+interface CheckpointDao {
+    @Insert
+    suspend fun insert(checkpoint: CheckpointEntity): Long
+
+    @Query("SELECT * FROM checkpoints WHERE sessionId = :sessionId AND messageSeq > :seq ORDER BY id DESC")
+    suspend fun since(sessionId: String, seq: Int): List<CheckpointEntity>
+
+    @Query("SELECT * FROM checkpoints WHERE sessionId = :sessionId ORDER BY id DESC")
+    fun observe(sessionId: String): Flow<List<CheckpointEntity>>
+
+    @Query("DELETE FROM checkpoints WHERE id IN (:ids)")
+    suspend fun delete(ids: List<Long>)
+
+    @Query("SELECT id FROM checkpoints WHERE sessionId = :sessionId ORDER BY id DESC LIMIT -1 OFFSET :keep")
+    suspend fun idsBeyond(sessionId: String, keep: Int): List<Long>
+}

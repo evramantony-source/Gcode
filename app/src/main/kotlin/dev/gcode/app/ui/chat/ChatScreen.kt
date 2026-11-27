@@ -1,6 +1,24 @@
 package dev.gcode.app.ui.chat
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import dev.gcode.agent.PermissionMode
+import dev.gcode.agent.tools.TodoItem
+import dev.gcode.app.ui.approval.modeLabel
+import dev.gcode.app.ui.code.DiffText
+import dev.gcode.app.ui.theme.CodeTextStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,14 +69,21 @@ import com.mikepenz.markdown.m3.Markdown
 import dev.gcode.app.R
 import dev.gcode.app.ui.components.GCodeScreen
 import dev.gcode.app.ui.models.ModelPickerSheet
-import dev.gcode.core.data.db.MessageEntity
-import dev.gcode.core.data.repo.StoredMessage
-import dev.gcode.gemini.model.Content
 
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showPicker by rememberSaveable { mutableStateOf(false) }
+    var confirmFullAuto by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    // Android 13+: the agent's foreground-service notification (with Stop) needs this permission to be visible.
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    val send: (String) -> Unit = { text ->
+        if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        viewModel.send(text)
+    }
     GCodeScreen(
         title = state.session?.title ?: stringResource(R.string.nav_chat),
         modifier = Modifier.testTag("screen_chat"),
@@ -69,11 +94,29 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
         },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding()) {
-            StatusBar(state, onModelClick = { showPicker = true })
+            StatusBar(
+                state,
+                onModelClick = { showPicker = true },
+                onMode = { mode -> if (mode == PermissionMode.FULL_AUTO) confirmFullAuto = true else viewModel.setMode(mode) },
+            )
             MessageList(state, Modifier.weight(1f))
+            TodoPanel(state.todos)
             LiveArea(state, onRetry = viewModel::retry, onDismiss = viewModel::dismissError)
-            Composer(running = state.live.running, onSend = viewModel::send, onStop = viewModel::stop)
+            Composer(running = state.live.running, onSend = send, onStop = viewModel::stop)
         }
+    }
+    if (confirmFullAuto) {
+        AlertDialog(
+            onDismissRequest = { confirmFullAuto = false },
+            title = { Text(stringResource(R.string.full_auto_title), color = MaterialTheme.colorScheme.error) },
+            text = { Text(stringResource(R.string.full_auto_body)) },
+            confirmButton = {
+                TextButton(onClick = { confirmFullAuto = false; viewModel.setMode(PermissionMode.FULL_AUTO) }, modifier = Modifier.testTag("full_auto_confirm")) {
+                    Text(stringResource(R.string.full_auto_enable))
+                }
+            },
+            dismissButton = { TextButton(onClick = { confirmFullAuto = false }) { Text(stringResource(R.string.cancel)) } },
+        )
     }
     if (showPicker) {
         ModelPickerSheet(
@@ -92,12 +135,13 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
     }
 }
 
-/** Model · mode · repo · branch · context %. Mode, repo and branch appear once a workspace is open. */
+/** Model · mode · repo · branch · context % (ARCHITECTURE.md section 12). */
 @Composable
-private fun StatusBar(state: ChatUiState, onModelClick: () -> Unit) {
+private fun StatusBar(state: ChatUiState, onModelClick: () -> Unit, onMode: (PermissionMode) -> Unit) {
+    var modeMenu by remember { mutableStateOf(false) }
     Surface(tonalElevation = 2.dp, modifier = Modifier.fillMaxWidth()) {
         Row(
-            Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+            Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
@@ -109,11 +153,17 @@ private fun StatusBar(state: ChatUiState, onModelClick: () -> Unit) {
                     { Icon(painterResource(R.drawable.ic_swap), stringResource(R.string.fallback_active), Modifier.size(18.dp)) }
                 } else null,
             )
-            Text(
-                stringResource(R.string.context_percent, state.contextPercent),
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.testTag("status_context"),
-            )
+            Box {
+                AssistChip(onClick = { modeMenu = true }, modifier = Modifier.testTag("status_mode"), label = { Text(stringResource(modeLabel(state.mode))) })
+                DropdownMenu(expanded = modeMenu, onDismissRequest = { modeMenu = false }) {
+                    PermissionMode.entries.forEach { m ->
+                        DropdownMenuItem(text = { Text(stringResource(modeLabel(m))) }, onClick = { modeMenu = false; onMode(m) }, modifier = Modifier.testTag("mode_${m.id}"))
+                    }
+                }
+            }
+            val workspace = state.repo?.fullName ?: state.settings.safFolderUri?.let { stringResource(R.string.device_folder) }
+            workspace?.let { Text(it, style = MaterialTheme.typography.labelMedium, maxLines = 1) }
+            Text(stringResource(R.string.context_percent, state.contextPercent), style = MaterialTheme.typography.labelMedium, modifier = Modifier.testTag("status_context"))
         }
     }
     state.fallbackReason?.let {
@@ -127,32 +177,81 @@ private fun StatusBar(state: ChatUiState, onModelClick: () -> Unit) {
 }
 
 @Composable
+private fun TodoPanel(todos: List<TodoItem>) {
+    if (todos.isEmpty()) return
+    var expanded by rememberSaveable { mutableStateOf(true) }
+    Card(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp).testTag("todo_panel")) {
+        Row(Modifier.fillMaxWidth().clickable { expanded = !expanded }.padding(12.dp, 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.todos_title, todos.count { it.status == TodoItem.DONE }, todos.size), style = MaterialTheme.typography.labelLarge, modifier = Modifier.weight(1f))
+            Icon(painterResource(if (expanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more), null)
+        }
+        if (expanded) {
+            Column(Modifier.padding(12.dp, 0.dp, 12.dp, 8.dp)) {
+                todos.forEach { t ->
+                    val mark = when (t.status) { TodoItem.DONE -> "✓"; TodoItem.IN_PROGRESS -> "▶"; else -> "○" }
+                    Text(
+                        "$mark ${t.content}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (t.status == TodoItem.DONE) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun MessageList(state: ChatUiState, modifier: Modifier) {
     val listState = rememberLazyListState()
-    val count = state.messages.size + if (state.live.running) 1 else 0
-    LaunchedEffect(count, state.live.streamingText.length) {
+    val count = state.items.size + if (state.live.running) 1 else 0
+    LaunchedEffect(count, state.live.streamingText.length, state.live.tools.size) {
         if (count > 0) listState.animateScrollToItem(count - 1)
     }
-    if (state.messages.isEmpty() && !state.live.running) {
+    if (state.items.isEmpty() && !state.live.running) {
         Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             Text(stringResource(R.string.chat_empty), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(32.dp))
         }
         return
     }
     LazyColumn(modifier.fillMaxWidth().testTag("message_list"), state = listState, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(state.messages, key = { it.seq }) { message -> MessageItem(message) }
+        items(state.items, key = { it.key }) { item ->
+            when (item) {
+                is ChatItem.User -> UserBubble(item.text)
+                is ChatItem.Model -> ModelMessage(item.text, item.thoughts, item.model)
+                is ChatItem.ToolCall -> ToolCard(item.name, item.args, running = false, ok = item.ok, result = item.result, display = null)
+                is ChatItem.Compacted -> CompactedMarker()
+            }
+        }
         if (state.live.running) {
             item(key = "live") { StreamingItem(state) }
         }
     }
 }
 
+/** A collapsible tool-call card: name, arguments, status and result (ARCHITECTURE.md section 12). */
 @Composable
-private fun MessageItem(message: StoredMessage) {
-    when {
-        message.kind == MessageEntity.KIND_SUMMARY -> CompactedMarker()
-        message.content.role == Content.ROLE_USER -> UserBubble(message.content.text)
-        else -> ModelMessage(text = message.content.text, thoughts = message.content.thoughtText, model = message.modelId)
+fun ToolCard(name: String, args: String, running: Boolean, ok: Boolean?, result: String?, display: String?) {
+    var expanded by remember { mutableStateOf(false) }
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp).clickable { expanded = !expanded }.testTag("tool_card_$name"),
+    ) {
+        Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            when {
+                running -> CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                ok == false -> Icon(painterResource(R.drawable.ic_error), null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.error)
+                else -> Icon(painterResource(R.drawable.ic_check), null, Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
+            }
+            Column(Modifier.weight(1f).padding(start = 8.dp)) {
+                Text(name, style = MaterialTheme.typography.labelLarge)
+                Text(args, style = MaterialTheme.typography.bodySmall, maxLines = if (expanded) 20 else 1, overflow = TextOverflow.Ellipsis)
+            }
+            Icon(painterResource(if (expanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more), null)
+        }
+        if (expanded) {
+            result?.let { Text(it, style = CodeTextStyle, modifier = Modifier.padding(12.dp, 0.dp, 12.dp, 8.dp)) }
+            display?.let { DiffText(it, Modifier.padding(12.dp, 0.dp, 12.dp, 8.dp)) }
+        }
     }
 }
 
@@ -211,9 +310,11 @@ private fun ThoughtsCard(thoughts: String) {
 
 @Composable
 private fun StreamingItem(state: ChatUiState) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         ModelMessage(text = state.live.streamingText, thoughts = state.live.streamingThoughts, model = state.live.activeModel)
-        if (state.live.streamingText.isEmpty()) LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 12.dp))
+        state.live.tools.forEach { t -> ToolCard(t.name, t.args, t.running, t.ok, t.summary, t.display) }
+        state.live.status?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp)) }
+        if (state.live.streamingText.isEmpty() && state.live.tools.none { it.running }) LinearProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 12.dp))
     }
 }
 
