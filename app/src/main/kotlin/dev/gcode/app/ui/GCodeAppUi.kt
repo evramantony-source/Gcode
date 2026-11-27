@@ -1,6 +1,14 @@
 package dev.gcode.app.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -67,6 +75,14 @@ fun GCodeAppUi() {
             }
         },
     ) {
+        // Tablets and large screens: the chat stays beside the file, diff or build panel (ARCHITECTURE.md section 12).
+        val wide = LocalConfiguration.current.screenWidthDp >= 840
+        Row(Modifier.fillMaxSize()) {
+            if (wide) {
+                Box(Modifier.width(420.dp).fillMaxHeight().testTag("chat_pane")) { ChatScreen() }
+                VerticalDivider()
+            }
+            Box(Modifier.weight(1f).fillMaxHeight()) {
         NavDisplay(
             backStack = backStack,
             onBack = { back() },
@@ -75,7 +91,13 @@ fun GCodeAppUi() {
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
-                entry<ChatRoute> { ChatScreen() }
+                entry<ChatRoute> {
+                    if (wide) {
+                        CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) })
+                    } else {
+                        ChatScreen()
+                    }
+                }
                 entry<ReposRoute> { ReposScreen(onOpened = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CODE) }) }
                 entry<CodeRoute> { CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
                 entry<BuildsRoute> {
@@ -117,5 +139,7 @@ fun GCodeAppUi() {
                 entry<AboutRoute> { AboutScreen(onBack = back) }
             },
         )
+            }
+        }
     }
 }

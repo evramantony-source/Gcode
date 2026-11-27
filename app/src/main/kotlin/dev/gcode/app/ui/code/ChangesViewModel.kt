@@ -21,6 +21,9 @@ import javax.inject.Inject
 data class ChangesUiState(
     val repo: LocalRepoEntity? = null,
     val status: GitStatus? = null,
+    val history: List<dev.gcode.git.CommitInfo> = emptyList(),
+    val branches: List<dev.gcode.git.BranchInfo> = emptyList(),
+    val merging: Boolean = false,
     val busy: String? = null,
     val message: String? = null,
     val error: String? = null,
@@ -82,6 +85,73 @@ class ChangesViewModel @Inject constructor(private val git: WorkspaceGit, privat
         val updates = repo.fetch(git.credentials())
         local.update { it.copy(message = if (updates.isEmpty()) "No new commits" else "Fetched: ${updates.size} refs updated") }
         repo.status()
+    }
+
+    fun loadHistory() = viewModelScope.launch {
+        val log = runCatching { git.withRepo { repo, _ -> repo.log(200) } }.getOrElse { e -> local.update { it.copy(error = e.message) }; return@launch }
+        local.update { it.copy(history = log) }
+    }
+
+    fun showCommit(sha: String, title: String) = viewModelScope.launch {
+        val diff = runCatching { git.withRepo { repo, _ -> repo.commitDiff(sha) } }.getOrElse { it.message.orEmpty() }
+        local.update { it.copy(diffTitle = "${sha.take(7)} $title", diff = diff) }
+    }
+
+    fun loadBranches() = viewModelScope.launch {
+        val result = runCatching { git.withRepo { repo, _ -> repo.branches() to repo.isMerging() } }.getOrElse { e -> local.update { it.copy(error = e.message) }; return@launch }
+        local.update { it.copy(branches = result.first, merging = result.second) }
+    }
+
+    fun createBranch(name: String) = run("branch") { repo, _ ->
+        repo.createBranch(name.trim(), checkout = true)
+        local.update { it.copy(message = "Created and switched to ${name.trim()}") }
+        repo.status()
+    }.also { loadBranchesAfter() }
+
+    fun switchBranch(name: String) = run("checkout") { repo, _ ->
+        repo.checkout(name)
+        local.update { it.copy(message = "Switched to $name") }
+        repo.status()
+    }.also { loadBranchesAfter() }
+
+    /** Always confirmed by the UI before it is called (branch deletion is in the always-confirm set). */
+    fun deleteBranch(name: String, remote: Boolean) {
+        if (remote) {
+            local.update { it.copy(error = "Delete remote branches from the Pull requests / branches screen (GitHub).") }
+            return
+        }
+        run("delete") { repo, _ ->
+            repo.deleteBranch(name, force = true)
+            local.update { it.copy(message = "Deleted $name") }
+            repo.status()
+        }.also { loadBranchesAfter() }
+    }
+
+    /** Merges into the current branch; the UI confirms first when that is the default branch. */
+    fun merge(name: String) = run("merge") { repo, _ ->
+        val outcome = repo.merge(name)
+        local.update {
+            when (outcome) {
+                is MergeOutcome.Conflicts -> it.copy(error = "Merge conflicts in: ${outcome.paths.joinToString()}. Resolve them, then stage and commit, or abort.")
+                is MergeOutcome.Failed -> it.copy(error = "Merge failed: ${outcome.reason}")
+                MergeOutcome.AlreadyUpToDate -> it.copy(message = "Already up to date")
+                is MergeOutcome.Merged -> it.copy(message = "Merged $name")
+            }
+        }
+        repo.status()
+    }.also { loadBranchesAfter() }
+
+    fun abortMerge() = run("abort") { repo, _ ->
+        repo.abortMerge()
+        local.update { it.copy(message = "Merge aborted") }
+        repo.status()
+    }.also { loadBranchesAfter() }
+
+    fun discard(path: String) = run("discard", report = false) { repo, _ -> repo.discard(listOf(path)); repo.status() }
+
+    private fun loadBranchesAfter() = viewModelScope.launch {
+        kotlinx.coroutines.delay(300)
+        loadBranches()
     }
 
     fun showDiff(path: String, staged: Boolean) = viewModelScope.launch {
