@@ -20,7 +20,7 @@ This file lets a new session resume without other context. It is updated after e
 | 2 Gemini onboarding, model discovery, streaming chat | Merged | [#2](https://github.com/evramantony-source/Gcode/pull/2) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45986329590) |
 | 3 GitHub sign-in, repos, JGit | Merged | [#3](https://github.com/evramantony-source/Gcode/pull/3) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45990406165) |
 | 4 Workspace tools, agent loop, permissions | In review | [#4](https://github.com/evramantony-source/Gcode/pull/4) | — |
-| 5 Editor, explorer, source control UI | Not started | | |
+| 5 Editor, explorer, source control UI | Ready (pushed after #4 merges) | — | — |
 | 6 Remote build pipeline | Not started | | |
 | 7 Agent GitHub/Actions tools, build-fix loop | Not started | | |
 | 8 PRs, issues, releases, branches, conflicts | Not started | | |
@@ -62,6 +62,15 @@ This file lets a new session resume without other context. It is updated after e
   (diff sheet Accept/Reject/Edit, dangerous confirmations naming the target, secret prompt, plan
   sheet with mode choice); chat tool cards, todo panel, mode menu with Full-auto opt-in, workspace
   chip; `AgentService` (dataSync FGS, Stop action, onTimeout); notification permission on first send.
+
+- **Phase 5:** file explorer (lazy tree, works for repos and SAF folders); Sora Editor 0.24.7 with
+  TextMate highlighting (Kotlin, Java, Groovy/Gradle, JSON, XML, YAML, Markdown, Shell, Python), tabs
+  with dirty markers, undo/redo, find/replace (case, regex), save, read-only for large files, reload
+  when the agent changed a clean file; Code tab with Files / Changes / History / Branches; full-screen
+  diff viewer (unified or side by side); discard changes; branch create/switch/delete/merge with
+  confirmations (delete, merge into default branch) and abort merge; tablet two-pane (explorer +
+  editor; chat pane beside every destination from 840 dp). Instrumented test edits and saves a file
+  in Sora on API 26 and 36.
 
 ## Known limitations
 

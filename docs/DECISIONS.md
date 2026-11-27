@@ -33,3 +33,8 @@ Significant decisions, with a one-line rationale each. D1–D5 were approved bef
 | 26 | Protected-file writes use the always-confirm secret prompt | Editing `.env`, keystores or git-ignored files should never happen silently, even with auto-accept. |
 | 27 | Agent foreground service type `dataSync`, `START_NOT_STICKY`, stop on `onTimeout` | Matches the docs for user-started network work; Android 15+ caps dataSync at 6 h per 24 h. |
 | 28 | Checkpoint bytes in app files, metadata in Room (newest 100 per session) | Keeps the database small; rewind restores newest-first. |
+| 29 | Sora Editor with bundled MIT TextMate grammars and GCode's own themes | Kotlin (fwcd/vscode-kotlin) and VS Code grammars are MIT; writing the two themes avoids third-party theme licences. |
+| 30 | One Sora `CodeEditor` per open tab, kept outside composition | Undo history and cursor survive tab switches; views are released when a tab closes. |
+| 31 | Explorer/editor are two panes from 840 dp; the chat pane stays left of every destination on wide screens | Tablet split-pane layout without duplicating the chat. |
+| 32 | Side-by-side diff from a pure unified-diff parser | Unit-testable; reused for file diffs and commit diffs. |
+| 33 | Grant POST_NOTIFICATIONS in instrumented tests on API 33+ | The permission dialog covers the app on Android 13+ emulators and hides the Compose hierarchy. |
