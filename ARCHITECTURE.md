@@ -33,7 +33,9 @@ are finalised in Phase 1 in `gradle/libs.versions.toml` after a real build.
 | Android Gradle Plugin | 9.5.3 | 9.6 is still alpha |
 | Kotlin | 2.4.21 | 2.5.0 is RC; AGP 9 has built-in Kotlin support |
 | KSP | 2.3.14 | for Hilt and Room |
-| compileSdk / targetSdk | **37** (Android 17) | platform 37.2 and build-tools 37.0.0 are on the stable channel |
+| compileSdk / targetSdk | compileSdk **37.2**, targetSdk **37** (Android 17) | Compose 1.13 requires compileSdk 37.1 or newer; build-tools 37.0.0 |
+| Navigation | Navigation 3 1.2.2 | back stack as a list of serializable keys |
+| Licences screen | AboutLibraries 15.3.0 | generates the dependency list and licence texts at build time |
 | minSdk | 26 | as requested |
 | Compose BOM | 2026.11.01 | Material 3, Material 3 Adaptive |
 | Hilt | 2.60.1 (androidx.hilt 1.4.0) | |
@@ -724,8 +726,11 @@ Endpoints by feature:
 ## 12. UI
 
 Navigation uses Material 3 Adaptive `NavigationSuiteScaffold`: a bottom bar
-on phones, a rail on tablets. Top-level destinations: **Chat, Repos, Code,
-Changes, Builds, More** (PRs, Issues, Releases, Sessions, Settings).
+on phones, a rail on tablets, with a Navigation 3 back stack. There are five
+top-level destinations: **Chat, Repos, Code, Builds, More**. Files and source
+control share **Code** (as tabs), because both belong to the open repository;
+this keeps the bottom bar at five items. **More** holds PRs, Issues,
+Releases, Sessions, Settings, Open-source licences and About.
 
 1. **Onboarding:**
    * Gemini key (with the "restrict to Gemini API" tip), checked by calling
@@ -752,7 +757,7 @@ Changes, Builds, More** (PRs, Issues, Releases, Sessions, Settings).
      TextMate grammars (Kotlin, Java, XML, Gradle, JSON, YAML, Markdown and
      others)
    * the editor is always left-to-right, even in Arabic
-5. **Source control:** changes (stage/unstage per file), diff viewer (unified,
+5. **Source control** (a tab of Code): changes (stage/unstage per file), diff viewer (unified,
    or side by side on tablets), commit, push/pull/fetch, branches, history
    with per-commit diff, conflict resolver.
 6. **Builds:** Build button, workflow picker, live run, step tree, log viewer
@@ -761,6 +766,10 @@ Changes, Builds, More** (PRs, Issues, Releases, Sessions, Settings).
 7. **PRs / Issues / Releases:** list, detail, create, comment, merge (merging
    into the default branch is always confirmed); releases with APK upload.
 8. **Sessions, Settings, Model picker.**
+9. **Open-source licences:** GCode's Apache-2.0 licence, the LGPL-2.1 notice
+   and full text for Sora Editor, and every dependency with its licence
+   (generated at build time by AboutLibraries, which also fails the build if
+   a dependency brings a licence that is not on the reviewed allow-list).
 
 On tablets, **two panes** (`ListDetailPaneScaffold`) put the chat next to the
 file, diff or build panel. Light and dark themes, plus dynamic color on
@@ -820,7 +829,11 @@ all strings in `values-ar/strings.xml`; code, diffs and logs are forced LTR.
   * create the GitHub Release with the APK using the preinstalled `gh` CLI,
     so no third-party release action is needed
 * `GCODE_GITHUB_CLIENT_ID` is read from repository **variables** into
-  `BuildConfig`. If it is missing, the app asks for a client ID or a PAT.
+  `BuildConfig` (or from the `gcode.githubClientId` Gradle property locally).
+  **The build fails with a clear message if it is missing.** It is never
+  hard-coded.
+* `THIRD_PARTY_NOTICES.md` is generated from the build's dependency metadata;
+  CI fails if it is out of date.
 * `docs/SIGNING.md` explains how to:
   * create the keystore with `keytool`
   * base64-encode it
