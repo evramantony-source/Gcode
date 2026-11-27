@@ -47,6 +47,11 @@ import dev.gcode.app.ui.screens.PlaceholderScreen
 import dev.gcode.app.ui.chat.ChatScreen
 import dev.gcode.app.ui.approval.ApprovalHost
 import dev.gcode.app.ui.code.CodeScreen
+import dev.gcode.app.ui.builds.BuildsScreen
+import dev.gcode.app.builds.BuildLinks
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.gcode.app.ui.repos.ReposScreen
 import dev.gcode.app.ui.settings.SettingsScreen
 
@@ -60,6 +65,10 @@ fun GCodeAppUi() {
 
     // At the root of a tab other than Chat, Back returns to Chat (NavDisplay only handles deeper stacks).
     BackHandler(enabled = backStack.size == 1 && BackStackOps.canGoBack(backStack)) { back() }
+
+    // "Build finished" notifications open the run on the Builds tab.
+    val buildLink by BuildLinks.pending.collectAsStateWithLifecycle()
+    LaunchedEffect(buildLink) { if (buildLink != null) BackStackOps.selectTopLevel(backStack, TopLevelDestination.BUILDS) }
 
     ApprovalHost()
     NavigationSuiteScaffold(
@@ -100,12 +109,7 @@ fun GCodeAppUi() {
                 }
                 entry<ReposRoute> { ReposScreen(onOpened = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CODE) }) }
                 entry<CodeRoute> { CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
-                entry<BuildsRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.nav_builds), stringResource(R.string.placeholder_builds),
-                        phase = 6, icon = R.drawable.ic_builds, testTag = "screen_builds",
-                    )
-                }
+                entry<BuildsRoute> { BuildsScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
                 entry<MoreRoute> { MoreScreen(onNavigate = navigate) }
                 entry<PullRequestsRoute> {
                     PlaceholderScreen(

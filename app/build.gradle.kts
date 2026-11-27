@@ -145,6 +145,13 @@ aboutLibraries {
             "b3f0b0bb52153b7c087898e7d4b6abf6" to listOf("org.eclipse.jgit", "org.eclipse.jgit:org.eclipse.jgit"),
             // Sora Editor's POM says "LGPL v2.1"; config/libraries/io.github.rosemoe.*.json adds LGPL-2.1-only (decision D4).
             "36c8ce2eb10d65ef5edf4a5fdd06186e" to listOf("io.github.rosemoe", "io.github.rosemoe:editor", "io.github.rosemoe:language-textmate"),
+            // The Bouncy Castle Licence is the MIT licence text; config/libraries/org.bouncycastle.*.json adds MIT.
+            "73252b46f36df25ef51a7994de439aea" to listOf(
+                "org.bouncycastle",
+                "org.bouncycastle:bcprov-jdk18on",
+                "org.bouncycastle:bcpkix-jdk18on",
+                "org.bouncycastle:bcutil-jdk18on",
+            ),
         )
     }
 }
@@ -174,6 +181,9 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.sora.editor)
     implementation(libs.sora.textmate)
+    implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.okhttp)
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
