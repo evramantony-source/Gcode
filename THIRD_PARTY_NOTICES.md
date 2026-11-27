@@ -26,7 +26,7 @@ bundled in the app.
 - editor (`io.github.rosemoe:editor:0.24.7`): LGPL v2.1, LGPL-2.1-only, https://github.com/Rosemoe/sora-editor
 - language-textmate (`io.github.rosemoe:language-textmate:0.24.7`): LGPL v2.1, LGPL-2.1-only, https://github.com/Rosemoe/sora-editor
 
-## Libraries (150)
+## Libraries (160)
 
 | Library | Artifact | Version | Licence |
 |---|---|---|---|
@@ -65,6 +65,7 @@ bundled in the app.
 | [Compose Util](https://developer.android.com/jetpack/androidx/releases/compose-ui#1.13.0) | `androidx.compose.ui:ui-util` | 1.13.0 | Apache-2.0 |
 | [Jetpack Compose Libraries BOM](https://developer.android.com/jetpack) | `androidx.compose:compose-bom` | 2026.11.01 | Apache-2.0 |
 | [AndroidX Futures](https://developer.android.com/topic/libraries/architecture/index.html) | `androidx.concurrent:concurrent-futures` | 1.1.0 | Apache-2.0 |
+| [AndroidX Futures Kotlin Extensions](https://developer.android.com/topic/libraries/architecture/index.html) | `androidx.concurrent:concurrent-futures-ktx` | 1.1.0 | Apache-2.0 |
 | [Core](https://developer.android.com/jetpack/androidx/releases/core#1.19.1) | `androidx.core:core` | 1.19.1 | Apache-2.0 |
 | [Core Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/core#1.19.1) | `androidx.core:core-ktx` | 1.19.1 | Apache-2.0 |
 | [androidx.core:core-viewtree](https://developer.android.com/jetpack/androidx/releases/core#1.0.0) | `androidx.core:core-viewtree` | 1.0.0 | Apache-2.0 |
@@ -82,8 +83,10 @@ bundled in the app.
 | [Support fragment](https://developer.android.com/jetpack/androidx/releases/fragment#1.5.1) | `androidx.fragment:fragment` | 1.5.1 | Apache-2.0 |
 | [Android Graphics Path](https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0) | `androidx.graphics:graphics-path` | 1.1.0 | Apache-2.0 |
 | [Graphics Shapes](https://developer.android.com/jetpack/androidx/releases/graphics#1.0.1) | `androidx.graphics:graphics-shapes` | 1.0.1 | Apache-2.0 |
+| [Hilt Common](https://developer.android.com/jetpack/androidx/releases/hilt#1.4.0) | `androidx.hilt:hilt-common` | 1.4.0 | Apache-2.0 |
 | [ViewModel Hilt Extension](https://developer.android.com/jetpack/androidx/releases/hilt#1.4.0) | `androidx.hilt:hilt-lifecycle-viewmodel` | 1.4.0 | Apache-2.0 |
 | [ViewModel Compose Hilt Extension](https://developer.android.com/jetpack/androidx/releases/hilt#1.4.0) | `androidx.hilt:hilt-lifecycle-viewmodel-compose` | 1.4.0 | Apache-2.0 |
+| [WorkManager Hilt Extension](https://developer.android.com/jetpack/androidx/releases/hilt#1.4.0) | `androidx.hilt:hilt-work` | 1.4.0 | Apache-2.0 |
 | [Support Interpolators](http://developer.android.com/tools/extras/support-library.html) | `androidx.interpolator:interpolator` | 1.0.0 | Apache-2.0 |
 | [Lifecycle-Common](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-common` | 2.11.1 | Apache-2.0 |
 | [Lifecycle-Common for Java 8](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-common-java8` | 2.11.1 | Apache-2.0 |
@@ -94,6 +97,7 @@ bundled in the app.
 | [Lifecycle Runtime](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-runtime` | 2.11.1 | Apache-2.0 |
 | [Lifecycle Runtime Compose](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-runtime-compose` | 2.11.1 | Apache-2.0 |
 | [Lifecycle Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-runtime-ktx` | 2.11.1 | Apache-2.0 |
+| [Lifecycle Service](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-service` | 2.11.1 | Apache-2.0 |
 | [Lifecycle ViewModel](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-viewmodel` | 2.11.1 | Apache-2.0 |
 | [Lifecycle ViewModel Compose](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-viewmodel-compose` | 2.11.1 | Apache-2.0 |
 | [Lifecycle ViewModel Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.1) | `androidx.lifecycle:lifecycle-viewmodel-ktx` | 2.11.1 | Apache-2.0 |
@@ -115,10 +119,13 @@ bundled in the app.
 | [SQLite Framework Integration](https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2) | `androidx.sqlite:sqlite-framework` | 2.6.2 | Apache-2.0 |
 | [Startup Runtime](https://developer.android.com/jetpack/androidx/releases/startup#1.2.0) | `androidx.startup:startup-runtime` | 1.2.0 | Apache-2.0 |
 | [Tracing](https://developer.android.com/jetpack/androidx/releases/tracing#2.0.1) | `androidx.tracing:tracing` | 2.0.1 | Apache-2.0 |
+| [Tracing Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/tracing#2.0.1) | `androidx.tracing:tracing-ktx` | 2.0.1 | Apache-2.0 |
 | [VersionedParcelable](http://developer.android.com/tools/extras/support-library.html) | `androidx.versionedparcelable:versionedparcelable` | 1.1.1 | Apache-2.0 |
 | [Support View Pager](http://developer.android.com/tools/extras/support-library.html) | `androidx.viewpager:viewpager` | 1.0.0 | Apache-2.0 |
 | [WindowManager](https://developer.android.com/jetpack/androidx/releases/window#1.5.0) | `androidx.window:window` | 1.5.0 | Apache-2.0 |
 | [WindowManager Core](https://developer.android.com/jetpack/androidx/releases/window#1.5.0) | `androidx.window:window-core` | 1.5.0 | Apache-2.0 |
+| [WorkManager Runtime](https://developer.android.com/jetpack/androidx/releases/work#2.12.0) | `androidx.work:work-runtime` | 2.12.0 | Apache-2.0 |
+| [WorkManager Kotlin Extensions](https://developer.android.com/jetpack/androidx/releases/work#2.12.0) | `androidx.work:work-runtime-ktx` | 2.12.0 | Apache-2.0 |
 | [FindBugs-jsr305](http://findbugs.sourceforge.net/) | `com.google.code.findbugs:jsr305` | 3.0.2 | Apache-2.0 |
 | [Gson](https://github.com/google/gson) | `com.google.code.gson:gson` | 2.14.0 | Apache-2.0 |
 | [Dagger](https://github.com/google/dagger) | `com.google.dagger:dagger` | 2.60.1 | Apache-2.0 |
@@ -139,6 +146,9 @@ bundled in the app.
 | [language-textmate](https://github.com/Rosemoe/sora-editor) | `io.github.rosemoe:language-textmate` | 0.24.7 | LGPL v2.1, LGPL-2.1-only |
 | [Jakarta Dependency Injection](https://github.com/eclipse-ee4j/injection-api) | `jakarta.inject:jakarta.inject-api` | 2.0.1 | Apache-2.0 |
 | [javax.inject](http://code.google.com/p/atinject/) | `javax.inject:javax.inject` | 1 | Apache-2.0 |
+| [Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs](https://www.bouncycastle.org/) | `org.bouncycastle:bcpkix-jdk18on` | 1.87 | Bouncy Castle Licence, MIT |
+| [Bouncy Castle Provider](https://www.bouncycastle.org/) | `org.bouncycastle:bcprov-jdk18on` | 1.87 | Bouncy Castle Licence, MIT |
+| [Bouncy Castle ASN.1 Extension and Utility APIs](https://www.bouncycastle.org/) | `org.bouncycastle:bcutil-jdk18on` | 1.87 | Bouncy Castle Licence, MIT |
 | [JDT Annotations for Enhanced Null Analysis](https://github.com/eclipse-jdt/eclipse.jdt.core/) | `org.eclipse.jdt:org.eclipse.jdt.annotation` | 2.4.100 | EPL-2.0 |
 | [JGit - Core](https://github.com/eclipse-jgit/jgit) | `org.eclipse.jgit:org.eclipse.jgit` | 5.13.5.202508271544-r | BSD-3-Clause, Eclipse Distribution License (New BSD License) |
 | [Lifecycle-Common](https://github.com/JetBrains/compose-jb) | `org.jetbrains.androidx.lifecycle:lifecycle-common` | 2.9.6 | Apache-2.0 |
@@ -186,6 +196,10 @@ bundled in the app.
 ### LGPL v2.1
 
 https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt
+
+### Bouncy Castle Licence
+
+https://www.bouncycastle.org/licence.html
 
 ### Apache License 2.0
 

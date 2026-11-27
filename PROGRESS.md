@@ -3,8 +3,8 @@
 This file lets a new session resume without other context. It is updated after every phase.
 
 - Repository: `evramantony-source/Gcode`. Work branch: `ccr-ee862235-7b5f5g` (the only branch this
-  agent may push to). Each phase is one PR from that branch into `main`; after a merge the branch
-  is reset to `main` (fast-forward).
+  agent may push to). Each phase is one PR from that branch into `main` (squash merge); after a merge
+  the branch is restarted from `main`.
 - Plan: [TASKS.md](TASKS.md). Design: [ARCHITECTURE.md](ARCHITECTURE.md). Decisions:
   [docs/DECISIONS.md](docs/DECISIONS.md). Setup and signing: [docs/SIGNING.md](docs/SIGNING.md).
 - Local build: Android SDK at `/opt/android-sdk` (platform 37.2, build-tools 37.0.0), `local.properties`
@@ -20,8 +20,8 @@ This file lets a new session resume without other context. It is updated after e
 | 2 Gemini onboarding, model discovery, streaming chat | Merged | [#2](https://github.com/evramantony-source/Gcode/pull/2) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45986329590) |
 | 3 GitHub sign-in, repos, JGit | Merged | [#3](https://github.com/evramantony-source/Gcode/pull/3) | [run](https://github.com/evramantony-source/Gcode/actions/runs/45990406165) |
 | 4 Workspace tools, agent loop, permissions | Merged | [#4](https://github.com/evramantony-source/Gcode/pull/4) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46038035247) |
-| 5 Editor, explorer, source control UI | In review | [#5](https://github.com/evramantony-source/Gcode/pull/5) | — |
-| 6 Remote build pipeline | Not started | | |
+| 5 Editor, explorer, source control UI | Merged | [#5](https://github.com/evramantony-source/Gcode/pull/5) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46041082463) |
+| 6 Remote build pipeline | In review | #6 (see below) | — |
 | 7 Agent GitHub/Actions tools, build-fix loop | Not started | | |
 | 8 PRs, issues, releases, branches, conflicts | Not started | | |
 | 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Not started | | |
@@ -72,10 +72,27 @@ This file lets a new session resume without other context. It is updated after e
   editor; chat pane beside every destination from 840 dp). Instrumented test edits and saves a file
   in Sora on API 26 and 36.
 
+- **Phase 6:** GitHub Actions client (workflows, dispatch with `workflow_run_id`, runs by branch/
+  head_sha/event, jobs and steps, job logs and artifact zips through 302 without the token, cancel,
+  re-run failed jobs, releases with asset upload, repository secrets, contents API); libsodium-compatible
+  sealed box (Bouncy Castle, checked against a PyNaCl vector); workflow template `gcode-build.yml`
+  (debug APK artifact on push/PR/dispatch, optional stable debug key, signed release on `v*` tags) with
+  Android-project detection and "Set up builds" (commit + push, confirmed); Build button (commit dirty
+  changes, push, follow the push-triggered run for the commit or dispatch); live run screen (5 s
+  polling, jobs/steps, cancel, re-run failed, open on GitHub); log viewer split by step with failed
+  steps opened and error lines in red; artifacts (download with progress, APK extraction, 410 →
+  expired, label from the APK); install via `PackageInstaller` (always confirmed, unknown-sources flow,
+  signature-mismatch hint); build history in Room v4; `BuildMonitorWorker` (Hilt WorkManager, re-enqueues
+  every 30 s, completion notification that opens the run); secrets sheet (names, set secret through a
+  sealed box, link to GitHub settings) and the stable debug key (generated on the device, saved as
+  `DEBUG_KEYSTORE_BASE64`, always confirmed); workflows with `workflow_dispatch` inputs for any project.
+
 ## Known limitations
 
-- Builds and PR/issue/release screens are still placeholders until Phases 6 and 8; GitHub/Actions/web
-  agent tools arrive in Phase 7; the Rewind UI in Phase 9.
+- PR/issue/release screens are still placeholders until Phase 8; GitHub/Actions/web agent tools
+  arrive in Phase 7; the Rewind UI in Phase 9.
+- Dispatch inputs are read from the workflow file in the local clone (names only, no type-specific
+  widgets); workflows that exist only on GitHub are dispatched without inputs.
 - JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
 - The release APK has not been launched on a device yet (planned in Phase 10).
 
@@ -85,6 +102,8 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for Phase 5 CI, merge, reset the branch to `main`, then start Phase 6: build workflow template
-and "Set up builds", Build button (dispatch / head_sha), live run status, log parser, artifact
-download + PackageInstaller, build history, BuildMonitorWorker notifications, sealed-box secrets.
+Wait for the Phase 6 PR's CI, merge it, restart the branch from `main`, then start Phase 7: agent
+GitHub tools (gh_list_repos … gh_create_issue), Actions tools on top of `BuildService`
+(gh_setup_build_workflow, gh_trigger_workflow, gh_get_run_status, gh_wait_for_run, gh_get_run_logs
+with `LogParser.failureSummary`, gh_list_artifacts, gh_download_apk, gh_install_apk, gh_create_release),
+web_fetch (Jsoup) and web_search (google_search grounding), and the build-fix guard.
