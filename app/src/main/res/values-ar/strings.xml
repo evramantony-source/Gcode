@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Top-level navigation -->
+    <string name="nav_chat">المحادثة</string>
+    <string name="nav_repos">المستودعات</string>
+    <string name="nav_code">الكود</string>
+    <string name="nav_builds">البناء</string>
+    <string name="nav_more">المزيد</string>
+
+    <!-- More menu -->
+    <string name="more_pull_requests">طلبات الدمج</string>
+    <string name="more_issues">المشكلات</string>
+    <string name="more_releases">الإصدارات</string>
+    <string name="more_sessions">الجلسات</string>
+    <string name="more_settings">الإعدادات</string>
+    <string name="more_licenses">تراخيص المصادر المفتوحة</string>
+    <string name="more_about">حول GCode</string>
+
+    <!-- Placeholder screens -->
+    <string name="coming_in_phase">قادم في المرحلة %1$d</string>
+    <string name="placeholder_chat">تحدّث مع الوكيل المدعوم بـ Gemini. يعدّل الكود، ويُنشئ الإيداعات، ويدفعها، ويشغّل عمليات البناء على GitHub Actions.</string>
+    <string name="placeholder_repos">اعرض مستودعاتك على GitHub وابحث فيها وأنشئها واستنسخها وفرّعها.</string>
+    <string name="placeholder_code">تصفّح الملفات وحرّر الكود وأدِر التغييرات والفروع والسجل.</string>
+    <string name="placeholder_builds">ابدأ عمليات البناء على GitHub Actions وتابعها مباشرةً واقرأ السجلات وثبّت ملف APK.</string>
+    <string name="placeholder_pull_requests">أنشئ طلبات الدمج وراجعها وعلّق عليها وادمجها.</string>
+    <string name="placeholder_issues">اعرض المشكلات واقرأها وأنشئها وعلّق عليها.</string>
+    <string name="placeholder_releases">أنشئ الوسوم والإصدارات وأرفق ملفات APK.</string>
+    <string name="placeholder_sessions">استأنف جلسات الوكيل السابقة أو أعد تسميتها أو احذفها.</string>
+    <string name="placeholder_settings">مفتاح Gemini والنموذج، وحساب GitHub، ووضع الأذونات، والمظهر، واللغة.</string>
+
+    <!-- About -->
+    <string name="about_body">GCode مساعد برمجة ذكي لنظام Android. يعتمد على واجهة Google Gemini البرمجية بمفتاحك الخاص. تجري جميع عمليات البناء على GitHub Actions، ولا يُترجَم أي شيء على هذا الجهاز.</string>
+    <string name="about_version">الإصدار %1$s</string>
+
+    <!-- Licences -->
+    <string name="licenses_gcode_title">GCode</string>
+    <string name="licenses_gcode_body">يخضع GCode لرخصة Apache، الإصدار 2.0.</string>
+    <string name="licenses_lgpl_title">رخصة GNU LGPL، الإصدار 2.1</string>
+    <string name="licenses_lgpl_body">يُستخدم Sora Editor (محرر الكود) كمكتبة دون تعديل بموجب رخصة GNU العمومية الصغرى، الإصدار 2.1. الكود المصدري متاح على github.com/Rosemoe/sora-editor.</string>
+    <string name="licenses_view_full_text">عرض النص الكامل للرخصة</string>
+    <string name="licenses_dependencies">مكتبات الجهات الخارجية</string>
+    <string name="license_apache_title">رخصة Apache 2.0</string>
+
+    <string name="navigate_back">رجوع</string>
+</resources>
