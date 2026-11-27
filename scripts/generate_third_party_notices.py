@@ -35,6 +35,8 @@ This file is generated from the build's dependency metadata by
 |---|---|---|
 | Material Symbols icons (vector drawables in `app/src/main/res/drawable`) | Apache-2.0 | https://github.com/google/material-design-icons |
 | Full text of the Apache License 2.0 and the GNU LGPL 2.1 (`app/src/main/res/raw`) | (licence texts) | https://www.apache.org/licenses/LICENSE-2.0.txt, https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt |
+| TextMate grammar for Kotlin (`app/src/main/assets/textmate/kotlin`) | MIT | https://github.com/fwcd/vscode-kotlin |
+| TextMate grammars for Java, JSON, XML, YAML, Markdown, Shell, Python, Groovy (`app/src/main/assets/textmate`) | MIT | https://github.com/microsoft/vscode (extensions/*/syntaxes; each file names its upstream project) |
 
 ## LGPL components
 

@@ -1,0 +1,69 @@
+{
+  "languages": [
+    {
+      "grammar": "textmate/kotlin/kotlin.tmLanguage.json",
+      "name": "kotlin",
+      "scopeName": "source.kotlin"
+    },
+    {
+      "grammar": "textmate/java/java.tmLanguage.json",
+      "name": "java",
+      "scopeName": "source.java"
+    },
+    {
+      "grammar": "textmate/groovy/groovy.tmLanguage.json",
+      "name": "groovy",
+      "scopeName": "source.groovy"
+    },
+    {
+      "grammar": "textmate/json/JSON.tmLanguage.json",
+      "name": "json",
+      "scopeName": "source.json"
+    },
+    {
+      "grammar": "textmate/xml/xml.tmLanguage.json",
+      "name": "xml",
+      "scopeName": "text.xml"
+    },
+    {
+      "grammar": "textmate/yaml/yaml.tmLanguage.json",
+      "name": "yaml",
+      "scopeName": "source.yaml"
+    },
+    {
+      "grammar": "textmate/yaml/yaml-1.2.tmLanguage.json",
+      "name": "yaml-1.2",
+      "scopeName": "source.yaml.1.2"
+    },
+    {
+      "grammar": "textmate/yaml/yaml-1.1.tmLanguage.json",
+      "name": "yaml-1.1",
+      "scopeName": "source.yaml.1.1"
+    },
+    {
+      "grammar": "textmate/yaml/yaml-1.0.tmLanguage.json",
+      "name": "yaml-1.0",
+      "scopeName": "source.yaml.1.0"
+    },
+    {
+      "grammar": "textmate/yaml/yaml-embedded.tmLanguage.json",
+      "name": "yaml-embedded",
+      "scopeName": "source.yaml.embedded"
+    },
+    {
+      "grammar": "textmate/markdown/markdown.tmLanguage.json",
+      "name": "markdown",
+      "scopeName": "text.html.markdown"
+    },
+    {
+      "grammar": "textmate/shell/shell-unix-bash.tmLanguage.json",
+      "name": "shell",
+      "scopeName": "source.shell"
+    },
+    {
+      "grammar": "textmate/python/MagicPython.tmLanguage.json",
+      "name": "python",
+      "scopeName": "source.python"
+    }
+  ]
+}
