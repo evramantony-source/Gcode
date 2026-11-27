@@ -1,0 +1,207 @@
+# CI for the GCode app itself.
+# - Every push and pull request: secret scan, Gradle build, lint, unit tests, debug APK artifact "gcode-debug-apk".
+# - Pull requests and pushes to main: instrumented UI smoke test on an emulator.
+# - Version tags (v*): signed release APK attached to a GitHub Release (see docs/SIGNING.md).
+name: Android CI
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+permissions:
+  contents: read
+
+env:
+  # GitHub OAuth App client ID (public, not a secret). The build fails with a clear message without it.
+  GCODE_GITHUB_CLIENT_ID: ${{ vars.GCODE_GITHUB_CLIENT_ID }}
+  # Monotonic versionCode, so a newer debug APK can update an older install.
+  GCODE_VERSION_CODE: ${{ github.run_number }}
+
+jobs:
+  build:
+    name: Build, lint, unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Scan for committed secrets
+        run: scripts/check-no-secrets.sh
+
+      - name: Check repository variable GCODE_GITHUB_CLIENT_ID
+        run: |
+          if [ -z "${GCODE_GITHUB_CLIENT_ID}" ]; then
+            echo "::error title=Missing repository variable::GCODE_GITHUB_CLIENT_ID is not set. Add your GitHub OAuth App client ID under Settings > Secrets and variables > Actions > Variables."
+            exit 1
+          fi
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle (with dependency caching)
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
+      - name: Use stable debug signing key (optional)
+        env:
+          DEBUG_KEYSTORE_BASE64: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "${DEBUG_KEYSTORE_BASE64}" ]; then
+            printf '%s' "${DEBUG_KEYSTORE_BASE64}" | base64 --decode > "${RUNNER_TEMP}/debug.keystore"
+            echo "GCODE_DEBUG_KEYSTORE_FILE=${RUNNER_TEMP}/debug.keystore" >> "${GITHUB_ENV}"
+            echo "Using the stable debug key from DEBUG_KEYSTORE_BASE64."
+          else
+            echo "DEBUG_KEYSTORE_BASE64 not set: this run uses a fresh debug key (see docs/SIGNING.md)."
+          fi
+
+      - name: Build, lint and run unit tests
+        run: ./gradlew lint test assembleDebug --stacktrace
+
+      - name: Check THIRD_PARTY_NOTICES.md is up to date
+        run: python3 scripts/generate_third_party_notices.py --check
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: gcode-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload lint and test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-reports
+          path: |
+            **/build/reports/
+            **/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Remove debug keystore
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/debug.keystore"
+
+  ui-test:
+    name: Instrumented UI smoke test
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle (with dependency caching)
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
+      - name: Enable KVM for the emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run instrumented tests on an emulator
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+
+      - name: Upload instrumented test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-test-reports
+          path: |
+            app/build/reports/androidTests/
+            app/build/outputs/androidTest-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  release:
+    name: Signed release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Check signing secrets
+        run: |
+          missing=0
+          for name in KEYSTORE_BASE64 KEYSTORE_PASSWORD KEY_ALIAS KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error title=Missing secret::${name} is not set. See docs/SIGNING.md."
+              missing=1
+            fi
+          done
+          exit "${missing}"
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle (with dependency caching)
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+
+      - name: Prepare keystore and version
+        run: |
+          printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > "${RUNNER_TEMP}/release.keystore"
+          echo "GCODE_RELEASE_KEYSTORE_FILE=${RUNNER_TEMP}/release.keystore" >> "${GITHUB_ENV}"
+          echo "GCODE_VERSION_NAME=${GITHUB_REF_NAME#v}" >> "${GITHUB_ENV}"
+
+      - name: Build signed release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Verify APK signature
+        run: |
+          apk=app/build/outputs/apk/release/app-release.apk
+          test -f "${apk}" || { echo "::error::Signed APK not found (was the release signed?)"; ls -R app/build/outputs/apk; exit 1; }
+          apksigner="$(ls -d "${ANDROID_HOME}"/build-tools/* | sort -V | tail -n 1)/apksigner"
+          "${apksigner}" verify --verbose "${apk}"
+          cp "${apk}" "gcode-${GCODE_VERSION_NAME}.apk"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" "gcode-${GCODE_VERSION_NAME}.apk" \
+            --title "GCode ${GCODE_VERSION_NAME}" \
+            --generate-notes \
+            --verify-tag
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/release.keystore"
