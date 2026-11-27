@@ -47,23 +47,23 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
   tag builds a signed release once you add the secrets.
 
 ## Phase 2: Gemini onboarding, model discovery, streaming chat
-- [ ] `SecretStore` (Keystore AES-GCM + DataStore), with Robolectric tests
-- [ ] Onboarding step 1: key entry, "restrict to Gemini API" tip, check with
+- [x] `SecretStore` (Keystore AES-GCM + DataStore), with Robolectric tests
+- [x] Onboarding step 1: key entry, "restrict to Gemini API" tip, check with
       `models.list`
-- [ ] `GeminiClient`: models.list (paged), streamGenerateContent SSE,
+- [x] `GeminiClient`: models.list (paged), streamGenerateContent SSE,
       generateContent, countTokens; redacting logging
-- [ ] Model catalog in Room with a 24 h cache; `ModelSelector`
+- [x] Model catalog in Room with a 24 h cache; `ModelSelector`
       (gemini-4-hydrogen → newest Flash → newest Flash-Lite)
-- [ ] Model picker (every generateContent model), thinking-level setting
+- [x] Model picker (every generateContent model), thinking-level setting
       (table for each model, safe fallback)
-- [ ] 429 backoff (honours RetryInfo), auto-switch toggle with cool-downs
-- [ ] Chat screen: streaming Markdown, code blocks, thought summaries,
+- [x] 429 backoff (honours RetryInfo), auto-switch toggle with cool-downs
+- [x] Chat screen: streaming Markdown, code blocks, thought summaries,
       Stop, sessions saved in Room (parts kept verbatim), status bar
       (model, context %)
-- [ ] Tests: SSE parser, chunk folding that keeps thought signatures,
+- [x] Tests: SSE parser, chunk folding that keeps thought signatures,
       ModelSelector fixtures, backoff with a virtual clock, client through
       MockWebServer
-- *(stub)* repo, branch and mode in the status bar; tools not wired yet
+- Repo, branch and mode join the status bar with workspaces (Phase 3) and tools (Phase 4)
 
 ## Phase 3: GitHub sign-in, repos, JGit
 - [ ] **Spike first (risk R1):** JGit 7.x clone/commit/push in an
