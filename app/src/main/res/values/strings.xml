@@ -20,7 +20,6 @@
 
     <!-- Placeholder screens -->
     <string name="coming_in_phase">Coming in phase %1$d</string>
-    <string name="placeholder_chat">Talk to the Gemini-powered agent. It edits your code, commits, pushes and runs builds on GitHub Actions.</string>
     <string name="placeholder_repos">List, search, create, clone and fork your GitHub repositories.</string>
     <string name="placeholder_code">Browse files, edit code, and manage changes, branches and history.</string>
     <string name="placeholder_builds">Start builds on GitHub Actions, follow them live, read logs and install the APK.</string>
@@ -28,7 +27,6 @@
     <string name="placeholder_issues">List, read, create and comment on issues.</string>
     <string name="placeholder_releases">Create tags and releases, and attach APKs.</string>
     <string name="placeholder_sessions">Resume, rename and delete past agent sessions.</string>
-    <string name="placeholder_settings">Gemini key and model, GitHub account, permission mode, theme and language.</string>
 
     <!-- About -->
     <string name="about_body">GCode is an agentic coding assistant for Android. The AI backend is the Google Gemini API with your own key. All builds run on GitHub Actions; nothing is compiled on this device.</string>
@@ -44,4 +42,58 @@
     <string name="license_apache_title">Apache License 2.0</string>
 
     <string name="navigate_back">Back</string>
+
+    <!-- Phase 2: onboarding, chat, models, settings -->
+    <string name="onboarding_welcome">Welcome to GCode</string>
+    <string name="onboarding_intro">An agentic coding assistant for your phone. Gemini does the thinking, GitHub Actions does the building.</string>
+    <string name="onboarding_gemini_title">1. Gemini API key</string>
+    <string name="onboarding_gemini_body">GCode uses your own Gemini API key. It is stored encrypted on this device and only sent to Google\'s Gemini API.</string>
+    <string name="onboarding_get_key">Get a key in Google AI Studio</string>
+    <string name="onboarding_key_label">Gemini API key</string>
+    <string name="onboarding_restrict_tip">Tip: in AI Studio, restrict the key to \"Gemini API only\". New keys must be restricted.</string>
+    <string name="onboarding_verify">Verify and save</string>
+    <string name="show_key">Show key</string>
+    <string name="hide_key">Hide key</string>
+    <string name="model_picker_title">Model</string>
+    <string name="refresh_models">Refresh models</string>
+    <string name="refreshing">Refreshing…</string>
+    <string name="thinking_level">Thinking level</string>
+    <string name="thinking_default">Default</string>
+    <string name="thinking_badge">thinking</string>
+    <string name="show_thoughts">Show thoughts</string>
+    <string name="show_thoughts_body">Ask the model for thought summaries and show them in a collapsed card.</string>
+    <string name="context_tokens">%1$s context</string>
+    <string name="not_for_agent">chat only</string>
+    <string name="no_models">No models loaded. Tap to refresh.</string>
+    <string name="new_chat">New chat</string>
+    <string name="fallback_active">Fallback model in use</string>
+    <string name="fallback_reason">Using a fallback: %1$s</string>
+    <string name="context_percent">Context %1$d%%</string>
+    <string name="chat_empty">Ask anything about code. Tools, repositories and builds arrive as each phase lands.</string>
+    <string name="conversation_compacted">Earlier messages were compacted into a summary</string>
+    <string name="copy">Copy</string>
+    <string name="thoughts">Thoughts</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="retry">Retry</string>
+    <string name="composer_hint">Message GCode</string>
+    <string name="send">Send</string>
+    <string name="stop">Stop</string>
+    <string name="cancel">Cancel</string>
+    <string name="verifying">Verifying…</string>
+    <string name="settings_gemini">Gemini</string>
+    <string name="gemini_api_key">Gemini API key</string>
+    <string name="key_stored">Stored encrypted on this device. Tap to replace.</string>
+    <string name="key_missing">Not set</string>
+    <string name="default_model">Default model</string>
+    <string name="auto_switch">Auto-switch on rate limits</string>
+    <string name="auto_switch_body">After repeated 429 errors, move to the next available model and retry.</string>
+    <string name="compaction_title">Auto-compact threshold</string>
+    <string name="compaction_body">Summarise older messages when the context window is %1$d%% full.</string>
+    <string name="models_count">%1$d models available</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color">Dynamic colour</string>
+    <string name="dynamic_color_body">Use colours from your wallpaper (Android 12+).</string>
 </resources>

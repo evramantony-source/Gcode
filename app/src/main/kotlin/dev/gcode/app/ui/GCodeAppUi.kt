@@ -36,6 +36,8 @@ import dev.gcode.app.ui.navigation.TopLevelDestination
 import dev.gcode.app.ui.screens.AboutScreen
 import dev.gcode.app.ui.screens.MoreScreen
 import dev.gcode.app.ui.screens.PlaceholderScreen
+import dev.gcode.app.ui.chat.ChatScreen
+import dev.gcode.app.ui.settings.SettingsScreen
 
 /** App shell: adaptive navigation (bottom bar on phones, rail on tablets) around a Navigation 3 back stack. */
 @Composable
@@ -69,12 +71,7 @@ fun GCodeAppUi() {
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
-                entry<ChatRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.nav_chat), stringResource(R.string.placeholder_chat),
-                        phase = 2, icon = R.drawable.ic_chat, testTag = "screen_chat",
-                    )
-                }
+                entry<ChatRoute> { ChatScreen() }
                 entry<ReposRoute> {
                     PlaceholderScreen(
                         stringResource(R.string.nav_repos), stringResource(R.string.placeholder_repos),
@@ -118,12 +115,7 @@ fun GCodeAppUi() {
                         phase = 9, icon = R.drawable.ic_sessions, testTag = "screen_sessions", onBack = back,
                     )
                 }
-                entry<SettingsRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.more_settings), stringResource(R.string.placeholder_settings),
-                        phase = 2, icon = R.drawable.ic_settings, testTag = "screen_settings", onBack = back,
-                    )
-                }
+                entry<SettingsRoute> { SettingsScreen(onBack = back) }
                 entry<LicensesRoute> {
                     LicensesScreen(onBack = back, onOpenLicense = { navigate(LicenseTextRoute(it)) })
                 }
