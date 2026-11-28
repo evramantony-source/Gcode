@@ -79,7 +79,14 @@
     <string name="auto_switch_body">بعد تكرار أخطاء 429، انتقل إلى النموذج المتاح التالي وأعد المحاولة.</string>
     <string name="compaction_title">حد التلخيص التلقائي</string>
     <string name="compaction_body">لخّص الرسائل الأقدم عند امتلاء نافذة السياق بنسبة %1$d%%.</string>
-    <string name="models_count">%1$d نموذجًا متاحًا</string>
+    <plurals name="models_count">
+        <item quantity="zero">لا توجد نماذج متاحة</item>
+        <item quantity="one">نموذج واحد متاح</item>
+        <item quantity="two">نموذجان متاحان</item>
+        <item quantity="few">%1$d نماذج متاحة</item>
+        <item quantity="many">%1$d نموذجًا متاحًا</item>
+        <item quantity="other">%1$d نموذج متاح</item>
+    </plurals>
     <string name="settings_appearance">المظهر</string>
     <string name="theme_system">اتباع النظام</string>
     <string name="theme_light">فاتح</string>
@@ -212,7 +219,14 @@
     <string name="find">بحث</string>
     <string name="find_previous">التطابق السابق</string>
     <string name="find_next">التطابق التالي</string>
-    <string name="find_matches">%1$d تطابقات</string>
+    <plurals name="find_matches">
+        <item quantity="zero">لا تطابقات</item>
+        <item quantity="one">تطابق واحد</item>
+        <item quantity="two">تطابقان</item>
+        <item quantity="few">%1$d تطابقات</item>
+        <item quantity="many">%1$d تطابقًا</item>
+        <item quantity="other">%1$d تطابق</item>
+    </plurals>
     <string name="replace">استبدال</string>
     <string name="replace_all">استبدال الكل</string>
     <string name="diff_side_by_side">جنبًا إلى جنب</string>
@@ -353,7 +367,14 @@
     <string name="conflicts_resolve">حل</string>
     <string name="conflicts_none">لا يوجد دمج قيد التنفيذ.</string>
     <string name="conflicts_files">ملفات بها تعارضات (%1$d)</string>
-    <string name="conflicts_progress">تم حل %1$d من %2$d تعارضات</string>
+    <plurals name="conflicts_progress">
+        <item quantity="zero">تم حل %1$d من %2$d تعارض</item>
+        <item quantity="one">تم حل %1$d من تعارض واحد</item>
+        <item quantity="two">تم حل %1$d من تعارضين</item>
+        <item quantity="few">تم حل %1$d من %2$d تعارضات</item>
+        <item quantity="many">تم حل %1$d من %2$d تعارضًا</item>
+        <item quantity="other">تم حل %1$d من %2$d تعارض</item>
+    </plurals>
     <string name="conflicts_all_resolved">تم حل كل التعارضات. أودِع الدمج لإنهائه.</string>
     <string name="conflicts_commit">إيداع الدمج</string>
     <string name="conflicts_abort_body">إلغاء الدمج وإعادة كل الملفات إلى ما كانت عليه؟ ستضيع الحلول التي اخترتها.</string>
@@ -402,12 +423,26 @@
     <string name="attach_failed">تعذّرت قراءة تلك الصورة.</string>
     <string name="attachment_image">صورة %1$s</string>
     <string name="attachment_remove">إزالة المرفق</string>
-    <string name="attachments_count">🖼 %1$d صورة</string>
+    <plurals name="attachments_count">
+        <item quantity="zero">🖼 لا صور</item>
+        <item quantity="one">🖼 صورة واحدة</item>
+        <item quantity="two">🖼 صورتان</item>
+        <item quantity="few">🖼 %1$d صور</item>
+        <item quantity="many">🖼 %1$d صورة</item>
+        <item quantity="other">🖼 %1$d صورة</item>
+    </plurals>
     <string name="voice_input">إدخال صوتي</string>
     <string name="voice_prompt">تحدث برسالتك</string>
     <string name="voice_unavailable">التعرف على الكلام غير متاح على هذا الجهاز.</string>
     <string name="rewind_title">الرجوع إلى ما قبل هذه الرسالة</string>
-    <string name="rewind_files">ستُستعاد %1$d ملفات غيّرها الوكيل بعد هذه الرسالة:</string>
+    <plurals name="rewind_files">
+        <item quantity="zero">لا ملفات لاستعادتها:</item>
+        <item quantity="one">سيُستعاد ملف واحد غيّره الوكيل بعد هذه الرسالة:</item>
+        <item quantity="two">سيُستعاد ملفان غيّرهما الوكيل بعد هذه الرسالة:</item>
+        <item quantity="few">ستُستعاد %1$d ملفات غيّرها الوكيل بعد هذه الرسالة:</item>
+        <item quantity="many">سيُستعاد %1$d ملفًا غيّرها الوكيل بعد هذه الرسالة:</item>
+        <item quantity="other">سيُستعاد %1$d ملف غيّرها الوكيل بعد هذه الرسالة:</item>
+    </plurals>
     <string name="rewind_no_files">لم يغيّر الوكيل أي ملفات بعد هذه الرسالة.</string>
     <string name="rewind_remote_warning">هذه الإجراءات حدثت بالفعل ولن يتم التراجع عنها:</string>
     <string name="rewind_git_warning">يُحتفظ بسجل Git المحلي (الرجوع يستعيد الملفات، لا الإيداعات أو الفروع):</string>
@@ -429,7 +464,14 @@
     <string name="denylist_title">ملفات محمية إضافية</string>
     <string name="denylist_body">نمط واحد في كل سطر. لا تُرسل هذه الملفات، مثل ‎.env‎ ومخازن المفاتيح، إلى Gemini دون موافقتك.</string>
     <string name="mcp_title">خوادم MCP</string>
-    <string name="mcp_settings_body">%1$d مفعّلة. تُعرض أدواتها على الوكيل.</string>
+    <plurals name="mcp_settings_body">
+        <item quantity="zero">لا خوادم مفعّلة.</item>
+        <item quantity="one">خادم واحد مفعّل. تُعرض أدواته على الوكيل.</item>
+        <item quantity="two">خادمان مفعّلان. تُعرض أدواتهما على الوكيل.</item>
+        <item quantity="few">%1$d خوادم مفعّلة. تُعرض أدواتها على الوكيل.</item>
+        <item quantity="many">%1$d خادمًا مفعّلًا. تُعرض أدواتها على الوكيل.</item>
+        <item quantity="other">%1$d خادم مفعّل. تُعرض أدواتها على الوكيل.</item>
+    </plurals>
     <string name="mcp_body">يتصل GCode بخوادم Model Context Protocol عبر HTTP القابل للبث (البروتوكول 2026-07-28 مع الرجوع إلى 2025-11-25 والإصدارات الأقدم). تظهر أدواتها للوكيل باسم mcp__server__tool وتطلب الموافقة ما لم يكن الخادم موثوقًا ويصفها بأنها للقراءة فقط.</string>
     <string name="mcp_none">لا توجد خوادم MCP بعد.</string>
     <string name="mcp_add">إضافة خادم MCP</string>
@@ -444,7 +486,14 @@
     <string name="mcp_trusted_label">موثوق</string>
     <string name="mcp_test">اختبار</string>
     <string name="mcp_not_checked">لم يتم الاتصال بعد.</string>
-    <string name="mcp_connected">متصل بـ %1$s (MCP %2$s)، %3$d أدوات:</string>
+    <plurals name="mcp_connected">
+        <item quantity="zero">متصل بـ %1$s (MCP %2$s)، لا أدوات</item>
+        <item quantity="one">متصل بـ %1$s (MCP %2$s)، أداة واحدة:</item>
+        <item quantity="two">متصل بـ %1$s (MCP %2$s)، أداتان:</item>
+        <item quantity="few">متصل بـ %1$s (MCP %2$s)، %3$d أدوات:</item>
+        <item quantity="many">متصل بـ %1$s (MCP %2$s)، %3$d أداة:</item>
+        <item quantity="other">متصل بـ %1$s (MCP %2$s)، %3$d أداة:</item>
+    </plurals>
     <string name="mcp_delete_title">إزالة %1$s؟</string>
     <string name="mcp_delete_body">تُزال بيانات الخادم وبيانات اعتماده المخزنة من هذا الجهاز.</string>
 </resources>

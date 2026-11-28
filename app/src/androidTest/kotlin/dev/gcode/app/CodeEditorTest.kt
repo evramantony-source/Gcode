@@ -80,6 +80,7 @@ class CodeEditorTest {
             editor.text.insert(1, 0, "Edited on device\n")
         }
         composeRule.waitForIdle()
+        Screenshots.take(composeRule, "editor")
         composeRule.onNodeWithTag("save_file").performClick()
         composeRule.waitUntil(TIMEOUT) { File(repoDir, "README.md").readText().contains("Edited on device") }
         assertEquals("# Editor test\nEdited on device\n", File(repoDir, "README.md").readText())
@@ -87,6 +88,7 @@ class CodeEditorTest {
         // The change shows up in source control.
         composeRule.onNodeWithTag("code_tab_changes").performClick()
         composeRule.waitUntilAtLeastOneExists(hasTestTag("changes_list"), TIMEOUT)
+        Screenshots.take(composeRule, "changes")
         composeRule.onNodeWithTag("code_tab_history").performClick()
         composeRule.waitUntilAtLeastOneExists(hasTestTag("history_list"), TIMEOUT)
         // Typing in the editor can leave the soft keyboard open, which shrinks the panel below it.

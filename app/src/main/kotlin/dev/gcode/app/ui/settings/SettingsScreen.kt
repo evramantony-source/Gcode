@@ -27,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -74,7 +75,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpenMcp: () -> Unit = {}, viewModel: Se
             }) { Text(stringResource(R.string.compaction_title)) }
             ListItem(
                 modifier = Modifier.clickable(onClick = viewModel::refreshModels),
-                supportingContent = { Text(state.message ?: stringResource(R.string.models_count, state.catalog.chatModels.size)) },
+                supportingContent = { Text(state.message ?: pluralStringResource(R.plurals.models_count, state.catalog.chatModels.size, state.catalog.chatModels.size)) },
             ) { Text(stringResource(if (state.refreshing) R.string.refreshing else R.string.refresh_models)) }
             HorizontalDivider()
 
@@ -111,7 +112,7 @@ fun SettingsScreen(onBack: () -> Unit, onOpenMcp: () -> Unit = {}, viewModel: Se
             }) { Text(stringResource(R.string.denylist_title)) }
             ListItem(
                 modifier = Modifier.clickable(onClick = onOpenMcp).testTag("settings_mcp"),
-                supportingContent = { Text(stringResource(R.string.mcp_settings_body, s.mcpServers.count { it.enabled })) },
+                supportingContent = { Text(s.mcpServers.count { it.enabled }.let { n -> pluralStringResource(R.plurals.mcp_settings_body, n, n) }) },
             ) { Text(stringResource(R.string.mcp_title)) }
             HorizontalDivider()
 

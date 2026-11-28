@@ -72,6 +72,15 @@ android {
             // Unsigned unless the release keystore is provided (CI release job only).
             signingConfig = if (releaseSigningConfigured) signingConfigs.getByName("release") else null
         }
+        // Release code (R8 minify + resource shrinking) signed with the debug key, so CI can install and
+        // launch it on an emulator and catch missing keep rules before a real release.
+        create("qa") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "-qa"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+        }
     }
 
     buildFeatures {

@@ -24,8 +24,8 @@ This file lets a new session resume without other context. It is updated after e
 | 6 Remote build pipeline | Merged | [#6](https://github.com/evramantony-source/Gcode/pull/6) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46042568090) |
 | 7 Agent GitHub/Actions tools, build-fix loop | Merged | [#7](https://github.com/evramantony-source/Gcode/pull/7) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46045167907) |
 | 8 PRs, issues, releases, branches, conflicts | Merged | [#8](https://github.com/evramantony-source/Gcode/pull/8) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46146868812) |
-| 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | In review | #9 (see below) | — |
-| 10 Release signing, polish, README, tests | Not started | | |
+| 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Merged | [#9](https://github.com/evramantony-source/Gcode/pull/9) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46149311159) |
+| 10 Release signing, polish, README, tests | Merged | [#10](https://github.com/evramantony-source/Gcode/pull/10) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46151211082) |
 
 ## Features done
 
@@ -123,6 +123,16 @@ This file lets a new session resume without other context. It is updated after e
   registry; image attachments (photo picker, downscaled) and voice input (system recogniser);
   Settings: global instructions, default mode, max steps, extra protected files.
 
+- **Phase 10:** README (features, install, setup, building, signed releases, CI, layout) and
+  docs/TESTING.md (automated tests and a manual checklist); minified `qa` build type (R8 + resource
+  shrinking, debug-signed) installed and launched on both emulators by
+  `scripts/release-launch-check.sh`; signed release path verified locally with a throwaway keystore
+  through the release job's environment (apksigner V2 signature OK); JaCoCo coverage for the JVM
+  modules with a summary in the CI job summary and HTML reports as `coverage-report`; screenshots
+  captured by the instrumented tests (API 36) for the README; plurals for count strings (Arabic's six
+  forms); window-size based two-pane layouts; CI resilience (Google's Maven Central mirror first,
+  test dependencies cached by the build job, pre-built emulator APKs with retries).
+
 ## Known limitations
 
 - Only the repository's root GEMINI.md is loaded (no per-folder memory files).
@@ -132,16 +142,39 @@ This file lets a new session resume without other context. It is updated after e
 - Dispatch inputs are read from the workflow file in the local clone (names only, no type-specific
   widgets); workflows that exist only on GitHub are dispatched without inputs.
 - JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
-- The release APK has not been launched on a device yet (planned in Phase 10).
+- The first tagged release has not run yet: it needs the owner's signing secrets (see blockers).
 
 ## Blockers on the repository owner
 
-- None. (Signed releases additionally need the four signing secrets from docs/SIGNING.md.)
+1. **Signed releases:** add the four repository secrets `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`,
+   `KEY_ALIAS`, `KEY_PASSWORD` (docs/SIGNING.md §2), then push a tag such as `v1.0.0`. Until then the
+   **Signed release** job is skipped (no tag) or stops at "Check signing secrets" with a clear error.
+   Everything else works without it.
+2. (Already done by the owner: the OAuth App with Device Flow and the `GCODE_GITHUB_CLIENT_ID`
+   variable.)
+
+## Definition of Done
+
+Checked against the code on the final branch. Status: **Done**, **Partial** or **Blocked**.
+
+| Item | Status | Where |
+|---|---|---|
+| Gemini: encrypted key storage, dynamic model discovery, `gemini-4-hydrogen` default with fallback, model picker, thinking levels, 429 backoff and auto-switch, streaming, function calling, token tracking, auto and manual compaction | Done | `:gemini`, `core/data` SecretStore, `ModelPickerSheet`, `ConversationCompactor` |
+| Agent: tool loop, parallel tool calls, todo list, sub-agents, autonomous build-fix loop with attempt limit, Stop | Done | `AgentLoop`, `ToolRegistryExecutor`, `TaskTool`, `BuildFixGuard`, `AgentService` |
+| Permissions: Ask / Auto-accept edits / Plan / Full auto; mandatory confirmations (repo/branch deletion, force push, merge into default branch, public repo, secrets, APK install); diff approval sheet; secrets denylist; checkpoints and Rewind | Done | `PermissionPolicy`, `ApprovalHost`, `SecretGuard`, `RewindService` |
+| File tools and workspace (SAF and internal storage), code editor with tabs, search, undo/redo, file explorer | Done | `FileTools`, `SafWorkspaceFs`, `CodeScreen` (Sora Editor) |
+| GitHub: device flow + PAT; list/search/create/clone/fork repos; status, diff, stage, commit, push, pull, fetch; branches, merge, conflict resolver; history; PRs; issues; releases | Done | `:github`, `:git`, Repos/Code/PR/Issues/Releases screens |
+| Remote builds: workflow template setup, trigger, live status, logs with highlighted failures, APK download/extraction/install, build history, WorkManager notifications, encrypted secrets API | Done | `BuildService`, `BuildMonitorWorker`, `ApkInstaller`, `BuildsScreen`, `SealedBox` |
+| All specified agent tools exposed to Gemini as functions | Done | 21 core + 21 GitHub/Actions + web_fetch, web_search, task (+ MCP tools) |
+| GEMINI.md memory and Init action, per-repo and global settings, sessions with resume | Done | `WorkspaceExtensions`, `RepoSettingsDialog`, `SettingsScreen`, `SessionsScreen` |
+| MCP client (streamable HTTP), custom slash commands, custom sub-agents | Done | `:mcp`, `SlashCommands`, `AgentDefinition` |
+| UI: all specified screens, dark and light themes, tablet split-pane, Arabic RTL | Done | `ui/*`, `values-ar`, `isWideLayout` |
+| Open-source licences screen, THIRD_PARTY_NOTICES, Apache-2.0 LICENSE | Done | `LicensesScreen`, `THIRD_PARTY_NOTICES.md` (checked in CI), `LICENSE` |
+| Signed release workflow on version tags; README with installation and setup | Done (workflow and README); first tagged run **Blocked** on the owner's signing secrets | `android.yml` release job, `README.md`, `docs/SIGNING.md` |
+| Unit tests for tools, permissions, model fallback and the GitHub client; instrumented UI smoke test passing on PRs and main | Done | 177 unit tests; instrumented tests on API 26 and 36 for every PR (main run linked below) |
 
 ## Next step
 
-Wait for the Phase 9 PR's CI, merge it (merge commit), fast-forward the branch, then Phase 10:
-release signing check on a test tag (document; the user must add the four signing secrets), R8
-check on a release build, accessibility/RTL/tablet pass, README (setup, OAuth App, key, signing),
-docs/TESTING.md, coverage report for :agent, :gemini, :github, DEFINITION OF DONE checklist in this
-file, final report.
+All ten phases are merged. The project is complete apart from the owner's action above (signing
+secrets, then a `v*` tag for the first signed release). For further work, start from `main`, keep one
+PR per change from `ccr-ee862235-7b5f5g`, and keep this file and docs/DECISIONS.md current.

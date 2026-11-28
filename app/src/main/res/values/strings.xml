@@ -81,7 +81,10 @@
     <string name="auto_switch_body">After repeated 429 errors, move to the next available model and retry.</string>
     <string name="compaction_title">Auto-compact threshold</string>
     <string name="compaction_body">Summarise older messages when the context window is %1$d%% full.</string>
-    <string name="models_count">%1$d models available</string>
+    <plurals name="models_count">
+        <item quantity="one">%1$d model available</item>
+        <item quantity="other">%1$d models available</item>
+    </plurals>
     <string name="settings_appearance">Appearance</string>
     <string name="theme_system">Follow system</string>
     <string name="theme_light">Light</string>
@@ -214,7 +217,10 @@
     <string name="find">Find</string>
     <string name="find_previous">Previous match</string>
     <string name="find_next">Next match</string>
-    <string name="find_matches">%1$d matches</string>
+    <plurals name="find_matches">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
     <string name="replace">Replace</string>
     <string name="replace_all">Replace all</string>
     <string name="diff_side_by_side">Side by side</string>
@@ -355,7 +361,10 @@
     <string name="conflicts_resolve">Resolve</string>
     <string name="conflicts_none">No merge is in progress.</string>
     <string name="conflicts_files">Files with conflicts (%1$d)</string>
-    <string name="conflicts_progress">%1$d of %2$d conflicts resolved</string>
+    <plurals name="conflicts_progress">
+        <item quantity="one">%1$d of %2$d conflict resolved</item>
+        <item quantity="other">%1$d of %2$d conflicts resolved</item>
+    </plurals>
     <string name="conflicts_all_resolved">All conflicts are resolved. Commit the merge to finish it.</string>
     <string name="conflicts_commit">Commit merge</string>
     <string name="conflicts_abort_body">Abort the merge and return every file to how it was before? Your resolutions are lost.</string>
@@ -404,12 +413,18 @@
     <string name="attach_failed">That image could not be read.</string>
     <string name="attachment_image">Image %1$s</string>
     <string name="attachment_remove">Remove attachment</string>
-    <string name="attachments_count">🖼 %1$d image(s)</string>
+    <plurals name="attachments_count">
+        <item quantity="one">🖼 %1$d image</item>
+        <item quantity="other">🖼 %1$d images</item>
+    </plurals>
     <string name="voice_input">Voice input</string>
     <string name="voice_prompt">Speak your message</string>
     <string name="voice_unavailable">Speech recognition is not available on this device.</string>
     <string name="rewind_title">Rewind to before this message</string>
-    <string name="rewind_files">%1$d file(s) the agent changed after this message will be restored:</string>
+    <plurals name="rewind_files">
+        <item quantity="one">%1$d file the agent changed after this message will be restored:</item>
+        <item quantity="other">%1$d files the agent changed after this message will be restored:</item>
+    </plurals>
     <string name="rewind_no_files">The agent changed no files after this message.</string>
     <string name="rewind_remote_warning">These actions already happened and are not undone:</string>
     <string name="rewind_git_warning">Local Git history is kept (rewinding restores files, not commits or branches):</string>
@@ -431,7 +446,10 @@
     <string name="denylist_title">Extra protected files</string>
     <string name="denylist_body">One glob per line. These files, like .env and keystores, are never sent to Gemini without your approval.</string>
     <string name="mcp_title">MCP servers</string>
-    <string name="mcp_settings_body">%1$d enabled. Their tools are offered to the agent.</string>
+    <plurals name="mcp_settings_body">
+        <item quantity="one">%1$d enabled. Its tools are offered to the agent.</item>
+        <item quantity="other">%1$d enabled. Their tools are offered to the agent.</item>
+    </plurals>
     <string name="mcp_body">GCode connects to Model Context Protocol servers over streamable HTTP (protocol 2026-07-28, with fallback to 2025-11-25 and older). Their tools appear to the agent as mcp__server__tool and ask for approval unless the server is trusted and marks them read-only.</string>
     <string name="mcp_none">No MCP servers yet.</string>
     <string name="mcp_add">Add MCP server</string>
@@ -446,7 +464,10 @@
     <string name="mcp_trusted_label">Trusted</string>
     <string name="mcp_test">Test</string>
     <string name="mcp_not_checked">Not connected yet.</string>
-    <string name="mcp_connected">Connected to %1$s (MCP %2$s), %3$d tools:</string>
+    <plurals name="mcp_connected">
+        <item quantity="one">Connected to %1$s (MCP %2$s), %3$d tool:</item>
+        <item quantity="other">Connected to %1$s (MCP %2$s), %3$d tools:</item>
+    </plurals>
     <string name="mcp_delete_title">Remove %1$s?</string>
     <string name="mcp_delete_body">The server and its stored credential are removed from this device.</string>
 </resources>

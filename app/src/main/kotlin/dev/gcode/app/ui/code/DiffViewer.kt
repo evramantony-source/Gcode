@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -37,12 +36,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dev.gcode.app.R
+import dev.gcode.app.ui.components.isWideLayout
 import dev.gcode.app.ui.theme.CodeTextStyle
 
 /** Full-screen diff: unified, or side by side (default on wide screens). Always left-to-right. */
 @Composable
 fun DiffViewerDialog(title: String, diff: String, onDismiss: () -> Unit) {
-    val wide = LocalConfiguration.current.screenWidthDp >= 840
+    val wide = isWideLayout()
     var split by rememberSaveable { mutableStateOf(wide) }
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(Modifier.fillMaxSize().testTag("diff_viewer")) {

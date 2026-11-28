@@ -65,6 +65,7 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("status_mode").assertIsDisplayed()
         composeRule.onNodeWithTag("tool_card_todo_write").assertIsDisplayed()
         composeRule.onNodeWithTag("todo_panel").assertIsDisplayed()
+        Screenshots.take(composeRule, "chat")
 
         // Slash commands: suggestions while typing, then /help opens the command list.
         composeRule.onNodeWithTag("composer").performTextInput("/he")
@@ -81,9 +82,11 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("screen_code").assertIsDisplayed()
         composeRule.onNodeWithTag(TopLevelDestination.BUILDS.testTag).performClick()
         composeRule.onNodeWithTag("screen_builds").assertIsDisplayed()
+        Screenshots.take(composeRule, "builds")
 
         composeRule.onNodeWithTag(TopLevelDestination.MORE.testTag).performClick()
         composeRule.onNodeWithTag("screen_more").assertIsDisplayed()
+        Screenshots.take(composeRule, "more")
         composeRule.onNodeWithTag("more_licenses").performClick()
         composeRule.onNodeWithTag("screen_licenses").assertIsDisplayed()
         composeRule.onNodeWithTag("license_card_lgpl").assertIsDisplayed()
@@ -100,6 +103,7 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("navigate_back").performClick()
         composeRule.onNodeWithTag("more_settings").performClick()
         composeRule.onNodeWithTag("screen_settings").assertIsDisplayed()
+        Screenshots.take(composeRule, "settings")
         composeRule.onNodeWithTag("settings_mcp").performScrollTo().performClick()
         composeRule.onNodeWithTag("screen_mcp").assertIsDisplayed()
         composeRule.onNodeWithTag("navigate_back").performClick()

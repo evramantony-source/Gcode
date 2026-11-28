@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -212,7 +213,7 @@ private fun SearchBar(searcher: EditorSearcher, onClose: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             FilterChip(selected = !ignoreCase, onClick = { ignoreCase = !ignoreCase; run() }, label = { Text("Aa") })
             FilterChip(selected = regex, onClick = { regex = !regex; run() }, label = { Text(".*") })
-            Text(stringResource(R.string.find_matches, matches), style = MaterialTheme.typography.labelSmall)
+            Text(pluralStringResource(R.plurals.find_matches, matches, matches), style = MaterialTheme.typography.labelSmall)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(replacement, { replacement = it }, singleLine = true, placeholder = { Text(stringResource(R.string.replace)) }, modifier = Modifier.weight(1f))

@@ -1,7 +1,7 @@
 package dev.gcode.app.workspace
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.gcode.agent.tools.GitAccess
 import dev.gcode.agent.tools.SecretGuard
@@ -49,7 +49,7 @@ class WorkspaceProvider @Inject constructor(
             }
         }
         s.safFolderUri?.let { uri ->
-            val fs = runCatching { SafWorkspaceFs(context, Uri.parse(uri)) }.getOrNull() ?: return null
+            val fs = runCatching { SafWorkspaceFs(context, uri.toUri()) }.getOrNull() ?: return null
             return ActiveWorkspace("saf:$uri", fs, null, null, SecretGuard(denylist))
         }
         return null
@@ -65,7 +65,7 @@ class WorkspaceProvider @Inject constructor(
     /** Workspace by key, for rewind (the active workspace may have changed since the checkpoint). */
     suspend fun byKey(key: String): WorkspaceFs? = when {
         key.startsWith("repo:") -> workspaceGit.dirForName(key.removePrefix("repo:"))?.takeIf { it.isDirectory }?.let { LocalWorkspaceFs(it) }
-        key.startsWith("saf:") -> runCatching { SafWorkspaceFs(context, Uri.parse(key.removePrefix("saf:"))) }.getOrNull()
+        key.startsWith("saf:") -> runCatching { SafWorkspaceFs(context, key.removePrefix("saf:").toUri()) }.getOrNull()
         else -> null
     }
 }
