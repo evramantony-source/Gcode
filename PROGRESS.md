@@ -25,7 +25,7 @@ This file lets a new session resume without other context. It is updated after e
 | 7 Agent GitHub/Actions tools, build-fix loop | Merged | [#7](https://github.com/evramantony-source/Gcode/pull/7) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46045167907) |
 | 8 PRs, issues, releases, branches, conflicts | Merged | [#8](https://github.com/evramantony-source/Gcode/pull/8) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46146868812) |
 | 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Merged | [#9](https://github.com/evramantony-source/Gcode/pull/9) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46149311159) |
-| 10 Release signing, polish, README, tests | In review | #10 (see below) | — |
+| 10 Release signing, polish, README, tests | Merged | [#10](https://github.com/evramantony-source/Gcode/pull/10) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46151211082) |
 
 ## Features done
 
@@ -175,6 +175,6 @@ Checked against the code on the final branch. Status: **Done**, **Partial** or *
 
 ## Next step
 
-Phase 10 PR: wait for CI, add the screenshots from the API 36 run to docs/screenshots and the README,
-merge, and check that the push to `main` is green. After that the project is complete; the owner's
-only remaining action is the signing secrets for tagged releases.
+All ten phases are merged. The project is complete apart from the owner's action above (signing
+secrets, then a `v*` tag for the first signed release). For further work, start from `main`, keep one
+PR per change from `ccr-ee862235-7b5f5g`, and keep this file and docs/DECISIONS.md current.
