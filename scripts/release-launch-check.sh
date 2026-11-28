@@ -7,7 +7,9 @@ apk="$(ls app/build/outputs/apk/qa/*.apk | head -n 1)"
 pkg="dev.gcode.app.qa"
 
 adb install -r "${apk}"
-adb logcat -c
+# Clearing is best effort: some emulator images refuse ("failed to clear the 'main' log"). The qa package
+# never ran before, so any crash entry that names it comes from this launch.
+adb logcat -c || true
 adb shell am start -W -n "${pkg}/dev.gcode.app.MainActivity"
 sleep 15
 
