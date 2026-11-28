@@ -9,6 +9,19 @@ GitHub Actions.
 workflow, follows it live, reads the logs, downloads the APK artifact and installs it. When a build
 fails, the agent can read the failed steps, fix the code and rebuild, up to a limit you set.
 
+## Screenshots
+
+Captured automatically by the instrumented tests on an Android emulator; the chat uses a scripted
+Gemini fake.
+
+| Chat with a tool card | Code editor | Changes | Merge conflict |
+|---|---|---|---|
+| ![Chat](docs/screenshots/chat.png) | ![Editor](docs/screenshots/editor.png) | ![Changes](docs/screenshots/changes.png) | ![Conflict resolver](docs/screenshots/conflicts.png) |
+
+| Builds | More | Settings |
+|---|---|---|
+| ![Builds](docs/screenshots/builds.png) | ![More](docs/screenshots/more.png) | ![Settings](docs/screenshots/settings.png) |
+
 ## Features
 
 **Agent**
