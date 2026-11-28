@@ -157,17 +157,17 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
 - [x] Tests: conflict model, merge flows, release upload request
 
 ## Phase 9: Compaction, fallback polish, sessions, checkpoints, MCP, commands, sub-agents
-- [ ] countTokens tracking, auto-compact at 80% (turn boundaries only),
+- [x] countTokens tracking, auto-compact at 80% (turn boundaries only),
       manual Compact
-- [ ] Sessions screen (search, rename, delete, resume)
-- [ ] Rewind UI (code, conversation, or both; warns about remote actions)
-- [ ] GEMINI.md loading and `/init`
-- [ ] Slash commands (built-in + `.gcode/commands/*.md` with `$ARGUMENTS`)
-- [ ] `task` sub-agents and `.gcode/agents/*.md` definitions
-- [ ] MCP client (streamable HTTP, version negotiation), settings UI, tools
+- [x] Sessions screen (search, rename, delete, resume)
+- [x] Rewind UI (code, conversation, or both; warns about remote actions)
+- [x] GEMINI.md loading and `/init`
+- [x] Slash commands (built-in + `.gcode/commands/*.md` with `$ARGUMENTS`)
+- [x] `task` sub-agents and `.gcode/agents/*.md` definitions
+- [x] MCP client (streamable HTTP, version negotiation), settings UI, tools
       added to the registry
-- [ ] Image attachments and voice input
-- [ ] Tests: compaction boundary rules, rewind, command expansion,
+- [x] Image attachments and voice input
+- [x] Tests: compaction boundary rules, rewind, command expansion,
       frontmatter parsing, MCP client against MockWebServer (2026-07-28 and
       2025-11-25 servers)
 

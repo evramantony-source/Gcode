@@ -23,8 +23,8 @@ This file lets a new session resume without other context. It is updated after e
 | 5 Editor, explorer, source control UI | Merged | [#5](https://github.com/evramantony-source/Gcode/pull/5) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46041082463) |
 | 6 Remote build pipeline | Merged | [#6](https://github.com/evramantony-source/Gcode/pull/6) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46042568090) |
 | 7 Agent GitHub/Actions tools, build-fix loop | Merged | [#7](https://github.com/evramantony-source/Gcode/pull/7) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46045167907) |
-| 8 PRs, issues, releases, branches, conflicts | In review | #8 (see below) | — |
-| 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Not started | | |
+| 8 PRs, issues, releases, branches, conflicts | Merged | [#8](https://github.com/evramantony-source/Gcode/pull/8) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46146868812) |
+| 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | In review | #9 (see below) | — |
 | 10 Release signing, polish, README, tests | Not started | | |
 
 ## Features done
@@ -110,9 +110,24 @@ This file lets a new session resume without other context. It is updated after e
   Secrets screen under More; per-repository settings from the Code tab (author, pull rebase, default
   mode for new chats, build workflow, build-fix limit). Merge commits now use the branch name.
 
+- **Phase 9:** context compaction (estimate + countTokens near the threshold, auto before model calls
+  at turn boundaries, manual Compact in the chat menu and /compact; summary from a transcript; the
+  model sees the summary first; marker in the chat); Sessions screen (search, rename, delete, resume,
+  new chat; chat top bar opens it); Rewind (long-press a message: code, conversation or both, with
+  the list of restored files and of remote/Git actions that are not undone); memory (global
+  instructions in Settings + the repository's GEMINI.md; Init action and /init); slash commands
+  (built-ins plus .gcode/commands with $ARGUMENTS/$1…$9, suggestions while typing, /help); `task`
+  sub-agents (general + .gcode/agents with frontmatter tools/model); MCP client (2026-07-28 with
+  2025-11-25 fallback, SSE responses, sessions, version negotiation) with an MCP servers screen (add,
+  edit, trust, enable, test, delete; credential in the SecretStore) and tools in the agent's
+  registry; image attachments (photo picker, downscaled) and voice input (system recogniser);
+  Settings: global instructions, default mode, max steps, extra protected files.
+
 ## Known limitations
 
-- The Sessions screen is a placeholder and the Rewind UI arrives in Phase 9.
+- Only the repository's root GEMINI.md is loaded (no per-folder memory files).
+- MCP: tools only (no resources, prompts, sampling or elicitation); servers that need OAuth must be
+  given a token in the auth header field.
 - PR review comments (line comments) are not shown; the PR thread shows issue-style comments.
 - Dispatch inputs are read from the workflow file in the local clone (names only, no type-specific
   widgets); workflows that exist only on GitHub are dispatched without inputs.
@@ -125,9 +140,8 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for the Phase 8 PR's CI, merge it (merge commit), fast-forward the branch, then start Phase 9:
-countTokens-based context tracking and auto-compact at 80% (turn boundaries) plus manual Compact;
-Sessions screen (search, rename, delete, resume); Rewind UI (code / conversation / both, warns
-about remote actions); GEMINI.md loading and /init; slash commands (built-in + .gcode/commands/*.md
-with $ARGUMENTS); task sub-agents and .gcode/agents/*.md; MCP client (streamable HTTP, 2026-07-28
-and 2025-11-25) with settings UI; image attachments and voice input.
+Wait for the Phase 9 PR's CI, merge it (merge commit), fast-forward the branch, then Phase 10:
+release signing check on a test tag (document; the user must add the four signing secrets), R8
+check on a release build, accessibility/RTL/tablet pass, README (setup, OAuth App, key, signing),
+docs/TESTING.md, coverage report for :agent, :gemini, :github, DEFINITION OF DONE checklist in this
+file, final report.
