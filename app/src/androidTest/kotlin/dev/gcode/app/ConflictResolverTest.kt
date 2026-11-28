@@ -82,6 +82,7 @@ class ConflictResolverTest {
         composeRule.onNodeWithTag("resolve_conflicts").performClick()
 
         composeRule.waitUntilAtLeastOneExists(hasTestTag("hunk_0_theirs"), TIMEOUT)
+        Screenshots.take(composeRule, "conflicts")
         composeRule.onNodeWithTag("hunk_0_theirs").performClick()
         composeRule.onNodeWithTag("conflict_save").performClick()
 

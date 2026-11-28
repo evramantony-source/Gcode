@@ -1,6 +1,7 @@
 # CI for the GCode app itself.
 # - Every push and pull request: secret scan, Gradle build, lint, unit tests, debug APK artifact "gcode-debug-apk".
-# - Pull requests and pushes to main: instrumented UI smoke test on an emulator.
+# - Pull requests and pushes to main: instrumented tests on emulators (API 26, 36) and a launch check of
+#   the minified (R8) build.
 # - Version tags (v*): signed release APK attached to a GitHub Release (see docs/SIGNING.md).
 name: Android CI
 
@@ -65,8 +66,22 @@ jobs:
           fi
 
       - name: Build, lint and run unit tests
-        # Also builds the test APKs, so their dependencies land in the Gradle cache the emulator jobs restore.
-        run: ./gradlew lint test assembleDebug assembleDebugAndroidTest --stacktrace
+        # Also builds the test APKs and the minified qa build, so their dependencies land in the Gradle cache
+        # that the emulator jobs restore.
+        run: ./gradlew lint test assembleDebug assembleDebugAndroidTest assembleQa jacocoTestReport --stacktrace
+
+      - name: Coverage summary (JVM modules)
+        run: |
+          echo "### Unit test coverage" >> "${GITHUB_STEP_SUMMARY}"
+          python3 scripts/coverage_summary.py | tee -a "${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: "**/build/reports/jacoco/test/"
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Check THIRD_PARTY_NOTICES.md is up to date
         run: python3 scripts/generate_third_party_notices.py --check
@@ -130,7 +145,7 @@ jobs:
       - name: Build test APKs
         run: |
           for attempt in 1 2 3; do
-            ./gradlew assembleDebug assembleDebugAndroidTest --stacktrace && exit 0
+            ./gradlew assembleDebug assembleDebugAndroidTest assembleQa --stacktrace && exit 0
             echo "Attempt ${attempt} failed; retrying in 60 s"
             sleep 60
           done
@@ -151,7 +166,17 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedDebugAndroidTest --stacktrace
+          # Instrumented tests, then install and launch the minified (R8) build.
+          script: ./gradlew connectedDebugAndroidTest -Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true --stacktrace && bash scripts/pull-screenshots.sh && bash scripts/release-launch-check.sh
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshots-api-${{ matrix.api-level }}
+          path: app/build/screenshots/
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Upload instrumented test reports
         if: always()
