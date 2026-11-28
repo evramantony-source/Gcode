@@ -6,6 +6,8 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -87,8 +89,13 @@ class CodeEditorTest {
         composeRule.waitUntilAtLeastOneExists(hasTestTag("changes_list"), TIMEOUT)
         composeRule.onNodeWithTag("code_tab_history").performClick()
         composeRule.waitUntilAtLeastOneExists(hasTestTag("history_list"), TIMEOUT)
+        // Typing in the editor can leave the soft keyboard open, which shrinks the panel below it.
+        composeRule.runOnUiThread {
+            val window = composeRule.activity.window
+            WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
+        }
         composeRule.onNodeWithTag("code_tab_branches").performClick()
-        composeRule.onNodeWithTag("branch_list").assertIsDisplayed()
+        composeRule.waitUntil(TIMEOUT) { runCatching { composeRule.onNodeWithTag("branch_list").assertIsDisplayed() }.isSuccess }
     }
 
     private fun android.view.View.findEditor(): CodeEditor? {
