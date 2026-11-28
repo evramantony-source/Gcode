@@ -46,6 +46,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
             defaultMode = p[DEFAULT_MODE]?.takeIf { it != "full_auto" } ?: defaults.defaultMode,
             extraDenylist = p[EXTRA_DENYLIST]?.split('\n')?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList(),
             maxSteps = (p[MAX_STEPS] ?: defaults.maxSteps).coerceIn(5, 500),
+            globalMemory = p[GLOBAL_MEMORY].orEmpty(),
+            mcpServers = McpServerEntry.decode(p[MCP_SERVERS]),
         )
     }
 
@@ -70,6 +72,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         p[DEFAULT_MODE] = s.defaultMode.takeIf { it != "full_auto" } ?: "ask"
         p[EXTRA_DENYLIST] = s.extraDenylist.joinToString("\n")
         p[MAX_STEPS] = s.maxSteps
+        p[GLOBAL_MEMORY] = s.globalMemory
+        p[MCP_SERVERS] = McpServerEntry.encode(s.mcpServers)
     }
 
     private fun <T> MutablePreferences.setOrRemove(key: Preferences.Key<T>, value: T?) {
@@ -97,5 +101,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val DEFAULT_MODE = stringPreferencesKey("default_mode")
         val EXTRA_DENYLIST = stringPreferencesKey("extra_denylist")
         val MAX_STEPS = intPreferencesKey("max_steps")
+        val GLOBAL_MEMORY = stringPreferencesKey("global_memory")
+        val MCP_SERVERS = stringPreferencesKey("mcp_servers")
     }
 }

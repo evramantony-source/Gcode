@@ -39,6 +39,9 @@ import dev.gcode.app.ui.navigation.PullRequestsRoute
 import dev.gcode.app.ui.navigation.ReleasesRoute
 import dev.gcode.app.ui.navigation.SecretsRoute
 import dev.gcode.app.ui.navigation.ConflictsRoute
+import dev.gcode.app.ui.navigation.McpRoute
+import dev.gcode.app.ui.sessions.SessionsScreen
+import dev.gcode.app.ui.mcp.McpScreen
 import dev.gcode.app.ui.collab.IssuesScreen
 import dev.gcode.app.ui.collab.PullRequestsScreen
 import dev.gcode.app.ui.collab.ReleasesScreen
@@ -50,7 +53,6 @@ import dev.gcode.app.ui.navigation.SettingsRoute
 import dev.gcode.app.ui.navigation.TopLevelDestination
 import dev.gcode.app.ui.screens.AboutScreen
 import dev.gcode.app.ui.screens.MoreScreen
-import dev.gcode.app.ui.screens.PlaceholderScreen
 import dev.gcode.app.ui.chat.ChatScreen
 import dev.gcode.app.ui.approval.ApprovalHost
 import dev.gcode.app.ui.code.CodeScreen
@@ -96,7 +98,7 @@ fun GCodeAppUi() {
         val wide = LocalConfiguration.current.screenWidthDp >= 840
         Row(Modifier.fillMaxSize()) {
             if (wide) {
-                Box(Modifier.width(420.dp).fillMaxHeight().testTag("chat_pane")) { ChatScreen() }
+                Box(Modifier.width(420.dp).fillMaxHeight().testTag("chat_pane")) { ChatScreen(onOpenSessions = { navigate(SessionsRoute) }) }
                 VerticalDivider()
             }
             Box(Modifier.weight(1f).fillMaxHeight()) {
@@ -112,7 +114,7 @@ fun GCodeAppUi() {
                     if (wide) {
                         CodeScreen(onOpenRepos = openRepos, onResolveConflicts = { navigate(ConflictsRoute) })
                     } else {
-                        ChatScreen()
+                        ChatScreen(onOpenSessions = { navigate(SessionsRoute) })
                     }
                 }
                 entry<ReposRoute> { ReposScreen(onOpened = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CODE) }) }
@@ -122,15 +124,11 @@ fun GCodeAppUi() {
                 entry<PullRequestsRoute> { PullRequestsScreen(onBack = back, onOpenRepos = openRepos) }
                 entry<IssuesRoute> { IssuesScreen(onBack = back, onOpenRepos = openRepos) }
                 entry<ReleasesRoute> { ReleasesScreen(onBack = back, onOpenRepos = openRepos) }
-                entry<SessionsRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.more_sessions), stringResource(R.string.placeholder_sessions),
-                        phase = 9, icon = R.drawable.ic_sessions, testTag = "screen_sessions", onBack = back,
-                    )
-                }
+                entry<SessionsRoute> { SessionsScreen(onBack = back, onResume = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CHAT) }) }
                 entry<SecretsRoute> { SecretsScreen(onBack = back, onOpenRepos = openRepos) }
                 entry<ConflictsRoute> { ConflictsScreen(onBack = back) }
-                entry<SettingsRoute> { SettingsScreen(onBack = back) }
+                entry<SettingsRoute> { SettingsScreen(onBack = back, onOpenMcp = { navigate(McpRoute) }) }
+                entry<McpRoute> { McpScreen(onBack = back) }
                 entry<LicensesRoute> {
                     LicensesScreen(onBack = back, onOpenLicense = { navigate(LicenseTextRoute(it)) })
                 }

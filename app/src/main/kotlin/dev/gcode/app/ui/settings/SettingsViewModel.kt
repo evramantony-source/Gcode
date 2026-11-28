@@ -54,6 +54,10 @@ class SettingsViewModel @Inject constructor(
     fun setAutoSwitch(on: Boolean) = set { it.copy(autoSwitchModels = on) }
     fun setClientIdOverride(id: String) = set { it.copy(githubClientIdOverride = id.trim().ifEmpty { null }) }
     fun setCompactionThreshold(percent: Int) = set { it.copy(compactionThresholdPercent = percent.coerceIn(50, 95)) }
+    fun setGlobalMemory(text: String) = set { it.copy(globalMemory = text.trim()) }
+    fun setDefaultMode(id: String) = set { it.copy(defaultMode = id.takeIf { m -> m != "full_auto" } ?: "ask") }
+    fun setMaxSteps(steps: Int) = set { it.copy(maxSteps = steps.coerceIn(5, 200)) }
+    fun setExtraDenylist(text: String) = set { it.copy(extraDenylist = text.lines().map { l -> l.trim() }.filter { l -> l.isNotEmpty() }) }
 
     fun refreshModels() {
         local.value = local.value.copy(refreshing = true, message = null)

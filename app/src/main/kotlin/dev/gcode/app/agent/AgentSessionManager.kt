@@ -11,6 +11,7 @@ import dev.gcode.agent.loop.ConversationStore
 import dev.gcode.agent.loop.FinishReason
 import dev.gcode.agent.loop.MessageKind
 import dev.gcode.agent.tools.CheckpointStore
+import dev.gcode.agent.extend.TaskTool
 import dev.gcode.agent.tools.CoreTools
 import dev.gcode.agent.tools.FileToolDeps
 import dev.gcode.agent.tools.GitToolDeps
@@ -83,6 +84,8 @@ class AgentSessionManager @Inject constructor(
     private val workspaces: WorkspaceProvider,
     private val db: GCodeDatabase,
     private val extraTools: ExtraToolsProvider,
+    private val compactor: ConversationCompactor,
+    private val extensions: WorkspaceExtensions,
     @ApplicationScope private val scope: CoroutineScope,
 ) {
     private val jobs = mutableMapOf<String, Job>()
@@ -110,8 +113,10 @@ class AgentSessionManager @Inject constructor(
         jobs[sessionId] = scope.launch {
             try {
                 val turn = TurnWorkspace(workspaces.current()) { workspaces.current() }
-                val executor = executor(sessionId, turn)
+                val configHolder = arrayOfNulls<AgentConfig>(1)
+                val executor = executor(sessionId, turn) { configHolder[0] ?: error("The turn has not started") }
                 val config = buildConfig(sessionId, turn.value, executor)
+                configHolder[0] = config
                 AgentLoop(gemini, store(sessionId), executor).run(user, config).collect { event -> onEvent(sessionId, event) }
             } catch (e: CancellationException) {
                 update(sessionId) { it.copy(running = false, streamingText = "", streamingThoughts = "", finishReason = FinishReason.CANCELLED, tools = it.tools.map { t -> t.copy(running = false) }) }
@@ -127,7 +132,28 @@ class AgentSessionManager @Inject constructor(
 
     suspend fun mode(sessionId: String): PermissionMode = PermissionMode.fromId(sessions.get(sessionId)?.mode)
 
-    private suspend fun executor(sessionId: String, turn: TurnWorkspace): ToolRegistryExecutor {
+    /** Auto-compact before a model call when the context is at the threshold; never fails the turn. */
+    private suspend fun autoCompact(sessionId: String, model: String) {
+        try {
+            if (compactor.maybeCompact(sessionId, model)) update(sessionId) { it.copy(notice = context.getString(dev.gcode.app.R.string.compacted_notice)) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            update(sessionId) { it.copy(notice = context.getString(dev.gcode.app.R.string.compaction_failed, describe(e))) }
+        }
+    }
+
+    /** Manual Compact (chat menu or /compact) between turns. */
+    suspend fun compactNow(sessionId: String): Boolean {
+        check(!isRunning(sessionId)) { "Wait for the agent to finish before compacting" }
+        val s = settings.current()
+        val catalog = models.current()
+        val now = System.currentTimeMillis()
+        val model = selector.chain(catalog, s.preferredModel).firstOrNull { health.isUsable(it, now) } ?: s.preferredModel
+        return compactor.compactNow(sessionId, model)
+    }
+
+    private suspend fun executor(sessionId: String, turn: TurnWorkspace, turnConfig: () -> AgentConfig): ToolRegistryExecutor {
         val stores = mutableMapOf<String, CheckpointStore>()
         // Checkpoints go to the store of whichever workspace is open when the file changes (gh_clone_repo can switch it).
         val checkpoints = object : CheckpointStore {
@@ -140,11 +166,22 @@ class AgentSessionManager @Inject constructor(
             override suspend fun delete(ids: List<Long>) = current().delete(ids)
         }
         val todos = SessionTodoStore(sessionId, sessions) {}
-        val tools: List<Tool> = CoreTools.create(
+        val base: List<Tool> = CoreTools.create(
             FileToolDeps({ turn.value?.fs }, { turn.value?.guard ?: dev.gcode.agent.tools.SecretGuard() }, checkpoints),
             GitToolDeps { turn.value?.git },
             todos,
         ) + extraTools.tools(sessionId, turn)
+        // Sub-agents (`task`): the built-in general agent plus `.gcode/agents/*.md`, sharing this turn's tools and approvals.
+        val agents = extensions.agents(turn.value)
+        val task = TaskTool(
+            gemini = gemini,
+            parentTools = { base },
+            definitions = { agents },
+            mode = { mode(sessionId) },
+            prompter = prompts,
+            baseConfig = turnConfig,
+        )
+        val tools = base + task
         return ToolRegistryExecutor(
             tools,
             mode = { mode(sessionId) },
@@ -173,12 +210,16 @@ class AgentSessionManager @Inject constructor(
             ),
             thinking = { model -> ThinkingSupport.configFor(model, catalog.find(model)?.thinking ?: false, level, s.showThoughts, s.rejectedThinking) },
             maxSteps = s.maxSteps,
-            beforeModelCall = { executor.refreshMode(); extraTools.beforeModelCall(sessionId) },
+            beforeModelCall = {
+                executor.refreshMode()
+                extraTools.beforeModelCall(sessionId)
+                autoCompact(sessionId, candidates.firstOrNull() ?: s.preferredModel)
+            },
         )
     }
 
     private fun store(sessionId: String) = object : ConversationStore {
-        override suspend fun history(): List<Content> = sessions.messages(sessionId).filter { !it.compacted }.map { it.content }
+        override suspend fun history(): List<Content> = ConversationCompactor.historyOf(sessions.messages(sessionId))
 
         override suspend fun append(content: Content, usage: UsageMetadata?, model: String?, kind: MessageKind) {
             val k = when (kind) {

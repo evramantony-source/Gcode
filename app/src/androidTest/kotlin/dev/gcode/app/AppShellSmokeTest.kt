@@ -10,6 +10,7 @@ import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -65,6 +66,14 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("tool_card_todo_write").assertIsDisplayed()
         composeRule.onNodeWithTag("todo_panel").assertIsDisplayed()
 
+        // Slash commands: suggestions while typing, then /help opens the command list.
+        composeRule.onNodeWithTag("composer").performTextInput("/he")
+        composeRule.waitUntilAtLeastOneExists(hasTestTag("command_help"), TIMEOUT)
+        composeRule.onNodeWithTag("command_help").performClick()
+        composeRule.onNodeWithTag("send").performClick()
+        composeRule.waitUntilAtLeastOneExists(hasTestTag("help_dismiss"), TIMEOUT)
+        composeRule.onNodeWithTag("help_dismiss").performClick()
+
         TopLevelDestination.entries.forEach { composeRule.onNodeWithTag(it.testTag).assertIsDisplayed() }
         composeRule.onNodeWithTag(TopLevelDestination.REPOS.testTag).performClick()
         composeRule.onNodeWithTag("github_sign_in").assertIsDisplayed()
@@ -86,7 +95,14 @@ class AppShellSmokeTest {
                 composeRule.onNodeWithTag(screen).assertIsDisplayed()
                 composeRule.onNodeWithTag("navigate_back").performClick()
             }
+        composeRule.onNodeWithTag("more_sessions").performClick()
+        composeRule.onNodeWithTag("screen_sessions").assertIsDisplayed()
+        composeRule.onNodeWithTag("navigate_back").performClick()
         composeRule.onNodeWithTag("more_settings").performClick()
+        composeRule.onNodeWithTag("screen_settings").assertIsDisplayed()
+        composeRule.onNodeWithTag("settings_mcp").performScrollTo().performClick()
+        composeRule.onNodeWithTag("screen_mcp").assertIsDisplayed()
+        composeRule.onNodeWithTag("navigate_back").performClick()
         composeRule.onNodeWithTag("screen_settings").assertIsDisplayed()
     }
 

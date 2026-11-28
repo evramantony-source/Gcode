@@ -17,6 +17,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object ReleasesRoute : NavKey
 @Serializable data object SecretsRoute : NavKey
 @Serializable data object ConflictsRoute : NavKey
+@Serializable data object McpRoute : NavKey
 @Serializable data object SessionsRoute : NavKey
 @Serializable data object SettingsRoute : NavKey
 @Serializable data object LicensesRoute : NavKey

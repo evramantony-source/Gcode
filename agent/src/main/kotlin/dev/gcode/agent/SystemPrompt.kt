@@ -31,6 +31,7 @@ object SystemPrompt {
         appendLine("- For multi-step work keep a todo list with todo_write: one item in_progress at a time, mark items done as you go.")
         appendLine("- The user approves changes. If they reject one, read their comment and adjust; do not retry the same change unchanged.")
         appendLine("- Never try to read secrets (.env, keystores, local.properties); ask the user instead.")
+        appendLine("- For self-contained research or a focused side task, you can delegate to a sub-agent with the task tool; it returns only its report.")
         appendLine("- When done, summarise what changed and what the user should check.")
         appendLine()
         appendLine("# Workspace")
@@ -62,7 +63,7 @@ object SystemPrompt {
         }
         if (!memory.isNullOrBlank()) {
             appendLine()
-            appendLine("# Project memory (GEMINI.md)")
+            appendLine("# Memory (follow these instructions)")
             appendLine(memory.trim())
         }
         if (!extra.isNullOrBlank()) {

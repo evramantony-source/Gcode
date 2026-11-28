@@ -36,6 +36,9 @@ data class AppSettings(
     val extraDenylist: List<String> = emptyList(),
     /** Maximum agent model calls per turn before asking to continue. */
     val maxSteps: Int = 50,
+    /** Instructions added to every chat, before the repository's GEMINI.md. */
+    val globalMemory: String = "",
+    val mcpServers: List<McpServerEntry> = emptyList(),
 ) {
     init {
         require(modelCacheHours in 1..168) { "modelCacheHours out of range: $modelCacheHours" }

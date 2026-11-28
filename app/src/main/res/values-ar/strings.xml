@@ -17,8 +17,6 @@
     <string name="more_about">حول GCode</string>
 
     <!-- Placeholder screens -->
-    <string name="coming_in_phase">قادم في المرحلة %1$d</string>
-    <string name="placeholder_sessions">استأنف جلسات الوكيل السابقة أو أعد تسميتها أو احذفها.</string>
 
     <!-- About -->
     <string name="about_body">GCode مساعد برمجة ذكي لنظام Android. يعتمد على واجهة Google Gemini البرمجية بمفتاحك الخاص. تجري جميع عمليات البناء على GitHub Actions، ولا يُترجَم أي شيء على هذا الجهاز.</string>
@@ -198,7 +196,6 @@
     <string name="todos_title">المهام %1$d/%2$d</string>
     <string name="folder_link">فتح مجلد على الجهاز</string>
     <string name="folder_unlink">إغلاق المجلد</string>
-    <string name="folder_linked">مجلد الجهاز: %1$s</string>
     <string name="folder_linked_body">يمكن للوكيل قراءة الملفات في هذا المجلد وتعديلها. تحتاج أدوات Git إلى مستودع مستنسخ.</string>
 
     <!-- Phase 5: editor, explorer, source control -->
@@ -394,4 +391,60 @@
     <string name="repo_settings_workflow">ملف سير عمل البناء</string>
     <string name="repo_settings_fix_limit">محاولات الإصلاح التلقائي للبناء: %1$d</string>
     <string name="repo_settings_fix_limit_hint">عدد المرات التي يمكن فيها للوكيل الإصلاح وإعادة البناء بعد فشل بناء GitHub Actions قبل أن يتوقف ويسألك. 0 يوقف الإصلاح التلقائي.</string>
+    <!-- المرحلة 9 -->
+    <string name="compacted_notice">تم ضغط المحادثة السابقة لتحرير السياق.</string>
+    <string name="compaction_failed">تعذّر ضغط المحادثة: %1$s</string>
+    <string name="compact_now">ضغط المحادثة</string>
+    <string name="init_memory">إنشاء GEMINI.md أو تحديثه</string>
+    <string name="commands_title">الأوامر</string>
+    <string name="commands_custom_hint">أضف أوامرك الخاصة كملفات Markdown في ‎.gcode/commands/‎ (استخدم $ARGUMENTS للنص بعد الأمر)، والوكلاء الفرعيين في ‎.gcode/agents/‎.</string>
+    <string name="attach_image">إرفاق صور</string>
+    <string name="attach_failed">تعذّرت قراءة تلك الصورة.</string>
+    <string name="attachment_image">صورة %1$s</string>
+    <string name="attachment_remove">إزالة المرفق</string>
+    <string name="attachments_count">🖼 %1$d صورة</string>
+    <string name="voice_input">إدخال صوتي</string>
+    <string name="voice_prompt">تحدث برسالتك</string>
+    <string name="voice_unavailable">التعرف على الكلام غير متاح على هذا الجهاز.</string>
+    <string name="rewind_title">الرجوع إلى ما قبل هذه الرسالة</string>
+    <string name="rewind_files">ستُستعاد %1$d ملفات غيّرها الوكيل بعد هذه الرسالة:</string>
+    <string name="rewind_no_files">لم يغيّر الوكيل أي ملفات بعد هذه الرسالة.</string>
+    <string name="rewind_remote_warning">هذه الإجراءات حدثت بالفعل ولن يتم التراجع عنها:</string>
+    <string name="rewind_git_warning">يُحتفظ بسجل Git المحلي (الرجوع يستعيد الملفات، لا الإيداعات أو الفروع):</string>
+    <string name="rewind_both">استعادة الشيفرة والمحادثة</string>
+    <string name="rewind_conversation">استعادة المحادثة فقط</string>
+    <string name="rewind_code">استعادة الشيفرة فقط</string>
+    <string name="sessions_search">البحث في المحادثات</string>
+    <string name="sessions_none">لم يتم العثور على محادثات.</string>
+    <string name="sessions_running">قيد التشغيل</string>
+    <string name="sessions_current">مفتوحة</string>
+    <string name="sessions_rename">إعادة تسمية</string>
+    <string name="sessions_delete_title">حذف المحادثة؟</string>
+    <string name="sessions_delete_body">حذف \"%1$s\" ورسائلها من هذا الجهاز؟</string>
+    <string name="settings_agent">الوكيل</string>
+    <string name="global_memory">تعليمات عامة</string>
+    <string name="global_memory_body">تُضاف إلى كل محادثة، قبل ملف GEMINI.md الخاص بالمستودع.</string>
+    <string name="default_mode">الوضع الافتراضي للمحادثات الجديدة</string>
+    <string name="max_steps">الحد الأقصى للخطوات في كل دور: %1$d</string>
+    <string name="denylist_title">ملفات محمية إضافية</string>
+    <string name="denylist_body">نمط واحد في كل سطر. لا تُرسل هذه الملفات، مثل ‎.env‎ ومخازن المفاتيح، إلى Gemini دون موافقتك.</string>
+    <string name="mcp_title">خوادم MCP</string>
+    <string name="mcp_settings_body">%1$d مفعّلة. تُعرض أدواتها على الوكيل.</string>
+    <string name="mcp_body">يتصل GCode بخوادم Model Context Protocol عبر HTTP القابل للبث (البروتوكول 2026-07-28 مع الرجوع إلى 2025-11-25 والإصدارات الأقدم). تظهر أدواتها للوكيل باسم mcp__server__tool وتطلب الموافقة ما لم يكن الخادم موثوقًا ويصفها بأنها للقراءة فقط.</string>
+    <string name="mcp_none">لا توجد خوادم MCP بعد.</string>
+    <string name="mcp_add">إضافة خادم MCP</string>
+    <string name="mcp_edit">تعديل خادم MCP</string>
+    <string name="mcp_url">عنوان الخادم</string>
+    <string name="mcp_url_invalid">استخدم عنوان https (يُسمح بـ http لـ localhost فقط).</string>
+    <string name="mcp_header">اسم ترويسة المصادقة</string>
+    <string name="mcp_secret">قيمة ترويسة المصادقة</string>
+    <string name="mcp_secret_keep">اتركها فارغة للإبقاء على القيمة المخزنة</string>
+    <string name="mcp_trusted">الوثوق بهذا الخادم</string>
+    <string name="mcp_trusted_hint">تعمل أدواته للقراءة فقط دون سؤال.</string>
+    <string name="mcp_trusted_label">موثوق</string>
+    <string name="mcp_test">اختبار</string>
+    <string name="mcp_not_checked">لم يتم الاتصال بعد.</string>
+    <string name="mcp_connected">متصل بـ %1$s (MCP %2$s)، %3$d أدوات:</string>
+    <string name="mcp_delete_title">إزالة %1$s؟</string>
+    <string name="mcp_delete_body">تُزال بيانات الخادم وبيانات اعتماده المخزنة من هذا الجهاز.</string>
 </resources>
