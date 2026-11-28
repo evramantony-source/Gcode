@@ -65,7 +65,8 @@ jobs:
           fi
 
       - name: Build, lint and run unit tests
-        run: ./gradlew lint test assembleDebug --stacktrace
+        # Also builds the test APKs, so their dependencies land in the Gradle cache the emulator jobs restore.
+        run: ./gradlew lint test assembleDebug assembleDebugAndroidTest --stacktrace
 
       - name: Check THIRD_PARTY_NOTICES.md is up to date
         run: python3 scripts/generate_third_party_notices.py --check
