@@ -129,7 +129,7 @@ fun BuildsScreen(onOpenRepos: () -> Unit, viewModel: BuildsViewModel = hiltViewM
         }
     }
     if (state.showSecrets) SecretsSheet(state, viewModel)
-    state.confirm?.let { ConfirmDialog(it, state, viewModel) }
+    state.confirm?.let { BuildConfirmDialog(it, state, viewModel) }
     if (state.needsUnknownSources) {
         AlertDialog(
             onDismissRequest = viewModel::dismissUnknownSources,
@@ -460,57 +460,63 @@ private fun LogViewer(steps: List<StepLog>) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SecretsSheet(state: BuildsUiState, viewModel: BuildsViewModel) {
+    ModalBottomSheet(onDismissRequest = { viewModel.showSecrets(false) }) {
+        SecretsContent(state, viewModel, Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("secrets_sheet"))
+    }
+}
+
+/** Repository secrets and the stable debug key; used by the Builds sheet and the Secrets screen. */
+@Composable
+fun SecretsContent(state: BuildsUiState, viewModel: BuildsViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var name by rememberSaveable { mutableStateOf("") }
     var value by remember { mutableStateOf("") }
-    ModalBottomSheet(onDismissRequest = { viewModel.showSecrets(false) }) {
-        LazyColumn(Modifier.fillMaxWidth().padding(horizontal = 16.dp).testTag("secrets_sheet"), contentPadding = PaddingValues(bottom = 32.dp)) {
-            item {
-                Text(stringResource(R.string.secrets_title), style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.height(8.dp))
-                Text(stringResource(R.string.secrets_body), style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.debug_key_title), style = MaterialTheme.typography.titleMedium)
-                Text(stringResource(R.string.debug_key_body), style = MaterialTheme.typography.bodySmall)
-                Spacer(Modifier.height(8.dp))
-                OutlinedButton(onClick = viewModel::requestDebugKey, modifier = Modifier.testTag("debug_key")) { Text(stringResource(R.string.debug_key_action)) }
-                Spacer(Modifier.height(16.dp))
-                Text(stringResource(R.string.secrets_existing), style = MaterialTheme.typography.titleMedium)
-            }
-            val names = state.secretNames
-            if (names == null) {
-                item { LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 8.dp)) }
-            } else if (names.isEmpty()) {
-                item { Text(stringResource(R.string.secrets_none), style = MaterialTheme.typography.bodySmall) }
-            } else {
-                items(names) { secret -> Text(secret, fontFamily = FontFamily.Monospace, modifier = Modifier.padding(vertical = 4.dp)) }
-            }
-            item {
-                Spacer(Modifier.height(16.dp))
-                OutlinedTextField(name, { name = it.trim() }, label = { Text(stringResource(R.string.secrets_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
-                OutlinedTextField(
-                    value, { value = it },
-                    label = { Text(stringResource(R.string.secrets_value)) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { viewModel.requestPutSecret(name, value); value = "" }, enabled = name.isNotBlank() && value.isNotEmpty()) {
-                        Text(stringResource(R.string.secrets_save))
-                    }
-                    TextButton(onClick = {
-                        val repo = state.repo?.fullName ?: return@TextButton
-                        context.startActivity(Intent(Intent.ACTION_VIEW, "https://github.com/$repo/settings/secrets/actions".toUri()))
-                    }) { Text(stringResource(R.string.secrets_open_github)) }
+    LazyColumn(modifier, contentPadding = PaddingValues(bottom = 32.dp)) {
+        item {
+            Text(stringResource(R.string.secrets_title), style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(8.dp))
+            Text(stringResource(R.string.secrets_body), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.debug_key_title), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.debug_key_body), style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(8.dp))
+            OutlinedButton(onClick = viewModel::requestDebugKey, modifier = Modifier.testTag("debug_key")) { Text(stringResource(R.string.debug_key_action)) }
+            Spacer(Modifier.height(16.dp))
+            Text(stringResource(R.string.secrets_existing), style = MaterialTheme.typography.titleMedium)
+        }
+        val names = state.secretNames
+        if (names == null) {
+            item { LinearProgressIndicator(Modifier.fillMaxWidth().padding(vertical = 8.dp)) }
+        } else if (names.isEmpty()) {
+            item { Text(stringResource(R.string.secrets_none), style = MaterialTheme.typography.bodySmall) }
+        } else {
+            items(names) { secret -> Text(secret, fontFamily = FontFamily.Monospace, modifier = Modifier.padding(vertical = 4.dp)) }
+        }
+        item {
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(name, { name = it.trim() }, label = { Text(stringResource(R.string.secrets_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth().testTag("secret_name"))
+            OutlinedTextField(
+                value, { value = it },
+                label = { Text(stringResource(R.string.secrets_value)) },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { viewModel.requestPutSecret(name, value); value = "" }, enabled = name.isNotBlank() && value.isNotEmpty()) {
+                    Text(stringResource(R.string.secrets_save))
                 }
+                TextButton(onClick = {
+                    val repo = state.repo?.fullName ?: return@TextButton
+                    context.startActivity(Intent(Intent.ACTION_VIEW, "https://github.com/$repo/settings/secrets/actions".toUri()))
+                }) { Text(stringResource(R.string.secrets_open_github)) }
             }
         }
     }
 }
 
 @Composable
-private fun ConfirmDialog(confirm: BuildConfirm, state: BuildsUiState, viewModel: BuildsViewModel) {
+fun BuildConfirmDialog(confirm: BuildConfirm, state: BuildsUiState, viewModel: BuildsViewModel) {
     val repo = state.repo?.fullName.orEmpty()
     val (title, body) = when (confirm) {
         is BuildConfirm.Install -> stringResource(R.string.install_confirm_title) to stringResource(R.string.install_confirm_body, confirm.label, confirm.runNumber, confirm.repo)

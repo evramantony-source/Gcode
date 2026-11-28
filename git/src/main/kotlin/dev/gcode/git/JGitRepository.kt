@@ -183,8 +183,10 @@ class JGitRepository private constructor(private val git: Git) : AutoCloseable {
     }
 
     fun merge(name: String, message: String? = null): MergeOutcome {
+        // Including the ref (not just its id) gives the usual "Merge branch 'x'" message.
+        val ref = repository.findRef(name)
         val id = repository.resolve(name) ?: throw GitOperationException("Unknown branch $name")
-        val result = git.merge().include(id).setCommit(true).apply { message?.let { setMessage(it) } }.call()
+        val result = git.merge().apply { if (ref != null) include(ref) else include(id) }.setCommit(true).apply { message?.let { setMessage(it) } }.call()
         return when (result.mergeStatus) {
             MergeResult.MergeStatus.ALREADY_UP_TO_DATE -> MergeOutcome.AlreadyUpToDate
             MergeResult.MergeStatus.FAST_FORWARD, MergeResult.MergeStatus.FAST_FORWARD_SQUASHED -> MergeOutcome.Merged(result.newHead?.name, true)
@@ -199,6 +201,29 @@ class JGitRepository private constructor(private val git: Git) : AutoCloseable {
     /** True while a merge is in progress (conflicts not yet committed). */
     fun isMerging(): Boolean = repository.repositoryState == org.eclipse.jgit.lib.RepositoryState.MERGING ||
         repository.repositoryState == org.eclipse.jgit.lib.RepositoryState.MERGING_RESOLVED
+
+    /** Paths that still have conflict stages in the index. */
+    fun conflicts(): List<String> = git.status().call().conflicting.sorted()
+
+    /**
+     * Resolves a conflicted file by taking one side entirely (binary files, delete/modify conflicts).
+     * If that side deleted the file, the file is removed. The result is staged.
+     */
+    fun takeSide(path: String, ours: Boolean) {
+        val stage = if (ours) org.eclipse.jgit.dircache.DirCacheEntry.STAGE_2 else org.eclipse.jgit.dircache.DirCacheEntry.STAGE_3
+        val cache = repository.readDirCache()
+        val exists = (0 until cache.entryCount).any { cache.getEntry(it).let { e -> e.pathString == path && e.stage == stage } }
+        if (exists) {
+            git.checkout().addPath(path).setStage(if (ours) org.eclipse.jgit.api.CheckoutCommand.Stage.OURS else org.eclipse.jgit.api.CheckoutCommand.Stage.THEIRS).call()
+            git.add().addFilepattern(path).call()
+        } else {
+            java.io.File(repository.workTree, path).delete()
+            git.rm().addFilepattern(path).call()
+        }
+    }
+
+    /** The prepared merge commit message (MERGE_MSG), if a merge is in progress. */
+    fun mergeMessage(): String? = repository.readMergeCommitMsg()?.lines()?.filterNot { it.startsWith("#") }?.joinToString("\n")?.trim()?.ifEmpty { null }
 
     fun abortMerge() {
         git.reset().setMode(ResetCommand.ResetType.HARD).setRef(Constants.HEAD).call()

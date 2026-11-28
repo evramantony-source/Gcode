@@ -37,6 +37,13 @@ import dev.gcode.app.ui.navigation.LicensesRoute
 import dev.gcode.app.ui.navigation.MoreRoute
 import dev.gcode.app.ui.navigation.PullRequestsRoute
 import dev.gcode.app.ui.navigation.ReleasesRoute
+import dev.gcode.app.ui.navigation.SecretsRoute
+import dev.gcode.app.ui.navigation.ConflictsRoute
+import dev.gcode.app.ui.collab.IssuesScreen
+import dev.gcode.app.ui.collab.PullRequestsScreen
+import dev.gcode.app.ui.collab.ReleasesScreen
+import dev.gcode.app.ui.conflicts.ConflictsScreen
+import dev.gcode.app.ui.builds.SecretsScreen
 import dev.gcode.app.ui.navigation.ReposRoute
 import dev.gcode.app.ui.navigation.SessionsRoute
 import dev.gcode.app.ui.navigation.SettingsRoute
@@ -62,6 +69,7 @@ fun GCodeAppUi() {
     val current = BackStackOps.currentTopLevel(backStack)
     val navigate: (NavKey) -> Unit = { BackStackOps.navigate(backStack, it) }
     val back: () -> Unit = { BackStackOps.back(backStack) }
+    val openRepos: () -> Unit = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }
 
     // At the root of a tab other than Chat, Back returns to Chat (NavDisplay only handles deeper stacks).
     BackHandler(enabled = backStack.size == 1 && BackStackOps.canGoBack(backStack)) { back() }
@@ -102,39 +110,26 @@ fun GCodeAppUi() {
             entryProvider = entryProvider {
                 entry<ChatRoute> {
                     if (wide) {
-                        CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) })
+                        CodeScreen(onOpenRepos = openRepos, onResolveConflicts = { navigate(ConflictsRoute) })
                     } else {
                         ChatScreen()
                     }
                 }
                 entry<ReposRoute> { ReposScreen(onOpened = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.CODE) }) }
-                entry<CodeRoute> { CodeScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
+                entry<CodeRoute> { CodeScreen(onOpenRepos = openRepos, onResolveConflicts = { navigate(ConflictsRoute) }) }
                 entry<BuildsRoute> { BuildsScreen(onOpenRepos = { BackStackOps.selectTopLevel(backStack, TopLevelDestination.REPOS) }) }
                 entry<MoreRoute> { MoreScreen(onNavigate = navigate) }
-                entry<PullRequestsRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.more_pull_requests), stringResource(R.string.placeholder_pull_requests),
-                        phase = 8, icon = R.drawable.ic_pull_request, testTag = "screen_pull_requests", onBack = back,
-                    )
-                }
-                entry<IssuesRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.more_issues), stringResource(R.string.placeholder_issues),
-                        phase = 8, icon = R.drawable.ic_issue, testTag = "screen_issues", onBack = back,
-                    )
-                }
-                entry<ReleasesRoute> {
-                    PlaceholderScreen(
-                        stringResource(R.string.more_releases), stringResource(R.string.placeholder_releases),
-                        phase = 8, icon = R.drawable.ic_release, testTag = "screen_releases", onBack = back,
-                    )
-                }
+                entry<PullRequestsRoute> { PullRequestsScreen(onBack = back, onOpenRepos = openRepos) }
+                entry<IssuesRoute> { IssuesScreen(onBack = back, onOpenRepos = openRepos) }
+                entry<ReleasesRoute> { ReleasesScreen(onBack = back, onOpenRepos = openRepos) }
                 entry<SessionsRoute> {
                     PlaceholderScreen(
                         stringResource(R.string.more_sessions), stringResource(R.string.placeholder_sessions),
                         phase = 9, icon = R.drawable.ic_sessions, testTag = "screen_sessions", onBack = back,
                     )
                 }
+                entry<SecretsRoute> { SecretsScreen(onBack = back, onOpenRepos = openRepos) }
+                entry<ConflictsRoute> { ConflictsScreen(onBack = back) }
                 entry<SettingsRoute> { SettingsScreen(onBack = back) }
                 entry<LicensesRoute> {
                     LicensesScreen(onBack = back, onOpenLicense = { navigate(LicenseTextRoute(it)) })

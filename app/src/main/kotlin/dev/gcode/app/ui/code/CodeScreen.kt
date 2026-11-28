@@ -44,6 +44,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,13 +64,21 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.gcode.app.R
 import dev.gcode.app.ui.components.GCodeScreen
+import dev.gcode.app.ui.repos.RepoSettingsDialog
+import dev.gcode.app.ui.repos.RepoSettingsViewModel
 import dev.gcode.app.ui.theme.CodeTextStyle
 import dev.gcode.git.ChangeKind
 
 private enum class CodeTab(val label: Int) { FILES(R.string.code_tab_files), CHANGES(R.string.code_tab_changes), HISTORY(R.string.code_tab_history), BRANCHES(R.string.code_tab_branches) }
 
 @Composable
-fun CodeScreen(onOpenRepos: () -> Unit, viewModel: ChangesViewModel = hiltViewModel(), code: CodeViewModel = hiltViewModel()) {
+fun CodeScreen(
+    onOpenRepos: () -> Unit,
+    onResolveConflicts: () -> Unit = {},
+    viewModel: ChangesViewModel = hiltViewModel(),
+    code: CodeViewModel = hiltViewModel(),
+    repoSettings: RepoSettingsViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val files by code.state.collectAsStateWithLifecycle()
     val folder by viewModel.safFolder.collectAsStateWithLifecycle()
@@ -86,10 +95,20 @@ fun CodeScreen(onOpenRepos: () -> Unit, viewModel: ChangesViewModel = hiltViewMo
     val dark = isSystemInDarkTheme()
     val wide = LocalConfiguration.current.screenWidthDp >= 840
     val hasGit = state.repo != null
+    var showRepoSettings by rememberSaveable { mutableStateOf(false) }
+    // Refresh when the screen comes back (e.g. after resolving conflicts on their own screen).
+    LaunchedEffect(Unit) { viewModel.refresh() }
     GCodeScreen(
         title = state.repo?.fullName ?: files.workspaceName ?: stringResource(R.string.nav_code),
         modifier = Modifier.testTag("screen_code"),
-        actions = { if (files.workspaceKey != null) IconButton(onClick = { code.refreshTree(); viewModel.refresh() }) { Icon(painterResource(R.drawable.ic_refresh), stringResource(R.string.refresh)) } },
+        actions = {
+            if (hasGit) {
+                IconButton(onClick = { showRepoSettings = true }, modifier = Modifier.testTag("repo_settings_button")) {
+                    Icon(painterResource(R.drawable.ic_settings), stringResource(R.string.repo_settings))
+                }
+            }
+            if (files.workspaceKey != null) IconButton(onClick = { code.refreshTree(); viewModel.refresh() }) { Icon(painterResource(R.drawable.ic_refresh), stringResource(R.string.refresh)) }
+        },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             if (files.workspaceKey == null) {
@@ -124,13 +143,19 @@ fun CodeScreen(onOpenRepos: () -> Unit, viewModel: ChangesViewModel = hiltViewMo
             }
             when (if (tab in tabs) tab else CodeTab.FILES) {
                 CodeTab.FILES -> FilesTab(files, code, holder, dark, wide)
-                CodeTab.CHANGES -> ChangesPanel(state, viewModel)
+                CodeTab.CHANGES -> Column {
+                    if (state.merging) MergeBanner(viewModel, onResolveConflicts)
+                    ChangesPanel(state, viewModel)
+                }
                 CodeTab.HISTORY -> HistoryPanel(state, viewModel)
-                CodeTab.BRANCHES -> BranchesPanel(state, viewModel)
+                CodeTab.BRANCHES -> BranchesPanel(state, viewModel, onResolveConflicts)
             }
         }
     }
     state.diff?.let { diff -> DiffViewerDialog(state.diffTitle.orEmpty(), diff, viewModel::closeDiff) }
+    if (showRepoSettings) {
+        state.repo?.let { repo -> RepoSettingsDialog(repo, onSave = { repoSettings.save(it); showRepoSettings = false }, onDismiss = { showRepoSettings = false }) }
+    }
     files.message?.let { msg ->
         AlertDialog(onDismissRequest = code::dismissMessage, text = { Text(msg) }, confirmButton = { TextButton(onClick = code::dismissMessage) { Text(stringResource(R.string.dismiss)) } })
     }
@@ -174,17 +199,21 @@ private fun HistoryPanel(state: ChangesUiState, viewModel: ChangesViewModel) {
 }
 
 @Composable
-private fun BranchesPanel(state: ChangesUiState, viewModel: ChangesViewModel) {
+private fun MergeBanner(viewModel: ChangesViewModel, onResolveConflicts: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(stringResource(R.string.merge_in_progress), color = MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
+        TextButton(onClick = onResolveConflicts, modifier = Modifier.testTag("resolve_conflicts")) { Text(stringResource(R.string.conflicts_resolve)) }
+        TextButton(onClick = viewModel::abortMerge) { Text(stringResource(R.string.merge_abort)) }
+    }
+}
+
+@Composable
+private fun BranchesPanel(state: ChangesUiState, viewModel: ChangesViewModel, onResolveConflicts: () -> Unit) {
     var newBranch by rememberSaveable { mutableStateOf("") }
     var confirm by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
     val current = state.status?.branch
     Column(Modifier.fillMaxSize()) {
-        if (state.merging) {
-            Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.merge_in_progress), color = MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
-                TextButton(onClick = viewModel::abortMerge) { Text(stringResource(R.string.merge_abort)) }
-            }
-        }
+        if (state.merging) MergeBanner(viewModel, onResolveConflicts)
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             OutlinedTextField(newBranch, { newBranch = it }, singleLine = true, label = { Text(stringResource(R.string.branch_new)) }, modifier = Modifier.weight(1f).testTag("new_branch_name"))
             TextButton(onClick = { viewModel.createBranch(newBranch); newBranch = "" }, enabled = newBranch.isNotBlank()) { Text(stringResource(R.string.create)) }

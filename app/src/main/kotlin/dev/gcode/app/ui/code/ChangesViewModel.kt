@@ -166,8 +166,8 @@ class ChangesViewModel @Inject constructor(private val git: WorkspaceGit, privat
         if (git.let { local.value.busy != null }) return
         local.update { it.copy(busy = label, error = if (report) null else it.error) }
         viewModelScope.launch {
-            runCatching { git.withRepo(block) }
-                .onSuccess { status -> local.update { it.copy(status = status, busy = null) } }
+            runCatching { git.withRepo { repo, entity -> block(repo, entity) to repo.isMerging() } }
+                .onSuccess { (status, merging) -> local.update { it.copy(status = status, merging = merging, busy = null) } }
                 .onFailure { e -> local.update { it.copy(busy = null, error = e.message ?: e::class.simpleName) } }
         }
     }

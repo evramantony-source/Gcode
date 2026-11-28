@@ -22,8 +22,8 @@ This file lets a new session resume without other context. It is updated after e
 | 4 Workspace tools, agent loop, permissions | Merged | [#4](https://github.com/evramantony-source/Gcode/pull/4) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46038035247) |
 | 5 Editor, explorer, source control UI | Merged | [#5](https://github.com/evramantony-source/Gcode/pull/5) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46041082463) |
 | 6 Remote build pipeline | Merged | [#6](https://github.com/evramantony-source/Gcode/pull/6) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46042568090) |
-| 7 Agent GitHub/Actions tools, build-fix loop | In review | #7 (see below) | — |
-| 8 PRs, issues, releases, branches, conflicts | Not started | | |
+| 7 Agent GitHub/Actions tools, build-fix loop | Merged | [#7](https://github.com/evramantony-source/Gcode/pull/7) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46045167907) |
+| 8 PRs, issues, releases, branches, conflicts | In review | #8 (see below) | — |
 | 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Not started | | |
 | 10 Release signing, polish, README, tests | Not started | | |
 
@@ -99,11 +99,21 @@ This file lets a new session resume without other context. It is updated after e
   (Google Search grounding with sources); build-fix guard (per-repo limit, default 3) with guidance in
   the system prompt.
 
+- **Phase 8:** Pull requests screen (open/closed/all, detail with Markdown body, mergeability, files
+  with per-file diffs, comments, comment, merge with method choice (always confirmed, stronger
+  warning into the default branch), close/reopen, create from branch pickers); Issues screen (filter,
+  detail with comments, comment, close as completed / not planned, reopen, create with labels);
+  Releases screen (list with assets, create tag + release with notes/generated notes/draft/pre-release
+  and an APK from the build history, upload an APK to an existing release); merge conflict resolver
+  (file chips, per-hunk Ours / Theirs / Both / Edit / Ask AI with review, base shown for diff3,
+  whole-file side for binary or delete/modify conflicts, save and stage, commit or abort the merge);
+  Secrets screen under More; per-repository settings from the Code tab (author, pull rebase, default
+  mode for new chats, build workflow, build-fix limit). Merge commits now use the branch name.
+
 ## Known limitations
 
-- PR/issue/release screens are still placeholders until Phase 8; the Rewind UI arrives in Phase 9.
-- The per-repository build-fix limit is stored (default 3) but has no settings UI until Phase 8's
-  repository settings.
+- The Sessions screen is a placeholder and the Rewind UI arrives in Phase 9.
+- PR review comments (line comments) are not shown; the PR thread shows issue-style comments.
 - Dispatch inputs are read from the workflow file in the local clone (names only, no type-specific
   widgets); workflows that exist only on GitHub are dispatched without inputs.
 - JGit 5.13 has no shallow clone; "only the default branch" is offered instead.
@@ -115,8 +125,9 @@ This file lets a new session resume without other context. It is updated after e
 
 ## Next step
 
-Wait for the Phase 7 PR's CI, merge it (merge commit), fast-forward the branch, then start Phase 8:
-PR list/detail (files, diff, comments)/create/comment/merge (confirmed into the default branch),
-issue list/detail/create/comment/close, releases (list, create tag + release, upload APK), branch merge
-with the conflict resolver (Ours / Theirs / Both / Edit / Ask AI), secrets screen, per-repo settings
-(build-fix limit, author, default mode).
+Wait for the Phase 8 PR's CI, merge it (merge commit), fast-forward the branch, then start Phase 9:
+countTokens-based context tracking and auto-compact at 80% (turn boundaries) plus manual Compact;
+Sessions screen (search, rename, delete, resume); Rewind UI (code / conversation / both, warns
+about remote actions); GEMINI.md loading and /init; slash commands (built-in + .gcode/commands/*.md
+with $ARGUMENTS); task sub-agents and .gcode/agents/*.md; MCP client (streamable HTTP, 2026-07-28
+and 2025-11-25) with settings UI; image attachments and voice input.

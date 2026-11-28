@@ -79,6 +79,13 @@ class AppShellSmokeTest {
         composeRule.onNodeWithTag("screen_licenses").assertIsDisplayed()
         composeRule.onNodeWithTag("license_card_lgpl").assertIsDisplayed()
         composeRule.onNodeWithTag("navigate_back").performClick()
+        // Collaboration screens without a repository show the "open a repository" state.
+        listOf("more_pull_requests" to "screen_pull_requests", "more_issues" to "screen_issues", "more_releases" to "screen_releases", "more_secrets" to "screen_secrets")
+            .forEach { (item, screen) ->
+                composeRule.onNodeWithTag(item).performClick()
+                composeRule.onNodeWithTag(screen).assertIsDisplayed()
+                composeRule.onNodeWithTag("navigate_back").performClick()
+            }
         composeRule.onNodeWithTag("more_settings").performClick()
         composeRule.onNodeWithTag("screen_settings").assertIsDisplayed()
     }

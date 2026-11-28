@@ -57,7 +57,7 @@ class ChatViewModel @Inject constructor(
     private val settingsRepo: SettingsRepository,
     private val selector: ModelSelector,
     private val active: ActiveSession,
-    workspaceGit: WorkspaceGit,
+    private val workspaceGit: WorkspaceGit,
 ) : ViewModel() {
 
     private val modelStatus = MutableStateFlow(false to (null as String?))
@@ -99,7 +99,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private suspend fun newSession(): SessionEntity = sessions.create(mode = settingsRepo.current().defaultMode)
+    /** New sessions start in the open repository's default mode, else the global default (never Full auto). */
+    private suspend fun newSession(): SessionEntity =
+        sessions.create(mode = workspaceGit.active()?.defaultMode?.takeIf { it != PermissionMode.FULL_AUTO.id } ?: settingsRepo.current().defaultMode)
 
     fun send(text: String) {
         val id = active.id.value ?: return
