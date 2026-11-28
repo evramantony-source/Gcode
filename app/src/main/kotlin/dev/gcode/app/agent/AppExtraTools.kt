@@ -51,10 +51,13 @@ class AppExtraTools @Inject constructor(
     private val models: ModelRepository,
     private val selector: ModelSelector,
     private val health: ModelHealth,
+    private val extensions: WorkspaceExtensions,
+    private val mcp: McpManager,
 ) : ExtraToolsProvider {
 
     override suspend fun tools(sessionId: String, workspace: TurnWorkspace): List<Tool> {
-        val web = listOf(WebFetchTool(okHttp), WebSearchTool(transport) { searchModel() })
+        // MCP servers from Settings; a server that is down contributes no tools instead of failing the turn.
+        val web = listOf(WebFetchTool(okHttp), WebSearchTool(transport) { searchModel() }) + runCatching { mcp.tools() }.getOrDefault(emptyList())
         if (account.state.value !is GitHubAuthState.SignedIn) return web
         val host = Host(workspace)
         // One guard per turn: a new user message allows a new round of fix attempts.
@@ -63,7 +66,7 @@ class AppExtraTools @Inject constructor(
         return web + GitHubTools.create(deps, guard)
     }
 
-    override suspend fun memory(workspace: ActiveWorkspace?): String? = null
+    override suspend fun memory(workspace: ActiveWorkspace?): String? = extensions.memory(workspace)
 
     override suspend fun promptExtra(workspace: ActiveWorkspace?): String? =
         if (account.state.value is GitHubAuthState.SignedIn) GitHubTools.GUIDANCE else WEB_ONLY_GUIDANCE

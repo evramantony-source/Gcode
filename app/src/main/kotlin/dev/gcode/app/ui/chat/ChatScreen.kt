@@ -48,10 +48,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,25 +73,49 @@ import dev.gcode.app.ui.components.GCodeScreen
 import dev.gcode.app.ui.models.ModelPickerSheet
 
 @Composable
-fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
+fun ChatScreen(onOpenSessions: () -> Unit = {}, viewModel: ChatViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var confirmFullAuto by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     // Android 13+: the agent's foreground-service notification (with Stop) needs this permission to be visible.
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
-    val send: (String) -> Unit = { text ->
+    var menu by remember { mutableStateOf(false) }
+    val send: (String, List<Attachment>) -> Unit = { text, attachments ->
         if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-        viewModel.send(text)
+        viewModel.send(text, attachments)
     }
     GCodeScreen(
         title = state.session?.title ?: stringResource(R.string.nav_chat),
         modifier = Modifier.testTag("screen_chat"),
         actions = {
+            IconButton(onClick = onOpenSessions, modifier = Modifier.testTag("open_sessions")) {
+                Icon(painterResource(R.drawable.ic_history), stringResource(R.string.more_sessions))
+            }
             IconButton(onClick = viewModel::newChat, modifier = Modifier.testTag("new_chat")) {
                 Icon(painterResource(R.drawable.ic_new_chat), stringResource(R.string.new_chat))
+            }
+            Box {
+                IconButton(onClick = { menu = true }, modifier = Modifier.testTag("chat_menu")) {
+                    Icon(painterResource(R.drawable.ic_more_vert), stringResource(R.string.more_actions))
+                }
+                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.compact_now)) },
+                        onClick = { menu = false; viewModel.compact() },
+                        enabled = !state.live.running && state.items.isNotEmpty(),
+                        modifier = Modifier.testTag("menu_compact"),
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.init_memory)) },
+                        onClick = { menu = false; viewModel.initMemory() },
+                        enabled = !state.live.running,
+                        modifier = Modifier.testTag("menu_init"),
+                    )
+                    DropdownMenuItem(text = { Text(stringResource(R.string.commands_title)) }, onClick = { menu = false; viewModel.refreshCommands(); viewModel.send("/help") })
+                }
             }
         },
     ) { padding ->
@@ -99,10 +125,20 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 onModelClick = { showPicker = true },
                 onMode = { mode -> if (mode == PermissionMode.FULL_AUTO) confirmFullAuto = true else viewModel.setMode(mode) },
             )
-            MessageList(state, Modifier.weight(1f))
+            if (state.extras.compacting) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("compacting"))
+            MessageList(state, Modifier.weight(1f), onRewind = viewModel::previewRewind)
             TodoPanel(state.todos)
             LiveArea(state, onRetry = viewModel::retry, onDismiss = viewModel::dismissError)
-            Composer(running = state.live.running, onSend = send, onStop = viewModel::stop)
+            ChatComposer(
+                running = state.live.running,
+                commands = state.extras.commands,
+                prefill = state.extras.prefill,
+                onPrefillConsumed = viewModel::consumePrefill,
+                onTypingCommand = { viewModel.refreshCommands() },
+                onSend = send,
+                onStop = viewModel::stop,
+                onMessage = { viewModel.showMessage(it) },
+            )
         }
     }
     if (confirmFullAuto) {
@@ -117,6 +153,11 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
             },
             dismissButton = { TextButton(onClick = { confirmFullAuto = false }) { Text(stringResource(R.string.cancel)) } },
         )
+    }
+    if (state.extras.showHelp) CommandHelpDialog(state.extras.commands, viewModel::dismissHelp)
+    state.extras.rewind?.let { preview -> RewindSheet(preview, onRewind = viewModel::rewind, onDismiss = viewModel::dismissRewind) }
+    state.extras.message?.let { text ->
+        AlertDialog(onDismissRequest = viewModel::dismissMessage, text = { Text(text) }, confirmButton = { TextButton(onClick = viewModel::dismissMessage) { Text(stringResource(R.string.dismiss)) } })
     }
     if (showPicker) {
         ModelPickerSheet(
@@ -201,7 +242,7 @@ private fun TodoPanel(todos: List<TodoItem>) {
 }
 
 @Composable
-private fun MessageList(state: ChatUiState, modifier: Modifier) {
+private fun MessageList(state: ChatUiState, modifier: Modifier, onRewind: (Int) -> Unit) {
     val listState = rememberLazyListState()
     val count = state.items.size + if (state.live.running) 1 else 0
     LaunchedEffect(count, state.live.streamingText.length, state.live.tools.size) {
@@ -216,7 +257,7 @@ private fun MessageList(state: ChatUiState, modifier: Modifier) {
     LazyColumn(modifier.fillMaxWidth().testTag("message_list"), state = listState, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(state.items, key = { it.key }) { item ->
             when (item) {
-                is ChatItem.User -> UserBubble(item.text)
+                is ChatItem.User -> UserBubble(item.text, item.images, onLongPress = { onRewind(item.seq) })
                 is ChatItem.Model -> ModelMessage(item.text, item.thoughts, item.model)
                 is ChatItem.ToolCall -> ToolCard(item.name, item.args, running = false, ok = item.ok, result = item.result, display = null)
                 is ChatItem.Compacted -> CompactedMarker()
@@ -265,12 +306,23 @@ private fun CompactedMarker() {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun UserBubble(text: String) {
-    if (text.isBlank()) return
+private fun UserBubble(text: String, images: Int, onLongPress: () -> Unit) {
+    if (text.isBlank() && images == 0) return
+    val rewindLabel = stringResource(R.string.rewind_title)
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.End) {
-        Surface(color = MaterialTheme.colorScheme.primaryContainer, shape = RoundedCornerShape(16.dp), modifier = Modifier.widthIn(max = 560.dp)) {
-            SelectionContainer { Text(text, modifier = Modifier.padding(12.dp), color = MaterialTheme.colorScheme.onPrimaryContainer) }
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.widthIn(max = 560.dp)
+                .combinedClickable(onClick = {}, onLongClick = onLongPress, onLongClickLabel = rewindLabel)
+                .testTag("user_message"),
+        ) {
+            Column(Modifier.padding(12.dp)) {
+                if (images > 0) Text(stringResource(R.string.attachments_count, images), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                if (text.isNotBlank()) Text(text, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            }
         }
     }
 }
@@ -340,32 +392,6 @@ private fun LiveArea(state: ChatUiState, onRetry: () -> Unit, onDismiss: () -> U
                 TextButton(onClick = onDismiss) { Text(stringResource(R.string.dismiss)) }
                 TextButton(onClick = onRetry) { Text(stringResource(R.string.retry)) }
             }
-        }
-    }
-}
-
-@Composable
-private fun Composer(running: Boolean, onSend: (String) -> Unit, onStop: () -> Unit) {
-    var text by rememberSaveable { mutableStateOf("") }
-    Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier.weight(1f).testTag("composer"),
-            placeholder = { Text(stringResource(R.string.composer_hint)) },
-            maxLines = 6,
-        )
-        if (running) {
-            IconButton(onClick = onStop, modifier = Modifier.testTag("stop")) { Icon(painterResource(R.drawable.ic_stop), stringResource(R.string.stop)) }
-        } else {
-            IconButton(
-                onClick = {
-                    onSend(text)
-                    text = ""
-                },
-                enabled = text.isNotBlank(),
-                modifier = Modifier.testTag("send"),
-            ) { Icon(painterResource(R.drawable.ic_send), stringResource(R.string.send)) }
         }
     }
 }

@@ -19,8 +19,6 @@
     <string name="more_about">About GCode</string>
 
     <!-- Placeholder screens -->
-    <string name="coming_in_phase">Coming in phase %1$d</string>
-    <string name="placeholder_sessions">Resume, rename and delete past agent sessions.</string>
 
     <!-- About -->
     <string name="about_body">GCode is an agentic coding assistant for Android. The AI backend is the Google Gemini API with your own key. All builds run on GitHub Actions; nothing is compiled on this device.</string>
@@ -200,7 +198,6 @@
     <string name="todos_title">Tasks %1$d/%2$d</string>
     <string name="folder_link">Open a device folder</string>
     <string name="folder_unlink">Close the folder</string>
-    <string name="folder_linked">Device folder: %1$s</string>
     <string name="folder_linked_body">The agent can read and edit files in this folder. Git tools need a cloned repository.</string>
 
     <!-- Phase 5: editor, explorer, source control -->
@@ -396,4 +393,60 @@
     <string name="repo_settings_workflow">Build workflow file</string>
     <string name="repo_settings_fix_limit">Automatic build-fix attempts: %1$d</string>
     <string name="repo_settings_fix_limit_hint">How often the agent may fix and rebuild after a failed GitHub Actions build before it stops and asks you. 0 turns automatic fixing off.</string>
+    <!-- Phase 9: compaction, sessions, rewind, memory, commands, MCP, attachments, voice -->
+    <string name="compacted_notice">Compacted the earlier conversation to free context.</string>
+    <string name="compaction_failed">Could not compact the conversation: %1$s</string>
+    <string name="compact_now">Compact conversation</string>
+    <string name="init_memory">Create or update GEMINI.md</string>
+    <string name="commands_title">Commands</string>
+    <string name="commands_custom_hint">Add your own commands as Markdown files in .gcode/commands/ (use $ARGUMENTS for the text after the command), and sub-agents in .gcode/agents/.</string>
+    <string name="attach_image">Attach images</string>
+    <string name="attach_failed">That image could not be read.</string>
+    <string name="attachment_image">Image %1$s</string>
+    <string name="attachment_remove">Remove attachment</string>
+    <string name="attachments_count">🖼 %1$d image(s)</string>
+    <string name="voice_input">Voice input</string>
+    <string name="voice_prompt">Speak your message</string>
+    <string name="voice_unavailable">Speech recognition is not available on this device.</string>
+    <string name="rewind_title">Rewind to before this message</string>
+    <string name="rewind_files">%1$d file(s) the agent changed after this message will be restored:</string>
+    <string name="rewind_no_files">The agent changed no files after this message.</string>
+    <string name="rewind_remote_warning">These actions already happened and are not undone:</string>
+    <string name="rewind_git_warning">Local Git history is kept (rewinding restores files, not commits or branches):</string>
+    <string name="rewind_both">Restore code and conversation</string>
+    <string name="rewind_conversation">Restore conversation only</string>
+    <string name="rewind_code">Restore code only</string>
+    <string name="sessions_search">Search chats</string>
+    <string name="sessions_none">No chats found.</string>
+    <string name="sessions_running">running</string>
+    <string name="sessions_current">open</string>
+    <string name="sessions_rename">Rename</string>
+    <string name="sessions_delete_title">Delete chat?</string>
+    <string name="sessions_delete_body">Delete \"%1$s\" and its messages from this device?</string>
+    <string name="settings_agent">Agent</string>
+    <string name="global_memory">Global instructions</string>
+    <string name="global_memory_body">Added to every chat, before the repository\'s GEMINI.md.</string>
+    <string name="default_mode">Default mode for new chats</string>
+    <string name="max_steps">Maximum steps per turn: %1$d</string>
+    <string name="denylist_title">Extra protected files</string>
+    <string name="denylist_body">One glob per line. These files, like .env and keystores, are never sent to Gemini without your approval.</string>
+    <string name="mcp_title">MCP servers</string>
+    <string name="mcp_settings_body">%1$d enabled. Their tools are offered to the agent.</string>
+    <string name="mcp_body">GCode connects to Model Context Protocol servers over streamable HTTP (protocol 2026-07-28, with fallback to 2025-11-25 and older). Their tools appear to the agent as mcp__server__tool and ask for approval unless the server is trusted and marks them read-only.</string>
+    <string name="mcp_none">No MCP servers yet.</string>
+    <string name="mcp_add">Add MCP server</string>
+    <string name="mcp_edit">Edit MCP server</string>
+    <string name="mcp_url">Server URL</string>
+    <string name="mcp_url_invalid">Use an https URL (http only for localhost).</string>
+    <string name="mcp_header">Auth header name</string>
+    <string name="mcp_secret">Auth header value</string>
+    <string name="mcp_secret_keep">Leave empty to keep the stored value</string>
+    <string name="mcp_trusted">Trust this server</string>
+    <string name="mcp_trusted_hint">Its read-only tools run without asking.</string>
+    <string name="mcp_trusted_label">Trusted</string>
+    <string name="mcp_test">Test</string>
+    <string name="mcp_not_checked">Not connected yet.</string>
+    <string name="mcp_connected">Connected to %1$s (MCP %2$s), %3$d tools:</string>
+    <string name="mcp_delete_title">Remove %1$s?</string>
+    <string name="mcp_delete_body">The server and its stored credential are removed from this device.</string>
 </resources>

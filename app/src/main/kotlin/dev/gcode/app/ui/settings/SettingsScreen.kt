@@ -18,6 +18,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.FilterChip
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,12 +40,14 @@ import dev.gcode.app.ui.github.GitHubSignInViewModel
 import dev.gcode.core.data.settings.ThemeMode
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel(), signIn: GitHubSignInViewModel = hiltViewModel()) {
+fun SettingsScreen(onBack: () -> Unit, onOpenMcp: () -> Unit = {}, viewModel: SettingsViewModel = hiltViewModel(), signIn: GitHubSignInViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val github by signIn.account.state.collectAsStateWithLifecycle()
     var clientIdDraft by rememberSaveable(state.settings.githubClientIdOverride) { mutableStateOf(state.settings.githubClientIdOverride.orEmpty()) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val s = state.settings
+    var memoryDraft by rememberSaveable(s.globalMemory) { mutableStateOf(s.globalMemory) }
+    var denylistDraft by rememberSaveable(s.extraDenylist) { mutableStateOf(s.extraDenylist.joinToString("\n")) }
     GCodeScreen(title = stringResource(R.string.more_settings), onBack = onBack, modifier = Modifier.testTag("screen_settings")) { padding ->
         Column(Modifier.padding(padding).verticalScroll(rememberScrollState())) {
             SectionHeader(stringResource(R.string.settings_gemini))
@@ -71,6 +76,43 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
                 modifier = Modifier.clickable(onClick = viewModel::refreshModels),
                 supportingContent = { Text(state.message ?: stringResource(R.string.models_count, state.catalog.chatModels.size)) },
             ) { Text(stringResource(if (state.refreshing) R.string.refreshing else R.string.refresh_models)) }
+            HorizontalDivider()
+
+            SectionHeader(stringResource(R.string.settings_agent))
+            ListItem(supportingContent = {
+                Column {
+                    Text(stringResource(R.string.global_memory_body))
+                    OutlinedTextField(
+                        value = memoryDraft,
+                        onValueChange = { memoryDraft = it },
+                        minLines = 3,
+                        maxLines = 10,
+                        modifier = Modifier.fillMaxWidth().testTag("global_memory"),
+                    )
+                    TextButton(onClick = { viewModel.setGlobalMemory(memoryDraft) }, enabled = memoryDraft.trim() != s.globalMemory) { Text(stringResource(R.string.save)) }
+                }
+            }) { Text(stringResource(R.string.global_memory)) }
+            ListItem(supportingContent = {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf("ask" to R.string.mode_ask, "auto_accept_edits" to R.string.mode_auto_accept, "plan" to R.string.mode_plan).forEach { (id, label) ->
+                        FilterChip(selected = s.defaultMode == id, onClick = { viewModel.setDefaultMode(id) }, label = { Text(stringResource(label)) })
+                    }
+                }
+            }) { Text(stringResource(R.string.default_mode)) }
+            ListItem(supportingContent = {
+                Slider(value = s.maxSteps.toFloat(), onValueChange = { viewModel.setMaxSteps(it.toInt()) }, valueRange = 5f..200f)
+            }) { Text(stringResource(R.string.max_steps, s.maxSteps)) }
+            ListItem(supportingContent = {
+                Column {
+                    Text(stringResource(R.string.denylist_body))
+                    OutlinedTextField(value = denylistDraft, onValueChange = { denylistDraft = it }, minLines = 2, modifier = Modifier.fillMaxWidth(), placeholder = { Text("*.secret\nconfig/prod/*") })
+                    TextButton(onClick = { viewModel.setExtraDenylist(denylistDraft) }) { Text(stringResource(R.string.save)) }
+                }
+            }) { Text(stringResource(R.string.denylist_title)) }
+            ListItem(
+                modifier = Modifier.clickable(onClick = onOpenMcp).testTag("settings_mcp"),
+                supportingContent = { Text(stringResource(R.string.mcp_settings_body, s.mcpServers.count { it.enabled })) },
+            ) { Text(stringResource(R.string.mcp_title)) }
             HorizontalDivider()
 
             SectionHeader(stringResource(R.string.settings_github))
