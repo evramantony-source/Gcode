@@ -5,7 +5,6 @@ import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -87,7 +86,7 @@ class ConflictResolverTest {
         composeRule.onNodeWithTag("conflict_save").performClick()
 
         composeRule.waitUntilAtLeastOneExists(hasTestTag("commit_merge"), TIMEOUT)
-        composeRule.onNodeWithTag("commit_merge").performScrollTo().performClick()
+        composeRule.onNodeWithTag("commit_merge").performClick()
         composeRule.waitUntil(TIMEOUT) { JGitRepository.open(repoDir).use { !it.isMerging() } }
 
         assertEquals("val greeting = \"hi there\"\n", File(repoDir, "Greeting.kt").readText())
