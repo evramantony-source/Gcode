@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -130,7 +131,7 @@ fun McpScreen(onBack: () -> Unit, viewModel: McpViewModel = hiltViewModel()) {
                             status == null -> Text(stringResource(R.string.mcp_not_checked), style = MaterialTheme.typography.bodySmall)
                             status.error != null -> Text(status.error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                             else -> Text(
-                                stringResource(R.string.mcp_connected, status.info?.name ?: server.name, status.info?.protocolVersion.orEmpty(), status.tools.size) +
+                                pluralStringResource(R.plurals.mcp_connected, status.tools.size, status.info?.name ?: server.name, status.info?.protocolVersion.orEmpty(), status.tools.size) +
                                     "\n" + status.tools.joinToString { it.name },
                                 style = MaterialTheme.typography.bodySmall,
                             )

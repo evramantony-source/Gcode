@@ -15,7 +15,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -63,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.gcode.app.R
+import dev.gcode.app.ui.components.isWideLayout
 import dev.gcode.app.ui.components.GCodeScreen
 import dev.gcode.app.ui.repos.RepoSettingsDialog
 import dev.gcode.app.ui.repos.RepoSettingsViewModel
@@ -93,7 +93,7 @@ fun CodeScreen(
     var tab by rememberSaveable { mutableStateOf(CodeTab.FILES) }
     val holder = remember { EditorHolder() }
     val dark = isSystemInDarkTheme()
-    val wide = LocalConfiguration.current.screenWidthDp >= 840
+    val wide = isWideLayout()
     val hasGit = state.repo != null
     var showRepoSettings by rememberSaveable { mutableStateOf(false) }
     // Refresh when the screen comes back (e.g. after resolving conflicts on their own screen).

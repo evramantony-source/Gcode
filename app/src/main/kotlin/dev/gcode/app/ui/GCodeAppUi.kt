@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -24,6 +23,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.gcode.app.R
+import dev.gcode.app.ui.components.isWideLayout
 import dev.gcode.app.ui.licenses.LicenseTextScreen
 import dev.gcode.app.ui.licenses.LicensesScreen
 import dev.gcode.app.ui.navigation.AboutRoute
@@ -95,7 +95,7 @@ fun GCodeAppUi() {
         },
     ) {
         // Tablets and large screens: the chat stays beside the file, diff or build panel (ARCHITECTURE.md section 12).
-        val wide = LocalConfiguration.current.screenWidthDp >= 840
+        val wide = isWideLayout()
         Row(Modifier.fillMaxSize()) {
             if (wide) {
                 Box(Modifier.width(420.dp).fillMaxHeight().testTag("chat_pane")) { ChatScreen(onOpenSessions = { navigate(SessionsRoute) }) }

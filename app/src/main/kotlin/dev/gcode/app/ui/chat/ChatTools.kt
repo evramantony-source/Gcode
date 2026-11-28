@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -174,7 +175,7 @@ fun RewindSheet(preview: RewindPreview, onRewind: (code: Boolean, conversation: 
             Text(stringResource(R.string.rewind_title), style = MaterialTheme.typography.titleLarge)
             Text("“${preview.userText.take(200)}”", style = MaterialTheme.typography.bodyMedium)
             Text(
-                if (preview.files.isEmpty()) stringResource(R.string.rewind_no_files) else stringResource(R.string.rewind_files, preview.files.size) + "\n" + preview.files.take(12).joinToString("\n") { "• $it" },
+                if (preview.files.isEmpty()) stringResource(R.string.rewind_no_files) else pluralStringResource(R.plurals.rewind_files, preview.files.size, preview.files.size) + "\n" + preview.files.take(12).joinToString("\n") { "• $it" },
                 style = MaterialTheme.typography.bodySmall,
             )
             if (preview.remoteActions.isNotEmpty()) {

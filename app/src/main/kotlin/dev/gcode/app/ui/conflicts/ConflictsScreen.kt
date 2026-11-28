@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.LayoutDirection
@@ -150,7 +151,7 @@ private fun HunkList(segments: List<ConflictSegment>, state: ConflictsUiState, v
     LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 24.dp)) {
         item {
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.conflicts_progress, state.resolutions.size, state.hunkCount), modifier = Modifier.weight(1f))
+                Text(pluralStringResource(R.plurals.conflicts_progress, state.hunkCount, state.resolutions.size, state.hunkCount), modifier = Modifier.weight(1f))
                 Button(onClick = viewModel::saveFile, enabled = state.allResolved && !state.busy, modifier = Modifier.testTag("conflict_save")) {
                     Text(stringResource(R.string.conflict_mark_resolved))
                 }
