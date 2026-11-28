@@ -172,14 +172,15 @@ Legend: `[ ]` to do · `[x]` done · *(stub)* placeholder allowed in that phase
       2025-11-25 servers)
 
 ## Phase 10: Release signing, polish, README, tests
-- [ ] Release signing check end to end (tag → signed APK in a GitHub
-      Release)
-- [ ] R8 rules checked on a release build (serialization, JGit,
+- [x] Release signing checked with a throwaway keystore through the same
+      environment as the release job; the first real tag build is blocked on the
+      owner's four signing secrets (see PROGRESS.md)
+- [x] R8 rules checked on a release build (serialization, JGit,
       BouncyCastle)
-- [ ] Accessibility pass (content descriptions, touch targets, font scale),
+- [x] Accessibility pass (content descriptions, touch targets, font scale),
       RTL pass, tablet pass
-- [ ] Finish the instrumented smoke test (onboarding → chat → tool card with
+- [x] Finish the instrumented smoke test (onboarding → chat → tool card with
       fakes)
-- [ ] `README.md` (setup, OAuth App, key, signing, screenshots),
+- [x] `README.md` (setup, OAuth App, key, signing, screenshots),
       `docs/TESTING.md` manual checklist
-- [ ] Coverage report for `:agent`, `:gemini`, `:github`
+- [x] Coverage report for `:agent`, `:gemini`, `:github`
