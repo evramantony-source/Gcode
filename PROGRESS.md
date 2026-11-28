@@ -25,7 +25,12 @@ This file lets a new session resume without other context. It is updated after e
 | 7 Agent GitHub/Actions tools, build-fix loop | Merged | [#7](https://github.com/evramantony-source/Gcode/pull/7) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46045167907) |
 | 8 PRs, issues, releases, branches, conflicts | Merged | [#8](https://github.com/evramantony-source/Gcode/pull/8) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46146868812) |
 | 9 Compaction, sessions, checkpoints, MCP, commands, sub-agents | Merged | [#9](https://github.com/evramantony-source/Gcode/pull/9) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46149311159) |
-| 10 Release signing, polish, README, tests | Merged | [#10](https://github.com/evramantony-source/Gcode/pull/10) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46151211082) |
+| 10 Release signing, polish, README, tests | Merged | [#10](https://github.com/evramantony-source/Gcode/pull/10) | [run](https://github.com/evramantony-source/Gcode/actions/runs/46152092209) |
+
+Final run on `main` after the Phase 10 merge (commit `05589e5`): all jobs green (build, lint, unit
+tests, instrumented tests on API 26 and 36, R8 launch check; Signed release skipped because there is no
+tag): [run 46152846566](https://github.com/evramantony-source/Gcode/actions/runs/46152846566), with
+the debug APK as the artifact `gcode-debug-apk`.
 
 ## Features done
 
@@ -171,7 +176,7 @@ Checked against the code on the final branch. Status: **Done**, **Partial** or *
 | UI: all specified screens, dark and light themes, tablet split-pane, Arabic RTL | Done | `ui/*`, `values-ar`, `isWideLayout` |
 | Open-source licences screen, THIRD_PARTY_NOTICES, Apache-2.0 LICENSE | Done | `LicensesScreen`, `THIRD_PARTY_NOTICES.md` (checked in CI), `LICENSE` |
 | Signed release workflow on version tags; README with installation and setup | Done (workflow and README); first tagged run **Blocked** on the owner's signing secrets | `android.yml` release job, `README.md`, `docs/SIGNING.md` |
-| Unit tests for tools, permissions, model fallback and the GitHub client; instrumented UI smoke test passing on PRs and main | Done | 177 unit tests; instrumented tests on API 26 and 36 for every PR (main run linked below) |
+| Unit tests for tools, permissions, model fallback and the GitHub client; instrumented UI smoke test passing on PRs and main | Done | 177 unit tests; instrumented tests on API 26 and 36 for every PR and on `main` ([run 46152846566](https://github.com/evramantony-source/Gcode/actions/runs/46152846566)) |
 
 ## Next step
 
